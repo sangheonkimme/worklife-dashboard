@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { DashboardLayout } from './components/DashboardLayout'
 import { AuthLayout } from './components/AuthLayout'
 import { DashboardPage } from './pages/DashboardPage'
+import { ExpenseTrackerPage } from './pages/ExpenseTrackerPage'
 import { LoginPage } from './pages/LoginPage'
 import { SignupPage } from './pages/SignupPage'
 
@@ -33,6 +34,14 @@ function App() {
           element={
             <DashboardLayout>
               <DashboardPage />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/expense"
+          element={
+            <DashboardLayout>
+              <ExpenseTrackerPage />
             </DashboardLayout>
           }
         />
