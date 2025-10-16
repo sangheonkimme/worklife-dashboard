@@ -1,0 +1,111 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 사용자 모델
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  transactions Transaction[]
+  categories   Category[]
+  budgets      Budget[]
+  salaryCalculations SalaryCalculation[]
+
+  @@map("users")
+}
+
+// 카테고리 모델
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  type        CategoryType // INCOME or EXPENSE
+  color       String?
+  icon        String?
+  isDefault   Boolean  @default(false) // 기본 제공 카테고리
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  transactions Transaction[]
+
+  @@map("categories")
+}
+
+enum CategoryType {
+  INCOME
+  EXPENSE
+}
+
+// 거래 내역 모델
+model Transaction {
+  id          String   @id @default(cuid())
+  amount      Float
+  description String?
+  date        DateTime
+  type        CategoryType
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("transactions")
+  @@index([userId, date])
+  @@index([categoryId])
+}
+
+// 예산 모델
+model Budget {
+  id         String   @id @default(cuid())
+  categoryId String?
+  amount     Float
+  month      DateTime // 해당 월 (예: 2024-01-01)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("budgets")
+  @@unique([userId, categoryId, month])
+  @@index([userId, month])
+}
+
+// 급여 계산 이력 모델
+model SalaryCalculation {
+  id              String   @id @default(cuid())
+  salaryType      String   // 'annual' or 'monthly'
+  grossSalary     Float    // 세전 급여
+  nationalPension Float    // 국민연금
+  healthInsurance Float    // 건강보험
+  longTermCare    Float    // 장기요양보험
+  employmentIns   Float    // 고용보험
+  incomeTax       Float    // 소득세
+  localIncomeTax  Float    // 지방소득세
+  netSalary       Float    // 실수령액
+  dependents      Int      @default(0) // 부양가족 수
+  nonTaxable      Float    @default(0) // 비과세액
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+
+  @@map("salary_calculations")
+  @@index([userId, createdAt])
+}
