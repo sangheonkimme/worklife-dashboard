@@ -16,6 +16,7 @@ const ExpenseTrackerPage = lazy(() =>
     default: module.ExpenseTrackerPage,
   }))
 );
+const TransactionsPage = lazy(() => import("./pages/TransactionsPage"));
 const LoginPage = lazy(() =>
   import("./pages/LoginPage").then((module) => ({ default: module.LoginPage }))
 );
@@ -74,6 +75,16 @@ const App = () => {
               <PrivateRoute>
                 <DashboardLayout>
                   <ExpenseTrackerPage />
+                </DashboardLayout>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/transactions"
+            element={
+              <PrivateRoute>
+                <DashboardLayout>
+                  <TransactionsPage />
                 </DashboardLayout>
               </PrivateRoute>
             }

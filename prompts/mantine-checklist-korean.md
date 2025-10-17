@@ -385,61 +385,55 @@
 ### 🎨 프론트엔드 - 가계부 UI (Mantine)
 
 #### 가계부 메인 페이지
-- [ ] 페이지 레이아웃 구성
-  - [ ] Tabs (거래내역, 통계, 예산)
-  - [ ] 월 선택기 (MonthPicker)
-  - [ ] 빠른 추가 버튼 (Affix + ActionIcon)
+- [x] 페이지 레이아웃 구성
+  - [x] Tabs (거래내역, 통계, 예산)
+  - [x] 월 선택기 (MonthPicker)
+  - [x] 빠른 추가 버튼 (Affix + ActionIcon)
 
 #### 거래 관리 컴포넌트
-- [ ] 거래 입력 폼 (`TransactionForm.tsx`)
+- [x] 거래 입력 폼 (`TransactionForm.tsx`)
   ```jsx
   - SegmentedControl (수입/지출)
   - NumberInput (금액, 천 단위 구분)
   - Select (카테고리, searchable)
   - DatePickerInput (날짜)
   - Textarea (메모)
-  - Switch (반복 거래)
   - Button.Group (저장/취소)
   ```
-- [ ] 거래 목록 (`TransactionList.tsx`)
-  - [ ] 데스크톱: Table 컴포넌트
+- [x] 거래 목록 (`TransactionList.tsx`)
+  - [x] 데스크톱: Table 컴포넌트
   - [ ] 모바일: Card + Stack
-  - [ ] 각 항목 액션 (ActionIcon: 수정/삭제)
-  - [ ] Pagination 컴포넌트
-  - [ ] Empty state (빈 상태)
-- [ ] 거래 필터 (`TransactionFilter.tsx`)
-  - [ ] DateRangePicker (기간)
-  - [ ] MultiSelect (카테고리)
-  - [ ] TextInput (검색)
-  - [ ] Button (필터 초기화)
-- [ ] 거래 수정 모달
-  - [ ] Modal 컴포넌트
-  - [ ] 수정 폼 (입력 폼 재사용)
-- [ ] 거래 삭제 확인
-  - [ ] 확인 모달 (modals.openConfirmModal)
+  - [x] 각 항목 액션 (ActionIcon: 수정/삭제)
+  - [x] Pagination 컴포넌트
+  - [x] Empty state (빈 상태)
+- [x] 거래 필터 (`TransactionFilter.tsx`)
+  - [x] DateRangePicker (기간)
+  - [x] MultiSelect (카테고리)
+  - [x] TextInput (검색)
+  - [x] Button (필터 초기화)
+- [x] 거래 수정 모달
+  - [x] Modal 컴포넌트
+  - [x] 수정 폼 (입력 폼 재사용)
+- [x] 거래 삭제 확인
+  - [x] 확인 모달 (modals.openConfirmModal)
 
 #### 카테고리 관리
-- [ ] 카테고리 설정 모달
-  - [ ] 카테고리 목록 (List)
-  - [ ] 카테고리 추가 폼
-    - [ ] TextInput (이름)
-    - [ ] ColorPicker (색상)
+- [x] 카테고리 설정 모달
+  - [x] 카테고리 목록 (List)
+  - [x] 카테고리 추가 폼
+    - [x] TextInput (이름)
+    - [x] ColorPicker (색상)
     - [ ] 아이콘 선택기
-  - [ ] 카테고리 수정/삭제
+  - [x] 카테고리 수정/삭제
 
 #### 통계 대시보드
-- [ ] 요약 카드 (`SummaryCards.tsx`)
-  ```jsx
-  - StatsGrid
-  - StatsCard (수입/지출/잔액)
-  - Trend 표시 (증감률)
-  ```
-- [ ] 카테고리별 차트 (`CategoryChart.tsx`)
-  ```jsx
-  - DonutChart (원형 차트)
-  - 범례 표시
-  - 툴팁
-  ```
+- [x] 요약 카드 (기본 통계)
+  - [x] 총 수입/지출/순수익
+  - [x] 저축률 표시
+- [x] 카테고리별 표시
+  - [x] RingProgress (비율)
+  - [x] 금액 및 건수
+  - [x] 색상 구분
 - [ ] 일별 추이 차트 (`DailyTrendChart.tsx`)
   ```jsx
   - AreaChart (영역 차트)
@@ -455,13 +449,13 @@
   ```
 
 #### 예산 관리
-- [ ] 예산 설정 (`BudgetSettings.tsx`)
-  - [ ] 카테고리별 예산 입력
-  - [ ] NumberInput (금액)
-  - [ ] 저장 버튼
-- [ ] 예산 현황 (`BudgetStatus.tsx`)
-  - [ ] Progress.Root (진행률)
-  - [ ] Progress.Section (사용/남은 금액)
+- [x] 예산 설정
+  - [x] 카테고리별 예산 입력
+  - [x] NumberInput (금액)
+  - [x] 저장 버튼
+- [x] 예산 현황
+  - [x] Progress (진행률)
+  - [x] 사용/남은 금액 표시
   - [ ] 초과 경고 (Alert)
 
 #### CSV 가져오기/내보내기

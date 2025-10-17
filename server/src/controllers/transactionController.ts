@@ -7,7 +7,13 @@ export const transactionController = {
   async getTransactions(req: AuthRequest, res: Response, next: NextFunction): Promise<any> {
     try {
       const userId = req.user!.userId;
-      const filters = req.query;
+
+      // 쿼리 파라미터 타입 변환
+      const filters = {
+        ...req.query,
+        page: req.query.page ? Number(req.query.page) : undefined,
+        limit: req.query.limit ? Number(req.query.limit) : undefined,
+      };
 
       const result = await transactionService.getTransactions(userId, filters);
 
