@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   TextInput,
   PasswordInput,
@@ -23,6 +23,7 @@ import {
   IconAlertCircle,
 } from '@tabler/icons-react'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
 
 // 비밀번호 강도 계산 함수
 function getPasswordStrength(password: string): {
@@ -73,12 +74,19 @@ function PasswordRequirement({
   )
 }
 
+interface FormValues {
+  name: string
+  email: string
+  password: string
+  confirmPassword: string
+  agreeToTerms: boolean
+}
+
 export function SignupPage() {
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const { register, isRegisterLoading, registerError, isAuthenticated } = useAuth()
   const [popoverOpened, setPopoverOpened] = useState(false)
 
-  const form = useForm({
+  const form = useForm<FormValues>({
     initialValues: {
       name: '',
       email: '',
@@ -88,17 +96,17 @@ export function SignupPage() {
     },
 
     validate: {
-      name: (value) => {
+      name: (value: string) => {
         if (!value) return '이름을 입력해주세요'
         if (value.length < 2) return '이름은 최소 2자 이상이어야 합니다'
         return null
       },
-      email: (value) => {
+      email: (value: string) => {
         if (!value) return '이메일을 입력해주세요'
         if (!/^\S+@\S+$/.test(value)) return '올바른 이메일 형식이 아닙니다'
         return null
       },
-      password: (value) => {
+      password: (value: string) => {
         if (!value) return '비밀번호를 입력해주세요'
         if (value.length < 8) return '비밀번호는 최소 8자 이상이어야 합니다'
         if (!/[A-Z]/.test(value)) return '대문자를 하나 이상 포함해야 합니다'
@@ -106,12 +114,12 @@ export function SignupPage() {
         if (!/[0-9]/.test(value)) return '숫자를 하나 이상 포함해야 합니다'
         return null
       },
-      confirmPassword: (value, values) => {
+      confirmPassword: (value: string, values: FormValues) => {
         if (!value) return '비밀번호 확인을 입력해주세요'
         if (value !== values.password) return '비밀번호가 일치하지 않습니다'
         return null
       },
-      agreeToTerms: (value) => {
+      agreeToTerms: (value: boolean) => {
         if (!value) return '이용약관에 동의해주세요'
         return null
       },
@@ -132,24 +140,24 @@ export function SignupPage() {
   ]
 
   const handleSubmit = async (values: typeof form.values) => {
-    setLoading(true)
-    setError(null)
-
     try {
-      // 여기에 실제 회원가입 API 호출을 구현하세요
-      console.log('회원가입 시도:', values)
-
-      // 시뮬레이션을 위한 지연
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      alert('회원가입 성공! 로그인 페이지로 이동합니다.')
-      // navigate('/login')
+      await register({
+        name: values.name,
+        email: values.email,
+        password: values.password,
+      })
     } catch (err) {
-      setError('회원가입에 실패했습니다. 다시 시도해주세요.')
-    } finally {
-      setLoading(false)
+      // 에러는 useAuth의 registerError로 처리됨
+      console.error('회원가입 실패:', err)
     }
   }
+
+  // 이미 로그인된 경우 대시보드로 리다이렉트
+  useEffect(() => {
+    if (isAuthenticated) {
+      window.location.href = '/dashboard'
+    }
+  }, [isAuthenticated])
 
   return (
     <Container size={460} my={40}>
@@ -166,14 +174,14 @@ export function SignupPage() {
       <Paper withBorder shadow="md" p={30} mt={30} radius="md">
         <form onSubmit={form.onSubmit(handleSubmit)}>
           <Stack gap="md">
-            {error && (
+            {registerError && (
               <Alert
                 icon={<IconAlertCircle size={16} />}
                 title="오류"
                 color="red"
                 variant="light"
               >
-                {error}
+                {(registerError as Error & { response?: { data?: { message?: string } } })?.response?.data?.message || '회원가입에 실패했습니다. 다시 시도해주세요.'}
               </Alert>
             )}
 
@@ -260,7 +268,7 @@ export function SignupPage() {
               {...form.getInputProps('agreeToTerms', { type: 'checkbox' })}
             />
 
-            <Button type="submit" fullWidth loading={loading}>
+            <Button type="submit" fullWidth loading={isRegisterLoading}>
               회원가입
             </Button>
           </Stack>

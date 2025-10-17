@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { DashboardLayout } from './components/DashboardLayout'
 import { AuthLayout } from './components/AuthLayout'
+import { PrivateRoute } from './components/auth/PrivateRoute'
 import { DashboardPage } from './pages/DashboardPage'
 import { ExpenseTrackerPage } from './pages/ExpenseTrackerPage'
 import { LoginPage } from './pages/LoginPage'
@@ -28,26 +29,30 @@ function App() {
           }
         />
 
-        {/* Dashboard Routes */}
+        {/* Dashboard Routes - Protected */}
         <Route
           path="/dashboard"
           element={
-            <DashboardLayout>
-              <DashboardPage />
-            </DashboardLayout>
+            <PrivateRoute>
+              <DashboardLayout>
+                <DashboardPage />
+              </DashboardLayout>
+            </PrivateRoute>
           }
         />
         <Route
           path="/expense"
           element={
-            <DashboardLayout>
-              <ExpenseTrackerPage />
-            </DashboardLayout>
+            <PrivateRoute>
+              <DashboardLayout>
+                <ExpenseTrackerPage />
+              </DashboardLayout>
+            </PrivateRoute>
           }
         />
 
         {/* Default Route */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </BrowserRouter>
   )

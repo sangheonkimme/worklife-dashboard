@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import {
   TextInput,
   PasswordInput,
@@ -16,10 +15,11 @@ import {
 import { useForm } from '@mantine/form'
 import { IconAlertCircle } from '@tabler/icons-react'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
+import { useEffect } from 'react'
 
 export function LoginPage() {
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const { login, isLoginLoading, loginError, isAuthenticated } = useAuth()
 
   const form = useForm({
     initialValues: {
@@ -43,26 +43,24 @@ export function LoginPage() {
   })
 
   const handleSubmit = async (values: typeof form.values) => {
-    setLoading(true)
-    setError(null)
-
     try {
-      // 여기에 실제 로그인 API 호출을 구현하세요
-      console.log('로그인 시도:', values)
-
-      // 시뮬레이션을 위한 지연
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      // 성공 시 대시보드로 이동 (실제로는 토큰 저장 등의 작업 필요)
-      // navigate('/dashboard')
-
-      alert('로그인 성공!')
+      await login({
+        email: values.email,
+        password: values.password,
+        rememberMe: values.rememberMe,
+      })
     } catch (err) {
-      setError('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.')
-    } finally {
-      setLoading(false)
+      // 에러는 useAuth의 loginError로 처리됨
+      console.error('로그인 실패:', err)
     }
   }
+
+  // 이미 로그인된 경우 대시보드로 리다이렉트
+  useEffect(() => {
+    if (isAuthenticated) {
+      window.location.href = '/dashboard'
+    }
+  }, [isAuthenticated])
 
   return (
     <Container size={420} my={40}>
@@ -79,14 +77,14 @@ export function LoginPage() {
       <Paper withBorder shadow="md" p={30} mt={30} radius="md">
         <form onSubmit={form.onSubmit(handleSubmit)}>
           <Stack gap="md">
-            {error && (
+            {loginError && (
               <Alert
                 icon={<IconAlertCircle size={16} />}
                 title="오류"
                 color="red"
                 variant="light"
               >
-                {error}
+                {(loginError as Error & { response?: { data?: { message?: string } } })?.response?.data?.message || '로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.'}
               </Alert>
             )}
 
@@ -114,7 +112,7 @@ export function LoginPage() {
               </Anchor>
             </Group>
 
-            <Button type="submit" fullWidth loading={loading}>
+            <Button type="submit" fullWidth loading={isLoginLoading}>
               로그인
             </Button>
           </Stack>

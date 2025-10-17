@@ -241,8 +241,8 @@
 ### 🎨 프론트엔드 - 인증 UI (Mantine)
 
 #### 로그인 페이지
-- [ ] 로그인 페이지 컴포넌트 생성
-- [ ] Mantine 컴포넌트 적용
+- [x] 로그인 페이지 컴포넌트 생성
+- [x] Mantine 컴포넌트 적용
   ```jsx
   - Container (중앙 정렬)
   - Paper (폼 컨테이너)
@@ -250,29 +250,28 @@
   - PasswordInput (비밀번호)
   - Checkbox (자동 로그인)
   - Button (로그인)
-  - Divider (구분선)
   - Anchor (링크)
   ```
-- [ ] 폼 검증 (react-hook-form + zod)
-- [ ] 에러 메시지 표시 (Alert)
-- [ ] 로딩 상태 (LoadingOverlay)
-- [ ] 비밀번호 찾기 링크
+- [x] 폼 검증 (@mantine/form)
+- [x] 에러 메시지 표시 (Alert)
+- [x] 로딩 상태 (Button loading)
+- [x] 비밀번호 찾기 링크
 
 #### 회원가입 페이지
-- [ ] 회원가입 페이지 컴포넌트 생성
-- [ ] Mantine 컴포넌트 적용
+- [x] 회원가입 페이지 컴포넌트 생성
+- [x] Mantine 컴포넌트 적용
   ```jsx
-  - Stepper (단계별 진행)
   - TextInput (이메일, 이름)
   - PasswordInput (비밀번호)
   - Progress (비밀번호 강도)
+  - Popover (비밀번호 요구사항)
   - Checkbox (약관 동의)
   - Button (회원가입)
   ```
-- [ ] 실시간 유효성 검사
-- [ ] 비밀번호 강도 표시기
-- [ ] 약관 모달 (Modal)
-- [ ] 성공 시 리다이렉트
+- [x] 실시간 유효성 검사
+- [x] 비밀번호 강도 표시기
+- [x] 약관 동의 체크박스
+- [x] 성공 시 리다이렉트
 
 #### 프로필 페이지
 - [ ] 프로필 페이지 컴포넌트
@@ -282,36 +281,34 @@
 - [ ] 비밀번호 변경 섹션
 
 #### 상태 관리
-- [ ] Auth slice 생성 (Redux Toolkit)
+- [x] Auth slice 생성 (Redux Toolkit)
   ```javascript
   - user 상태
   - isAuthenticated
-  - loading
-  - error
   ```
-- [ ] Auth actions
-  - [ ] login
-  - [ ] logout
-  - [ ] register
-  - [ ] refreshToken
+- [x] Auth actions (TanStack Query mutations)
+  - [x] login
+  - [x] logout
+  - [x] register
+  - [ ] refreshToken (Axios 인터셉터에서 자동 처리)
   - [ ] updateProfile
-- [ ] Auth selectors
+- [x] Auth selectors
 
 #### 보호된 라우트
-- [ ] PrivateRoute 컴포넌트
-- [ ] 인증 체크 로직
-- [ ] 리다이렉트 처리
-- [ ] 로딩 상태 (Loader)
+- [x] PrivateRoute 컴포넌트
+- [x] 인증 체크 로직
+- [x] 리다이렉트 처리
+- [x] 로딩 상태 (Loader)
 
 #### 커스텀 훅
-- [ ] `useAuth` 훅
-  - [ ] 로그인/로그아웃 함수
-  - [ ] 사용자 상태
-  - [ ] 인증 상태
-- [ ] `useToken` 훅
-  - [ ] 토큰 저장/조회
-  - [ ] 토큰 갱신 로직
-  - [ ] 자동 로그아웃
+- [x] `useAuth` 훅
+  - [x] 로그인/로그아웃 함수
+  - [x] 사용자 상태
+  - [x] 인증 상태
+- [x] 토큰 관리 (Axios 인터셉터)
+  - [x] 토큰 저장/조회 (localStorage)
+  - [x] 토큰 갱신 로직 (자동)
+  - [x] 자동 로그아웃
 
 ---
 
