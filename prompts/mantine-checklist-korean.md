@@ -317,70 +317,70 @@
 ### 💰 백엔드 - 가계부 API
 
 #### 데이터베이스 준비
-- [ ] Transaction 모델 확인
-- [ ] Category 모델 확인
-- [ ] Budget 모델 확인
-- [ ] 인덱스 생성 (성능 최적화)
+- [x] Transaction 모델 확인
+- [x] Category 모델 확인
+- [x] Budget 모델 확인
+- [x] 인덱스 생성 (성능 최적화)
 
 #### 거래(Transaction) API
-- [ ] GET `/api/transactions`
-  - [ ] 페이지네이션 (limit, offset)
-  - [ ] 날짜 필터 (startDate, endDate)
-  - [ ] 카테고리 필터
-  - [ ] 검색 (description)
-  - [ ] 정렬 (date, amount)
-- [ ] GET `/api/transactions/:id`
-  - [ ] 단일 거래 조회
-- [ ] POST `/api/transactions`
-  - [ ] 거래 생성
-  - [ ] 입력 검증
-  - [ ] 예산 체크 알림
-- [ ] PUT `/api/transactions/:id`
-  - [ ] 거래 수정
-  - [ ] 권한 확인
-- [ ] DELETE `/api/transactions/:id`
-  - [ ] 거래 삭제
+- [x] GET `/api/transactions`
+  - [x] 페이지네이션 (limit, offset)
+  - [x] 날짜 필터 (startDate, endDate)
+  - [x] 카테고리 필터
+  - [x] 검색 (description)
+  - [x] 정렬 (date, amount)
+- [x] GET `/api/transactions/:id`
+  - [x] 단일 거래 조회
+- [x] POST `/api/transactions`
+  - [x] 거래 생성
+  - [x] 입력 검증
+  - [x] 예산 체크 알림
+- [x] PUT `/api/transactions/:id`
+  - [x] 거래 수정
+  - [x] 권한 확인
+- [x] DELETE `/api/transactions/:id`
+  - [x] 거래 삭제
   - [ ] Soft delete 옵션
-- [ ] POST `/api/transactions/bulk`
+- [x] POST `/api/transactions/bulk`
   - [ ] CSV 파싱 (multer + papaparse)
-  - [ ] 대량 입력
-  - [ ] 에러 처리 및 리포트
+  - [x] 대량 입력
+  - [x] 에러 처리 및 리포트
 
 #### 카테고리 API
-- [ ] GET `/api/categories`
-  - [ ] 사용자 카테고리 조회
-  - [ ] 기본 카테고리 포함
-- [ ] POST `/api/categories`
-  - [ ] 카테고리 생성
-  - [ ] 아이콘/색상 설정
-- [ ] PUT `/api/categories/:id`
-  - [ ] 카테고리 수정
-- [ ] DELETE `/api/categories/:id`
-  - [ ] 사용 중 체크
-  - [ ] 거래 재할당 옵션
+- [x] GET `/api/categories`
+  - [x] 사용자 카테고리 조회
+  - [x] 기본 카테고리 포함
+- [x] POST `/api/categories`
+  - [x] 카테고리 생성
+  - [x] 아이콘/색상 설정
+- [x] PUT `/api/categories/:id`
+  - [x] 카테고리 수정
+- [x] DELETE `/api/categories/:id`
+  - [x] 사용 중 체크
+  - [x] 거래 재할당 옵션
 
 #### 통계 API
-- [ ] GET `/api/transactions/statistics`
-  - [ ] 월별 수입/지출 합계
-  - [ ] 카테고리별 집계
-  - [ ] 일별 추이 데이터
-  - [ ] 전월 대비 비교
-- [ ] GET `/api/transactions/export`
-  - [ ] CSV 생성
+- [x] GET `/api/transactions/statistics`
+  - [x] 월별 수입/지출 합계
+  - [x] 카테고리별 집계
+  - [x] 일별 추이 데이터
+  - [x] 전월 대비 비교
+- [x] GET `/api/transactions/export`
+  - [x] CSV 생성
   - [ ] Excel 생성 (선택)
-  - [ ] 다운로드 응답
+  - [x] 다운로드 응답
 
 #### 예산 API
-- [ ] GET `/api/budgets`
-  - [ ] 현재 월 예산
-  - [ ] 카테고리별 예산
-- [ ] POST `/api/budgets`
-  - [ ] 예산 설정
-- [ ] PUT `/api/budgets/:id`
-  - [ ] 예산 수정
-- [ ] GET `/api/budgets/status`
-  - [ ] 사용 현황
-  - [ ] 남은 예산
+- [x] GET `/api/budgets`
+  - [x] 현재 월 예산
+  - [x] 카테고리별 예산
+- [x] POST `/api/budgets`
+  - [x] 예산 설정
+- [x] PUT `/api/budgets/:id`
+  - [x] 예산 수정
+- [x] GET `/api/budgets/status`
+  - [x] 사용 현황
+  - [x] 남은 예산
 
 ### 🎨 프론트엔드 - 가계부 UI (Mantine)
 

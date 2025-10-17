@@ -1,6 +1,16 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyAccessToken, verifyRefreshToken } from '../utils/jwt';
 
+// AuthRequest 타입 정의
+export interface AuthRequest extends Request {
+  user?: {
+    userId: string;
+    email: string;
+    iat?: number;
+    exp?: number;
+  };
+}
+
 /**
  * JWT 액세스 토큰을 검증하는 미들웨어
  */
@@ -99,3 +109,6 @@ export const authenticateRefreshToken = (
     });
   }
 };
+
+// authenticateToken의 alias (가계부 API에서 사용)
+export const authenticate = authenticateToken;

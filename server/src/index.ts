@@ -8,6 +8,9 @@ import dotenv from 'dotenv';
 import { errorHandler } from './middlewares/errorHandler';
 import { notFoundHandler } from './middlewares/notFoundHandler';
 import authRoutes from './routes/authRoutes';
+import transactionRoutes from './routes/transactionRoutes';
+import categoryRoutes from './routes/categoryRoutes';
+import budgetRoutes from './routes/budgetRoutes';
 
 // 환경 변수 로드
 dotenv.config();
@@ -38,9 +41,9 @@ app.get('/health', (_req, res) => {
 
 // API 라우트
 app.use('/api/auth', authRoutes);
-// app.use('/api/transactions', transactionRoutes);
-// app.use('/api/categories', categoryRoutes);
-// app.use('/api/budgets', budgetRoutes);
+app.use('/api/transactions', transactionRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/budgets', budgetRoutes);
 // app.use('/api/salary', salaryRoutes);
 
 // 404 핸들러
