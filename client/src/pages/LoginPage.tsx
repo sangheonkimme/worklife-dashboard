@@ -30,7 +30,7 @@ export const LoginPage = () => {
     isAuthenticated,
     googleLogin,
     googleLoginError,
-    isGoogleLoginLoading,
+    // isGoogleLoginLoading,
   } = useAuth();
 
   const form = useForm({
@@ -100,8 +100,13 @@ export const LoginPage = () => {
               >
                 {(() => {
                   // 네트워크 연결 오류 확인
+
                   if (isAxiosError(loginError)) {
-                    if (loginError.code === "ERR_NETWORK" || loginError.message.includes("Network Error")) {
+                    if (
+                      loginError.code === "ERR_BAD_RESPONSE" ||
+                      loginError.code === "ERR_NETWORK" ||
+                      loginError.message.includes("Network Error")
+                    ) {
                       return "서버에 연결할 수 없습니다. 네트워크 연결을 확인해주세요.";
                     }
                     // 서버 응답이 있는 경우 메시지 사용
@@ -155,7 +160,11 @@ export const LoginPage = () => {
                 {(() => {
                   // 네트워크 연결 오류 확인
                   if (isAxiosError(googleLoginError)) {
-                    if (googleLoginError.code === "ERR_NETWORK" || googleLoginError.message.includes("Network Error")) {
+                    if (
+                      googleLoginError.code === "ERR_BAD_RESPONSE" ||
+                      googleLoginError.code === "ERR_NETWORK" ||
+                      googleLoginError.message.includes("Network Error")
+                    ) {
                       return "서버에 연결할 수 없습니다. 네트워크 연결을 확인해주세요.";
                     }
                     // 서버 응답이 있는 경우 메시지 사용

@@ -81,7 +81,7 @@ export const login = async (
 
     // 사용자 조회
     const user = await findUserByEmail(email);
-    if (!user) {
+    if (!user || !user.password) {
       res.status(401).json({
         success: false,
         message: '이메일 또는 비밀번호가 올바르지 않습니다',
