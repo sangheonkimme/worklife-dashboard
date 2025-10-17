@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { notifications } from "@mantine/notifications";
 import { authApi } from "../services/api/authApi";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { setUser, clearUser } from "../store/slices/authSlice";
@@ -13,7 +14,7 @@ export const useAuth = () => {
   const { user } = useAppSelector((state) => state.auth);
 
   // 현재 사용자 정보 조회
-  const { data: currentUser, isLoading } = useQuery({
+  const { data: currentUser, isLoading, error } = useQuery({
     queryKey: ["auth", "me"],
     queryFn: authApi.me,
     enabled: !!localStorage.getItem("accessToken"),
@@ -23,6 +24,28 @@ export const useAuth = () => {
     refetchOnReconnect: false,
     staleTime: Infinity,
   });
+
+  // API 에러 처리
+  useEffect(() => {
+    if (error) {
+      // 네트워크 에러인지 확인
+      const isNetworkError = !window.navigator.onLine || error.message.includes("Network Error");
+
+      notifications.show({
+        title: "인증 오류",
+        message: isNetworkError
+          ? "네트워크 연결을 확인해주세요. 인터넷에 연결되어 있는지 확인하세요."
+          : "사용자 정보를 불러오는데 실패했습니다. 다시 로그인해주세요.",
+        color: "red",
+        autoClose: 5000,
+      });
+
+      // 에러 발생 시 로그인 페이지로 이동
+      localStorage.removeItem("accessToken");
+      dispatch(clearUser());
+      navigate("/login");
+    }
+  }, [error, dispatch, navigate]);
 
   // 리프레시 후에도 Redux에 사용자 정보를 채워 넣어 인증 상태를 복원
   useEffect(() => {

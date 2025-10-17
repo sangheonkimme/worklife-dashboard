@@ -19,6 +19,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../hooks/useAuth";
 import { useEffect } from "react";
+import { isAxiosError } from "axios";
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -97,12 +98,20 @@ export const LoginPage = () => {
                 color="red"
                 variant="light"
               >
-                {(
-                  loginError as Error & {
-                    response?: { data?: { message?: string } };
+                {(() => {
+                  // 네트워크 연결 오류 확인
+                  if (isAxiosError(loginError)) {
+                    if (loginError.code === "ERR_NETWORK" || loginError.message.includes("Network Error")) {
+                      return "서버에 연결할 수 없습니다. 네트워크 연결을 확인해주세요.";
+                    }
+                    // 서버 응답이 있는 경우 메시지 사용
+                    if (loginError.response?.data?.message) {
+                      return loginError.response.data.message;
+                    }
                   }
-                )?.response?.data?.message ||
-                  "로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요."}
+                  // 기본 에러 메시지
+                  return "로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.";
+                })()}
               </Alert>
             )}
 
@@ -143,12 +152,20 @@ export const LoginPage = () => {
                 color="red"
                 variant="light"
               >
-                {(
-                  googleLoginError as Error & {
-                    response?: { data?: { message?: string } };
+                {(() => {
+                  // 네트워크 연결 오류 확인
+                  if (isAxiosError(googleLoginError)) {
+                    if (googleLoginError.code === "ERR_NETWORK" || googleLoginError.message.includes("Network Error")) {
+                      return "서버에 연결할 수 없습니다. 네트워크 연결을 확인해주세요.";
+                    }
+                    // 서버 응답이 있는 경우 메시지 사용
+                    if (googleLoginError.response?.data?.message) {
+                      return googleLoginError.response.data.message;
+                    }
                   }
-                )?.response?.data?.message ||
-                  "Google 로그인에 실패했습니다. 다시 시도해주세요."}
+                  // 기본 에러 메시지
+                  return "Google 로그인에 실패했습니다. 다시 시도해주세요.";
+                })()}
               </Alert>
             )}
 
