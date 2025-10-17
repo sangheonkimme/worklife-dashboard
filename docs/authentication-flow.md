@@ -163,17 +163,17 @@ flowchart TD
 
     CallMeAPI --> CheckResponse{응답 결과}
 
-    CheckResponse -->|200 OK| UpdateRedux[Redux 상태 업데이트<br/>isAuthenticated = true]
+    CheckResponse -->|200 OK| SyncToRedux[useEffect로 Redux에<br/>사용자 정보 동기화<br/>dispatch setUser]
     CheckResponse -->|401 Error| TryRefresh[자동 토큰 갱신 시도<br/>Axios 인터셉터]
 
     TryRefresh --> RefreshResult{갱신 성공?}
 
-    RefreshResult -->|성공| UpdateRedux
+    RefreshResult -->|성공| SyncToRedux
     RefreshResult -->|실패| ClearToken[토큰 삭제]
 
     ClearToken --> RedirectLogin
 
-    UpdateRedux --> RenderPage[요청한 페이지<br/>렌더링]
+    SyncToRedux --> RenderPage[요청한 페이지<br/>렌더링]
 
     RedirectLogin --> End([종료])
     RenderPage --> End
@@ -630,10 +630,36 @@ export function PrivateRoute({ children }: PrivateRouteProps) {
      queryFn: authApi.me,
      enabled: !!localStorage.getItem('accessToken'),
      retry: false,
+     staleTime: Infinity,
    });
    ```
 
-3. **상태에 따른 처리**
+3. **TanStack Query → Redux 동기화**
+   ```typescript
+   // useAuth.ts에서 자동 동기화
+   useEffect(() => {
+     if (currentUser) {
+       dispatch(setUser(currentUser));
+     }
+   }, [currentUser, dispatch]);
+   ```
+   - TanStack Query가 `/api/auth/me`에서 사용자 정보를 가져오면
+   - useEffect가 자동으로 Redux 스토어에 동기화
+   - 이를 통해 페이지 새로고침 후에도 인증 상태 복원
+
+4. **다중 소스 인증 확인**
+   ```typescript
+   const effectiveUser = user || currentUser || null;
+   const effectiveIsAuthenticated = Boolean(
+     effectiveUser || localStorage.getItem("accessToken")
+   );
+   ```
+   - Redux user (useEffect로 동기화된 후)
+   - TanStack Query currentUser (API 호출 중)
+   - localStorage token (즉시 확인 가능)
+   - 세 가지 소스 중 하나라도 있으면 인증된 것으로 간주
+
+5. **상태에 따른 처리**
    - `isLoading=true`: 로딩 스피너 표시
    - `isAuthenticated=false`: 로그인 페이지로 리다이렉트
    - `isAuthenticated=true`: 요청한 페이지 렌더링
@@ -649,23 +675,50 @@ export function PrivateRoute({ children }: PrivateRouteProps) {
    - 토큰이 있으면 자동으로 `/api/auth/me` 호출
 
 2. **사용자 정보 복원**
+
    ```typescript
-   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
-   const { data: currentUser } = useQuery({
+   // TanStack Query가 localStorage에 토큰이 있으면 자동으로 /api/auth/me 호출
+   const { data: currentUser, isLoading } = useQuery({
      queryKey: ['auth', 'me'],
      queryFn: authApi.me,
      enabled: !!localStorage.getItem('accessToken'),
+     retry: false,
+     staleTime: Infinity,
    });
+   ```
+
+3. **useEffect로 Redux에 자동 동기화**
+
+   ```typescript
+   // useAuth.ts
+   useEffect(() => {
+     if (currentUser) {
+       dispatch(setUser(currentUser));
+     }
+   }, [currentUser, dispatch]);
+   ```
+
+   - API에서 사용자 정보를 받아오면 자동으로 Redux에 동기화
+   - 페이지 새로고침 후에도 인증 상태가 복원됨
+   - Redux와 TanStack Query가 항상 일관된 상태 유지
+
+4. **다중 소스 폴백 체인**
+
+   ```typescript
+   const effectiveUser = user || currentUser || null;
+   const effectiveIsAuthenticated = Boolean(
+     effectiveUser || localStorage.getItem("accessToken")
+   );
 
    return {
-     user: user || currentUser,
-     isAuthenticated,
+     user: effectiveUser,
+     isAuthenticated: effectiveIsAuthenticated,
+     isLoading,
    };
    ```
 
-3. **Redux 상태 업데이트**
-   - 사용자 정보를 Redux에 저장
-   - 이후 요청에서 재사용
+   - 인증 확인 우선순위: Redux user → TanStack Query user → localStorage token
+   - 이를 통해 로딩 중에도 즉시 인증 상태 확인 가능
 
 ---
 
