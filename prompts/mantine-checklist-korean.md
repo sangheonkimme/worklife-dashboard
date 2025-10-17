@@ -194,49 +194,49 @@
 ### 🔐 백엔드 - 인증 API
 
 #### 사용자 모델 및 서비스
-- [ ] User 모델 Prisma 스키마 확인
-- [ ] 사용자 서비스 레이어 작성
-  - [ ] createUser
-  - [ ] findUserByEmail
-  - [ ] updateUser
-  - [ ] verifyPassword
-- [ ] 비밀번호 해싱 유틸리티
-- [ ] JWT 토큰 유틸리티
-  - [ ] generateAccessToken
-  - [ ] generateRefreshToken
-  - [ ] verifyToken
+- [x] User 모델 Prisma 스키마 확인
+- [x] 사용자 서비스 레이어 작성
+  - [x] createUser
+  - [x] findUserByEmail
+  - [x] updateUser
+  - [x] verifyPassword
+- [x] 비밀번호 해싱 유틸리티
+- [x] JWT 토큰 유틸리티
+  - [x] generateAccessToken
+  - [x] generateRefreshToken
+  - [x] verifyToken
 
 #### API 엔드포인트 구현
-- [ ] POST `/api/auth/register`
-  - [ ] Zod 스키마 검증
-  - [ ] 이메일 중복 체크
-  - [ ] 비밀번호 해싱
-  - [ ] 사용자 생성
+- [x] POST `/api/auth/register`
+  - [x] Zod 스키마 검증
+  - [x] 이메일 중복 체크
+  - [x] 비밀번호 해싱
+  - [x] 사용자 생성
   - [ ] 환영 이메일 (선택)
-- [ ] POST `/api/auth/login`
-  - [ ] 입력 검증
-  - [ ] 사용자 조회
-  - [ ] 비밀번호 확인
-  - [ ] 토큰 생성 및 발급
-  - [ ] 리프레시 토큰 쿠키 설정
+- [x] POST `/api/auth/login`
+  - [x] 입력 검증
+  - [x] 사용자 조회
+  - [x] 비밀번호 확인
+  - [x] 토큰 생성 및 발급
+  - [x] 리프레시 토큰 쿠키 설정
 - [ ] POST `/api/auth/refresh`
   - [ ] 리프레시 토큰 검증
   - [ ] 새 액세스 토큰 발급
   - [ ] 리프레시 토큰 로테이션 (선택)
-- [ ] POST `/api/auth/logout`
-  - [ ] 토큰 무효화
-  - [ ] 쿠키 삭제
-- [ ] GET `/api/auth/me`
-  - [ ] 현재 사용자 정보 반환
+- [x] POST `/api/auth/logout`
+  - [x] 토큰 무효화
+  - [x] 쿠키 삭제
+- [x] GET `/api/auth/me`
+  - [x] 현재 사용자 정보 반환
 - [ ] PUT `/api/auth/profile`
   - [ ] 프로필 정보 수정
   - [ ] 비밀번호 변경
 
 #### 미들웨어
-- [ ] 인증 미들웨어 (`authenticateToken`)
+- [x] 인증 미들웨어 (`authenticateToken`)
 - [ ] 권한 확인 미들웨어 (선택)
-- [ ] Rate limiting 미들웨어
-- [ ] 입력 검증 미들웨어
+- [x] Rate limiting 미들웨어
+- [x] 입력 검증 미들웨어
 
 ### 🎨 프론트엔드 - 인증 UI (Mantine)
 
@@ -614,8 +614,8 @@
 ### 🧪 테스트
 
 #### 단위 테스트
-- [ ] 백엔드 테스트
-  - [ ] Auth 서비스 테스트
+- [x] 백엔드 테스트
+  - [x] Auth 서비스 테스트 (16개 테스트 통과)
   - [ ] Transaction 서비스 테스트
   - [ ] 급여 계산 로직 테스트
   - [ ] 유틸리티 함수 테스트
