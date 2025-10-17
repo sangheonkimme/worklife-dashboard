@@ -23,7 +23,7 @@ export const register = async (
     // 이메일 중복 확인
     const emailExists = await isEmailTaken(email);
     if (emailExists) {
-      res.status(400).json({
+      res.status(409).json({
         success: false,
         message: '이미 사용 중인 이메일입니다',
       });

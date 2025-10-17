@@ -1,7 +1,6 @@
-import { PrismaClient, User } from '@prisma/client';
+import { User } from '@prisma/client';
 import { hashPassword, comparePassword } from '../utils/password';
-
-const prisma = new PrismaClient();
+import { prisma } from '../lib/prisma';
 
 export interface CreateUserData {
   email: string;
