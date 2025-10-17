@@ -26,10 +26,12 @@ export interface AuthResponse {
 }
 
 // 카테고리 타입
-export enum CategoryType {
-  INCOME = 'INCOME',
-  EXPENSE = 'EXPENSE',
-}
+export const CategoryType = {
+  INCOME: 'INCOME',
+  EXPENSE: 'EXPENSE',
+} as const;
+
+export type CategoryType = typeof CategoryType[keyof typeof CategoryType];
 
 export interface Category {
   id: string;
@@ -65,7 +67,7 @@ export interface CreateTransactionData {
   categoryId: string;
 }
 
-export interface UpdateTransactionData extends Partial<CreateTransactionData> {}
+export type UpdateTransactionData = Partial<CreateTransactionData>;
 
 // 예산 타입
 export interface Budget {

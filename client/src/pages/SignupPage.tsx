@@ -82,7 +82,7 @@ interface FormValues {
   agreeToTerms: boolean
 }
 
-export function SignupPage() {
+export const SignupPage = () => {
   const { register, isRegisterLoading, registerError, isAuthenticated } = useAuth()
   const [popoverOpened, setPopoverOpened] = useState(false)
 
@@ -276,4 +276,6 @@ export function SignupPage() {
       </Paper>
     </Container>
   )
-}
+};
+
+export default SignupPage;

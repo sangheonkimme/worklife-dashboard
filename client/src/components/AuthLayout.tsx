@@ -1,27 +1,27 @@
-import { Box, useMantineColorScheme, ActionIcon, Group } from '@mantine/core'
-import { IconSun, IconMoon } from '@tabler/icons-react'
+import { Box, useMantineColorScheme, ActionIcon, Group } from "@mantine/core";
+import { IconSun, IconMoon } from "@tabler/icons-react";
 
 interface AuthLayoutProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
-export function AuthLayout({ children }: AuthLayoutProps) {
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme()
+export const AuthLayout = ({ children }: AuthLayoutProps) => {
+  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 
   return (
     <Box
       style={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'relative',
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        position: "relative",
       }}
     >
       <Group
         justify="flex-end"
         p="md"
         style={{
-          position: 'absolute',
+          position: "absolute",
           top: 0,
           right: 0,
           zIndex: 1,
@@ -32,7 +32,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
           onClick={() => toggleColorScheme()}
           size="lg"
         >
-          {colorScheme === 'dark' ? (
+          {colorScheme === "dark" ? (
             <IconSun size={18} />
           ) : (
             <IconMoon size={18} />
@@ -43,13 +43,13 @@ export function AuthLayout({ children }: AuthLayoutProps) {
       <Box
         style={{
           flex: 1,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         {children}
       </Box>
     </Box>
-  )
-}
+  );
+};

@@ -20,7 +20,7 @@ import {
   IconCoin,
 } from "@tabler/icons-react";
 
-export function DashboardPage() {
+export const DashboardPage = () => {
   const [count, setCount] = useState(0);
 
   const stats = [
@@ -217,4 +217,6 @@ export function DashboardPage() {
       </Card>
     </Stack>
   );
-}
+};
+
+export default DashboardPage;

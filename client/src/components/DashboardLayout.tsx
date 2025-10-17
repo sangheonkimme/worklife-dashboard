@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState } from "react";
 import {
   AppShell,
   Burger,
@@ -10,10 +10,9 @@ import {
   Text,
   Avatar,
   Menu,
-  rem,
   Divider,
-} from '@mantine/core'
-import { useDisclosure } from '@mantine/hooks'
+} from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import {
   IconSun,
   IconMoon,
@@ -25,31 +24,31 @@ import {
   IconBell,
   IconDashboard,
   IconCalendar,
-} from '@tabler/icons-react'
+} from "@tabler/icons-react";
 
 interface DashboardLayoutProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
-export function DashboardLayout({ children }: DashboardLayoutProps) {
-  const [opened, { toggle }] = useDisclosure()
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme()
-  const [active, setActive] = useState(0)
+export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
+  const [opened, { toggle }] = useDisclosure();
+  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+  const [active, setActive] = useState(0);
 
   const navItems = [
-    { icon: IconHome, label: '홈', description: '대시보드 홈' },
-    { icon: IconDashboard, label: '대시보드', description: '주요 지표' },
-    { icon: IconChartBar, label: '분석', description: '데이터 분석' },
-    { icon: IconCalendar, label: '일정', description: '캘린더' },
-    { icon: IconSettings, label: '설정', description: '시스템 설정' },
-  ]
+    { icon: IconHome, label: "홈", description: "대시보드 홈" },
+    { icon: IconDashboard, label: "대시보드", description: "주요 지표" },
+    { icon: IconChartBar, label: "분석", description: "데이터 분석" },
+    { icon: IconCalendar, label: "일정", description: "캘린더" },
+    { icon: IconSettings, label: "설정", description: "시스템 설정" },
+  ];
 
   return (
     <AppShell
       header={{ height: 60 }}
       navbar={{
         width: 300,
-        breakpoint: 'sm',
+        breakpoint: "sm",
         collapsed: { mobile: !opened },
       }}
       padding="md"
@@ -57,7 +56,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       <AppShell.Header>
         <Group h="100%" px="md" justify="space-between">
           <Group>
-            <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
+            <Burger
+              opened={opened}
+              onClick={toggle}
+              hiddenFrom="sm"
+              size="sm"
+            />
             <Title order={3}>워크라이프 대시보드</Title>
           </Group>
 
@@ -67,7 +71,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               onClick={() => toggleColorScheme()}
               size="lg"
             >
-              {colorScheme === 'dark' ? (
+              {colorScheme === "dark" ? (
                 <IconSun size={18} />
               ) : (
                 <IconMoon size={18} />
@@ -99,10 +103,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 <Menu.Divider />
 
                 <Menu.Label>위험 구역</Menu.Label>
-                <Menu.Item
-                  color="red"
-                  leftSection={<IconLogout size={14} />}
-                >
+                <Menu.Item color="red" leftSection={<IconLogout size={14} />}>
                   로그아웃
                 </Menu.Item>
               </Menu.Dropdown>
@@ -142,5 +143,5 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
       <AppShell.Main>{children}</AppShell.Main>
     </AppShell>
-  )
-}
+  );
+};

@@ -1,61 +1,93 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { DashboardLayout } from './components/DashboardLayout'
-import { AuthLayout } from './components/AuthLayout'
-import { PrivateRoute } from './components/auth/PrivateRoute'
-import { DashboardPage } from './pages/DashboardPage'
-import { ExpenseTrackerPage } from './pages/ExpenseTrackerPage'
-import { LoginPage } from './pages/LoginPage'
-import { SignupPage } from './pages/SignupPage'
+import { lazy, Suspense } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Center, Loader } from "@mantine/core";
+import { DashboardLayout } from "./components/DashboardLayout";
+import { AuthLayout } from "./components/AuthLayout";
+import { PrivateRoute } from "./components/auth/PrivateRoute";
 
-function App() {
+// Lazy load pages
+const DashboardPage = lazy(() =>
+  import("./pages/DashboardPage").then((module) => ({
+    default: module.DashboardPage,
+  }))
+);
+const ExpenseTrackerPage = lazy(() =>
+  import("./pages/ExpenseTrackerPage").then((module) => ({
+    default: module.ExpenseTrackerPage,
+  }))
+);
+const LoginPage = lazy(() =>
+  import("./pages/LoginPage").then((module) => ({ default: module.LoginPage }))
+);
+const SignupPage = lazy(() =>
+  import("./pages/SignupPage").then((module) => ({
+    default: module.SignupPage,
+  }))
+);
+
+// Loading fallback component
+const LoadingFallback = () => {
+  return (
+    <Center style={{ height: "100vh" }}>
+      <Loader size="lg" />
+    </Center>
+  );
+};
+
+const App = () => {
   return (
     <BrowserRouter>
-      <Routes>
-        {/* Auth Routes */}
-        <Route
-          path="/login"
-          element={
-            <AuthLayout>
-              <LoginPage />
-            </AuthLayout>
-          }
-        />
-        <Route
-          path="/signup"
-          element={
-            <AuthLayout>
-              <SignupPage />
-            </AuthLayout>
-          }
-        />
+      <Suspense fallback={<LoadingFallback />}>
+        <Routes>
+          {/* Auth Routes */}
+          <Route
+            path="/login"
+            element={
+              <AuthLayout>
+                <LoginPage />
+              </AuthLayout>
+            }
+          />
+          <Route
+            path="/signup"
+            element={
+              <AuthLayout>
+                <SignupPage />
+              </AuthLayout>
+            }
+          />
 
-        {/* Dashboard Routes - Protected */}
-        <Route
-          path="/dashboard"
-          element={
-            <PrivateRoute>
-              <DashboardLayout>
-                <DashboardPage />
-              </DashboardLayout>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/expense"
-          element={
-            <PrivateRoute>
-              <DashboardLayout>
-                <ExpenseTrackerPage />
-              </DashboardLayout>
-            </PrivateRoute>
-          }
-        />
+          {/* Dashboard Routes - Protected */}
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute>
+                <DashboardLayout>
+                  <DashboardPage />
+                </DashboardLayout>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/expense"
+            element={
+              <PrivateRoute>
+                <DashboardLayout>
+                  <ExpenseTrackerPage />
+                </DashboardLayout>
+              </PrivateRoute>
+            }
+          />
 
-        {/* Default Route */}
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
+          {/* Default Route */}
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
+          {/* 404 Route */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
-  )
-}
+  );
+};
 
-export default App
+export default App;
