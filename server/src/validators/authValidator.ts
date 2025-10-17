@@ -36,6 +36,7 @@ export const loginSchema = z.object({
 
 /**
  * 프로필 업데이트 검증 스키마
+ * 이메일은 로그인 ID로 사용되므로 변경 불가
  */
 export const updateProfileSchema = z.object({
   body: z.object({
@@ -44,7 +45,6 @@ export const updateProfileSchema = z.object({
       .min(2, '이름은 최소 2자 이상이어야 합니다')
       .max(50, '이름은 최대 50자까지 가능합니다')
       .optional(),
-    email: z.string().email('올바른 이메일 형식이 아닙니다').optional(),
     currentPassword: z.string().optional(),
     newPassword: z
       .string()

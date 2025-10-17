@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   AppShell,
   Burger,
@@ -17,14 +17,13 @@ import {
   IconSun,
   IconMoon,
   IconHome,
-  IconChartBar,
-  IconSettings,
   IconUser,
   IconLogout,
   IconBell,
-  IconDashboard,
-  IconCalendar,
+  IconReceipt,
+  IconWallet,
 } from "@tabler/icons-react";
+import { useAuth } from "../hooks/useAuth";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -33,15 +32,20 @@ interface DashboardLayoutProps {
 export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [opened, { toggle }] = useDisclosure();
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
-  const [active, setActive] = useState(0);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { user, logout } = useAuth();
 
   const navItems = [
-    { icon: IconHome, label: "홈", description: "대시보드 홈" },
-    { icon: IconDashboard, label: "대시보드", description: "주요 지표" },
-    { icon: IconChartBar, label: "분석", description: "데이터 분석" },
-    { icon: IconCalendar, label: "일정", description: "캘린더" },
-    { icon: IconSettings, label: "설정", description: "시스템 설정" },
+    { icon: IconHome, label: "대시보드", path: "/dashboard", description: "홈 대시보드" },
+    { icon: IconWallet, label: "가계부", path: "/expense", description: "수입/지출 관리" },
+    { icon: IconReceipt, label: "거래내역", path: "/transactions", description: "거래 내역 조회" },
   ];
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <AppShell
@@ -86,24 +90,28 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <Menu.Target>
                 <ActionIcon variant="default" size="lg" radius="xl">
                   <Avatar size="sm" radius="xl" color="blue">
-                    JD
+                    {user?.name?.charAt(0).toUpperCase() || 'U'}
                   </Avatar>
                 </ActionIcon>
               </Menu.Target>
 
               <Menu.Dropdown>
                 <Menu.Label>계정</Menu.Label>
-                <Menu.Item leftSection={<IconUser size={14} />}>
+                <Menu.Item
+                  leftSection={<IconUser size={14} />}
+                  onClick={() => navigate('/profile')}
+                >
                   프로필
-                </Menu.Item>
-                <Menu.Item leftSection={<IconSettings size={14} />}>
-                  설정
                 </Menu.Item>
 
                 <Menu.Divider />
 
                 <Menu.Label>위험 구역</Menu.Label>
-                <Menu.Item color="red" leftSection={<IconLogout size={14} />}>
+                <Menu.Item
+                  color="red"
+                  leftSection={<IconLogout size={14} />}
+                  onClick={handleLogout}
+                >
                   로그아웃
                 </Menu.Item>
               </Menu.Dropdown>
@@ -120,14 +128,14 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         </AppShell.Section>
 
         <AppShell.Section grow>
-          {navItems.map((item, index) => (
+          {navItems.map((item) => (
             <NavLink
-              key={item.label}
-              active={index === active}
+              key={item.path}
+              active={location.pathname === item.path}
               label={item.label}
               description={item.description}
               leftSection={<item.icon size={20} stroke={1.5} />}
-              onClick={() => setActive(index)}
+              onClick={() => navigate(item.path)}
               mb="xs"
             />
           ))}

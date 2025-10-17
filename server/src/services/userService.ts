@@ -70,6 +70,17 @@ export const findUserById = async (id: string): Promise<Omit<User, 'password'> |
 };
 
 /**
+ * ID로 사용자를 조회합니다 (비밀번호 포함)
+ * @param id 사용자 ID
+ * @returns 사용자 (비밀번호 포함)
+ */
+export const findUserByIdWithPassword = async (id: string): Promise<User | null> => {
+  return prisma.user.findUnique({
+    where: { id },
+  });
+};
+
+/**
  * 사용자 정보를 업데이트합니다
  * @param id 사용자 ID
  * @param data 업데이트할 데이터

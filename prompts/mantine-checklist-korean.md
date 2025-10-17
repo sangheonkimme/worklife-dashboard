@@ -274,11 +274,11 @@
 - [x] 성공 시 리다이렉트
 
 #### 프로필 페이지
-- [ ] 프로필 페이지 컴포넌트
-- [ ] 사용자 정보 표시 (Card)
-- [ ] 정보 수정 폼
-- [ ] 아바타 업로드 (Dropzone)
-- [ ] 비밀번호 변경 섹션
+- [x] 프로필 페이지 컴포넌트
+- [x] 사용자 정보 표시 (Card)
+- [x] 정보 수정 폼
+- [ ] 아바타 업로드 (Dropzone) - 추후 구현
+- [x] 비밀번호 변경 섹션
 
 #### 상태 관리
 - [x] Auth slice 생성 (Redux Toolkit)
@@ -290,8 +290,8 @@
   - [x] login
   - [x] logout
   - [x] register
-  - [ ] refreshToken (Axios 인터셉터에서 자동 처리)
-  - [ ] updateProfile
+  - [x] refreshToken (Axios 인터셉터에서 자동 처리)
+  - [x] updateProfile
 - [x] Auth selectors
 
 #### 보호된 라우트

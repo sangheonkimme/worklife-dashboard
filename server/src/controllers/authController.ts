@@ -3,6 +3,7 @@ import {
   createUser,
   findUserByEmail,
   findUserById,
+  findUserByIdWithPassword,
   updateUser,
   verifyPassword,
   isEmailTaken,
@@ -228,7 +229,7 @@ export const updateProfile = async (
   try {
     // @ts-ignore
     const userId = req.user.userId;
-    const { name, email, currentPassword, newPassword } = req.body;
+    const { name, currentPassword, newPassword } = req.body;
 
     // 비밀번호 변경 시 현재 비밀번호 확인
     if (newPassword) {
@@ -240,7 +241,7 @@ export const updateProfile = async (
         return;
       }
 
-      const user = await findUserByEmail(email);
+      const user = await findUserByIdWithPassword(userId);
       if (!user) {
         res.status(404).json({
           success: false,
@@ -259,22 +260,9 @@ export const updateProfile = async (
       }
     }
 
-    // 이메일 변경 시 중복 확인
-    if (email) {
-      const emailExists = await isEmailTaken(email);
-      if (emailExists) {
-        res.status(400).json({
-          success: false,
-          message: '이미 사용 중인 이메일입니다',
-        });
-        return;
-      }
-    }
-
-    // 프로필 업데이트
+    // 프로필 업데이트 (이메일 변경 불가)
     const updatedUser = await updateUser(userId, {
       name,
-      email,
       password: newPassword,
     });
 
