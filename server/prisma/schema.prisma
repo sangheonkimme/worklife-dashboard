@@ -17,8 +17,10 @@ datasource db {
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
-  password  String
+  password  String?  // Google 로그인 시 null 가능
   name      String
+  googleId  String?  @unique // Google OAuth ID
+  picture   String?  // Google 프로필 사진 URL
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

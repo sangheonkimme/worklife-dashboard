@@ -14,6 +14,13 @@ export interface UpdateUserData {
   password?: string;
 }
 
+export interface CreateGoogleUserData {
+  email: string;
+  name: string;
+  googleId: string;
+  picture?: string;
+}
+
 /**
  * 사용자를 생성합니다
  * @param data 사용자 데이터
@@ -136,4 +143,52 @@ export const isEmailTaken = async (email: string): Promise<boolean> => {
     where: { email },
   });
   return !!user;
+};
+
+/**
+ * Google ID로 사용자를 조회합니다
+ * @param googleId Google ID
+ * @returns 사용자 (비밀번호 제외)
+ */
+export const findUserByGoogleId = async (googleId: string): Promise<Omit<User, 'password'> | null> => {
+  return prisma.user.findUnique({
+    where: { googleId },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      googleId: true,
+      picture: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+};
+
+/**
+ * Google 사용자를 생성합니다
+ * @param data Google 사용자 데이터
+ * @returns 생성된 사용자 (비밀번호 제외)
+ */
+export const createGoogleUser = async (data: CreateGoogleUserData): Promise<Omit<User, 'password'>> => {
+  const user = await prisma.user.create({
+    data: {
+      email: data.email,
+      name: data.name,
+      googleId: data.googleId,
+      picture: data.picture,
+      password: null, // Google 로그인은 비밀번호 불필요
+    },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      googleId: true,
+      picture: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  return user;
 };

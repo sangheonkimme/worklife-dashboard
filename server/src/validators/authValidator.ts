@@ -57,7 +57,17 @@ export const updateProfileSchema = z.object({
   }),
 });
 
+/**
+ * Google 로그인 검증 스키마
+ */
+export const googleLoginSchema = z.object({
+  body: z.object({
+    credential: z.string({ message: 'Google credential은 필수입니다' }),
+  }),
+});
+
 // TypeScript 타입 추출
 export type RegisterInput = z.infer<typeof registerSchema>['body'];
 export type LoginInput = z.infer<typeof loginSchema>['body'];
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>['body'];
+export type GoogleLoginInput = z.infer<typeof googleLoginSchema>['body'];

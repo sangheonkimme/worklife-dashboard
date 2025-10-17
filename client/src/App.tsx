@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Center, Loader } from "@mantine/core";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import { DashboardLayout } from "./components/DashboardLayout";
 import { AuthLayout } from "./components/AuthLayout";
 import { PrivateRoute } from "./components/auth/PrivateRoute";
@@ -41,78 +42,82 @@ const LoadingFallback = () => {
 };
 
 const App = () => {
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
   return (
-    <BrowserRouter>
-      <Suspense fallback={<LoadingFallback />}>
-        <Routes>
-          {/* Auth Routes */}
-          <Route
-            path="/login"
-            element={
-              <AuthLayout>
-                <LoginPage />
-              </AuthLayout>
-            }
-          />
-          <Route
-            path="/signup"
-            element={
-              <AuthLayout>
-                <SignupPage />
-              </AuthLayout>
-            }
-          />
+    <GoogleOAuthProvider clientId={googleClientId}>
+      <BrowserRouter>
+        <Suspense fallback={<LoadingFallback />}>
+          <Routes>
+            {/* Auth Routes */}
+            <Route
+              path="/login"
+              element={
+                <AuthLayout>
+                  <LoginPage />
+                </AuthLayout>
+              }
+            />
+            <Route
+              path="/signup"
+              element={
+                <AuthLayout>
+                  <SignupPage />
+                </AuthLayout>
+              }
+            />
 
-          {/* Dashboard Routes - Protected */}
-          <Route
-            path="/dashboard"
-            element={
-              <PrivateRoute>
-                <DashboardLayout>
-                  <DashboardPage />
-                </DashboardLayout>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/expense"
-            element={
-              <PrivateRoute>
-                <DashboardLayout>
-                  <ExpenseTrackerPage />
-                </DashboardLayout>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/transactions"
-            element={
-              <PrivateRoute>
-                <DashboardLayout>
-                  <TransactionsPage />
-                </DashboardLayout>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <PrivateRoute>
-                <DashboardLayout>
-                  <ProfilePage />
-                </DashboardLayout>
-              </PrivateRoute>
-            }
-          />
+            {/* Dashboard Routes - Protected */}
+            <Route
+              path="/dashboard"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <DashboardPage />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/expense"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <ExpenseTrackerPage />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/transactions"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <TransactionsPage />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <ProfilePage />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
 
-          {/* Default Route */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            {/* Default Route */}
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-          {/* 404 Route */}
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
-      </Suspense>
-    </BrowserRouter>
+            {/* 404 Route */}
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+        </Suspense>
+      </BrowserRouter>
+    </GoogleOAuthProvider>
   );
 };
 

@@ -48,4 +48,10 @@ export const authApi = {
     const response = await api.put<ApiResponse<User>>('/api/auth/profile', data);
     return response.data.data;
   },
+
+  // Google 로그인
+  googleLogin: async (credential: string): Promise<AuthResponse> => {
+    const response = await api.post<ApiResponse<AuthResponse>>('/api/auth/google', { credential });
+    return response.data.data;
+  },
 };

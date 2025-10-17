@@ -11,16 +11,26 @@ import {
   Checkbox,
   Group,
   Alert,
+  Divider,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconAlertCircle } from "@tabler/icons-react";
 import { Link, useNavigate } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../hooks/useAuth";
 import { useEffect } from "react";
 
 export const LoginPage = () => {
   const navigate = useNavigate();
-  const { login, isLoginLoading, loginError, isAuthenticated } = useAuth();
+  const {
+    login,
+    isLoginLoading,
+    loginError,
+    isAuthenticated,
+    googleLogin,
+    googleLoginError,
+    isGoogleLoginLoading,
+  } = useAuth();
 
   const form = useForm({
     initialValues: {
@@ -123,6 +133,42 @@ export const LoginPage = () => {
             <Button type="submit" fullWidth loading={isLoginLoading}>
               로그인
             </Button>
+
+            <Divider label="또는" labelPosition="center" />
+
+            {googleLoginError && (
+              <Alert
+                icon={<IconAlertCircle size={16} />}
+                title="오류"
+                color="red"
+                variant="light"
+              >
+                {(
+                  googleLoginError as Error & {
+                    response?: { data?: { message?: string } };
+                  }
+                )?.response?.data?.message ||
+                  "Google 로그인에 실패했습니다. 다시 시도해주세요."}
+              </Alert>
+            )}
+
+            <GoogleLogin
+              onSuccess={async (credentialResponse) => {
+                try {
+                  if (credentialResponse.credential) {
+                    await googleLogin(credentialResponse.credential);
+                  }
+                } catch (err) {
+                  console.error("Google 로그인 실패:", err);
+                }
+              }}
+              onError={() => {
+                console.error("Google 로그인 실패");
+              }}
+              text="signin_with"
+              width="100%"
+              locale="ko"
+            />
           </Stack>
         </form>
       </Paper>

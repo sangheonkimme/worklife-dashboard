@@ -7,8 +7,11 @@ import {
   updateUser,
   verifyPassword,
   isEmailTaken,
+  findUserByGoogleId,
+  createGoogleUser,
 } from '../services/userService';
 import { generateAccessToken, generateRefreshToken } from '../utils/jwt';
+import { OAuth2Client } from 'google-auth-library';
 
 /**
  * 회원가입
@@ -250,7 +253,7 @@ export const updateProfile = async (
         return;
       }
 
-      const isPasswordValid = await verifyPassword(currentPassword, user.password);
+      const isPasswordValid = await verifyPassword(currentPassword, user.password!);
       if (!isPasswordValid) {
         res.status(401).json({
           success: false,
@@ -270,6 +273,108 @@ export const updateProfile = async (
       success: true,
       message: '프로필이 업데이트되었습니다',
       data: updatedUser,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Google 로그인
+ */
+export const googleLogin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { credential } = req.body;
+
+    if (!credential) {
+      res.status(400).json({
+        success: false,
+        message: 'Google credential이 필요합니다',
+      });
+      return;
+    }
+
+    // Google OAuth Client 초기화
+    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+    // Google ID 토큰 검증
+    const ticket = await client.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    if (!payload) {
+      res.status(401).json({
+        success: false,
+        message: 'Google 인증에 실패했습니다',
+      });
+      return;
+    }
+
+    const { sub: googleId, email, name, picture } = payload;
+
+    if (!email || !name) {
+      res.status(400).json({
+        success: false,
+        message: 'Google 계정 정보가 불완전합니다',
+      });
+      return;
+    }
+
+    // Google ID로 기존 사용자 확인
+    let user = await findUserByGoogleId(googleId);
+
+    // 기존 사용자가 없으면 이메일로 확인
+    if (!user) {
+      const existingUser = await findUserByEmail(email);
+      if (existingUser) {
+        // 이메일은 존재하지만 Google 계정이 연결되지 않은 경우
+        res.status(409).json({
+          success: false,
+          message: '이미 등록된 이메일입니다. 일반 로그인을 사용해주세요.',
+        });
+        return;
+      }
+
+      // 새로운 사용자 생성
+      user = await createGoogleUser({
+        email,
+        name,
+        googleId,
+        picture,
+      });
+    }
+
+    // JWT 토큰 생성
+    const accessToken = generateAccessToken({
+      userId: user.id,
+      email: user.email,
+    });
+    const refreshToken = generateRefreshToken({
+      userId: user.id,
+      email: user.email,
+    });
+
+    // 리프레시 토큰을 HttpOnly 쿠키로 설정
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7일
+    });
+
+    res.status(200).json({
+      success: true,
+      message: '로그인이 완료되었습니다',
+      data: {
+        user,
+        accessToken,
+      },
     });
   } catch (error) {
     next(error);

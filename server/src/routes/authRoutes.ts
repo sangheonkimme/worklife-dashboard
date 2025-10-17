@@ -6,6 +6,7 @@ import {
   me,
   refreshToken,
   updateProfile,
+  googleLogin,
 } from '../controllers/authController';
 import { authenticateToken, authenticateRefreshToken } from '../middlewares/auth';
 import { validate } from '../middlewares/validate';
@@ -13,6 +14,7 @@ import {
   registerSchema,
   loginSchema,
   updateProfileSchema,
+  googleLoginSchema,
 } from '../validators/authValidator';
 
 const router = Router();
@@ -58,5 +60,12 @@ router.post('/refresh', authenticateRefreshToken, refreshToken);
  * @access  Private
  */
 router.put('/profile', authenticateToken, validate(updateProfileSchema), updateProfile);
+
+/**
+ * @route   POST /api/auth/google
+ * @desc    Google 로그인
+ * @access  Public
+ */
+router.post('/google', validate(googleLoginSchema), googleLogin);
 
 export default router;

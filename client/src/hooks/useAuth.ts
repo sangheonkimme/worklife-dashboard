@@ -18,6 +18,9 @@ export const useAuth = () => {
     queryFn: authApi.me,
     enabled: !!localStorage.getItem("accessToken"),
     retry: false,
+    retryOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     staleTime: Infinity,
   });
 
@@ -61,6 +64,17 @@ export const useAuth = () => {
     },
   });
 
+  // Google 로그인 mutation
+  const googleLoginMutation = useMutation({
+    mutationFn: authApi.googleLogin,
+    onSuccess: (data) => {
+      localStorage.setItem("accessToken", data.accessToken);
+      dispatch(setUser(data.user));
+      queryClient.invalidateQueries({ queryKey: ["auth"] });
+      navigate("/dashboard");
+    },
+  });
+
   // 로그인 함수
   const login = async (credentials: LoginCredentials) => {
     return loginMutation.mutateAsync(credentials);
@@ -76,6 +90,11 @@ export const useAuth = () => {
     return logoutMutation.mutateAsync();
   };
 
+  // Google 로그인 함수
+  const googleLogin = async (credential: string) => {
+    return googleLoginMutation.mutateAsync(credential);
+  };
+
   // Redux 또는 서버에서 가져온 사용자 중 하나라도 있으면 인증된 것으로 간주
   const effectiveUser = user || currentUser || null;
   const effectiveIsAuthenticated = Boolean(
@@ -89,9 +108,12 @@ export const useAuth = () => {
     login,
     register,
     logout,
+    googleLogin,
     loginError: loginMutation.error,
     registerError: registerMutation.error,
+    googleLoginError: googleLoginMutation.error,
     isLoginLoading: loginMutation.isPending,
     isRegisterLoading: registerMutation.isPending,
+    isGoogleLoginLoading: googleLoginMutation.isPending,
   };
 };
