@@ -18,6 +18,11 @@ const ExpenseTrackerPage = lazy(() =>
   }))
 );
 const TransactionsPage = lazy(() => import("./pages/TransactionsPage"));
+const SalaryCalculatorPage = lazy(() =>
+  import("./pages/SalaryCalculatorPage").then((module) => ({
+    default: module.SalaryCalculatorPage,
+  }))
+);
 const LoginPage = lazy(() =>
   import("./pages/LoginPage").then((module) => ({ default: module.LoginPage }))
 );
@@ -94,6 +99,16 @@ const App = () => {
                 <PrivateRoute>
                   <DashboardLayout>
                     <TransactionsPage />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/salary"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <SalaryCalculatorPage />
                   </DashboardLayout>
                 </PrivateRoute>
               }

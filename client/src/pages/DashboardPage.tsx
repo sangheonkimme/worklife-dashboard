@@ -19,6 +19,7 @@ import {
   IconReceipt,
   IconCoin,
 } from "@tabler/icons-react";
+import { SalaryCalculatorCard } from "@/components/salary/SalaryCalculatorCard";
 
 export const DashboardPage = () => {
   const [count, setCount] = useState(0);
@@ -117,6 +118,17 @@ export const DashboardPage = () => {
           );
         })}
       </SimpleGrid>
+
+      {/* 주요 기능 카드 */}
+      <div>
+        <Text fw={600} size="lg" mb="md">
+          주요 기능
+        </Text>
+        <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
+          <SalaryCalculatorCard />
+          {/* 추가 기능 카드는 여기에 추가 */}
+        </SimpleGrid>
+      </div>
 
       <SimpleGrid cols={{ base: 1, lg: 2 }}>
         <Card shadow="sm" padding="lg" radius="md" withBorder>
