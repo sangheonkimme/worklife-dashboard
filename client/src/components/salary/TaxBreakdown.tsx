@@ -37,26 +37,14 @@ export function TaxBreakdown({ deductions }: TaxBreakdownProps) {
   return (
     <Stack gap="lg">
       <Text fw={700} size="lg">
-        세금 공제액 상세
+        공제액 상세 내역
       </Text>
 
-      {/* 공제액 합계 */}
-      <Card shadow="md" padding="lg" radius="md" withBorder>
-        <Group justify="space-between" align="center">
-          <Text size="md" fw={600}>
-            공제액 합계
-          </Text>
-          <Text size="xl" fw={700} c="red">
-            {formatCurrencyWithUnit(deductions.total)}
-          </Text>
-        </Group>
-      </Card>
-
-      {/* 4대 보험 */}
+      {/* 4대 보험 상세 */}
       <Card shadow="sm" padding="lg" radius="md" withBorder>
         <Stack gap="md">
           <Group justify="space-between">
-            <Text fw={600}>4대 보험</Text>
+            <Text fw={600}>4대 보험 상세</Text>
             <Text fw={600} c="blue">
               {formatCurrencyWithUnit(deductions.insurance.total)}
             </Text>
@@ -66,22 +54,22 @@ export function TaxBreakdown({ deductions }: TaxBreakdownProps) {
 
           <Stack gap="sm">
             <DeductionItem
-              label="국민연금"
+              label="국민연금 (4.5%)"
               amount={deductions.insurance.nationalPension}
               tooltip="소득의 4.5%가 공제됩니다. (상한: 월 590만원)"
             />
             <DeductionItem
-              label="건강보험"
+              label="건강보험 (3.545%)"
               amount={deductions.insurance.healthInsurance}
               tooltip="소득의 3.545%가 공제됩니다."
             />
             <DeductionItem
-              label="장기요양"
+              label="장기요양보험료 (12.95%)"
               amount={deductions.insurance.longTermCare}
               tooltip="건강보험료의 12.95%가 추가로 공제됩니다."
             />
             <DeductionItem
-              label="고용보험"
+              label="고용보험 (0.9%)"
               amount={deductions.insurance.employmentInsurance}
               tooltip="소득의 0.9%가 공제됩니다."
             />
@@ -89,7 +77,7 @@ export function TaxBreakdown({ deductions }: TaxBreakdownProps) {
         </Stack>
       </Card>
 
-      {/* 소득세 */}
+      {/* 소득세 상세 */}
       <Card shadow="sm" padding="lg" radius="md" withBorder>
         <Stack gap="md">
           <Group justify="space-between">
@@ -128,7 +116,7 @@ export function TaxBreakdown({ deductions }: TaxBreakdownProps) {
               }
             />
             <DeductionItem
-              label="지방소득세"
+              label="지방소득세 (10%)"
               amount={deductions.tax.localIncomeTax}
               tooltip={deductions.tax.incomeTaxReduction > 0
                 ? "감면 후 소득세의 10%가 추가로 공제됩니다."

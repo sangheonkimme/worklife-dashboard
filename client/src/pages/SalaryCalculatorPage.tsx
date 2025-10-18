@@ -11,7 +11,6 @@ import {
 import { IconRefresh } from "@tabler/icons-react";
 import { SalaryInputForm } from "@/components/salary/SalaryInputForm";
 import { SalaryResult } from "@/components/salary/SalaryResult";
-import { TaxBreakdown } from "@/components/salary/TaxBreakdown";
 import type { SalaryInput } from "@/types/salary";
 import { initialSalaryInput } from "@/types/salary";
 import { calculateSalary } from "@/utils/salaryCalculator";
@@ -61,11 +60,6 @@ export function SalaryCalculatorPage() {
             </Button>
           </Stack>
         </SimpleGrid>
-
-        {/* 세금 공제 상세 - 전체 너비 */}
-        <Card shadow="sm" padding="xl" radius="md" withBorder>
-          <TaxBreakdown deductions={result.deductions} />
-        </Card>
       </Stack>
     </Container>
   );
