@@ -22,6 +22,7 @@ import {
   IconBell,
   IconReceipt,
   IconWallet,
+  IconCalculator,
 } from "@tabler/icons-react";
 import { useAuth } from "../hooks/useAuth";
 
@@ -37,14 +38,45 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const { user, logout } = useAuth();
 
   const navItems = [
-    { icon: IconHome, label: "대시보드", path: "/dashboard", description: "홈 대시보드" },
-    { icon: IconWallet, label: "가계부", path: "/expense", description: "수입/지출 관리" },
-    { icon: IconReceipt, label: "거래내역", path: "/transactions", description: "거래 내역 조회" },
+    {
+      icon: IconHome,
+      label: "대시보드",
+      path: "/dashboard",
+      description: "홈 대시보드",
+      pageTitle: "대시보드",
+      pageDescription: "",
+    },
+    {
+      icon: IconCalculator,
+      label: "연봉계산기",
+      path: "/salary",
+      description: "실수령액 계산",
+      pageTitle: "연봉 계산기",
+      pageDescription: "2025년 기준 세율로 실수령액을 계산합니다",
+    },
+    {
+      icon: IconWallet,
+      label: "가계부",
+      path: "/expense",
+      description: "수입/지출 관리",
+      pageTitle: "가계부",
+      pageDescription: "수입과 지출을 관리합니다",
+    },
+    {
+      icon: IconReceipt,
+      label: "거래내역",
+      path: "/transactions",
+      description: "거래 내역 조회",
+      pageTitle: "거래내역",
+      pageDescription: "모든 거래 내역을 조회합니다",
+    },
   ];
+
+  const currentPage = navItems.find((item) => item.path === location.pathname);
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
@@ -66,7 +98,24 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               hiddenFrom="sm"
               size="sm"
             />
-            <Title order={3}>워크라이프 대시보드</Title>
+            <Group gap="md">
+              <Title order={3}>워크라이프 대시보드</Title>
+              {currentPage && (
+                <>
+                  <Text c="dimmed">|</Text>
+                  <div>
+                    <Text fw={600} size="md">
+                      {currentPage.pageTitle}
+                    </Text>
+                    {currentPage.pageDescription && (
+                      <Text size="xs" c="dimmed">
+                        {currentPage.pageDescription}
+                      </Text>
+                    )}
+                  </div>
+                </>
+              )}
+            </Group>
           </Group>
 
           <Group gap="sm">
@@ -90,7 +139,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <Menu.Target>
                 <ActionIcon variant="default" size="lg" radius="xl">
                   <Avatar size="sm" radius="xl" color="blue">
-                    {user?.name?.charAt(0).toUpperCase() || 'U'}
+                    {user?.name?.charAt(0).toUpperCase() || "U"}
                   </Avatar>
                 </ActionIcon>
               </Menu.Target>
@@ -99,7 +148,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 <Menu.Label>계정</Menu.Label>
                 <Menu.Item
                   leftSection={<IconUser size={14} />}
-                  onClick={() => navigate('/profile')}
+                  onClick={() => navigate("/profile")}
                 >
                   프로필
                 </Menu.Item>

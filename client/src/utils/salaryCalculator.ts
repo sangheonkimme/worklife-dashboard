@@ -27,9 +27,6 @@ const NATIONAL_PENSION_MAX = 5900000;
 // 건강보험 상한액 (실제로는 매우 높음, 일반적으로 적용 안됨)
 const HEALTH_INSURANCE_MAX = 100000000;
 
-// 비과세 한도 (식대 등, 월 20만원)
-export const NON_TAXABLE_MAX = 200000;
-
 /**
  * 국민연금 계산
  */
@@ -188,7 +185,9 @@ export function calculateSalary(input: SalaryInput): SalaryResult {
   }
 
   // 2. 과세 대상 소득 계산 (비과세액 제외)
-  const monthlyTaxableIncome = monthlyGrossSalary - input.nonTaxableAmount;
+  // 비과세액은 연간 총액이므로 12로 나눠서 월 단위로 환산
+  const monthlyNonTaxable = Math.floor(input.nonTaxableAmount / 12);
+  const monthlyTaxableIncome = monthlyGrossSalary - monthlyNonTaxable;
 
   // 3. 4대 보험 계산
   const insurance = calculateInsuranceDeductions(monthlyTaxableIncome);

@@ -1,7 +1,15 @@
-import { Stack, Text, Card, Group, Table, Divider, Tooltip, ActionIcon } from '@mantine/core';
-import { IconHelp, IconMinus } from '@tabler/icons-react';
-import type { SalaryResult as SalaryResultType } from '@/types/salary';
-import { formatCurrencyWithUnit } from '@/utils/salaryCalculator';
+import {
+  Stack,
+  Text,
+  Card,
+  Group,
+  Divider,
+  Tooltip,
+  ActionIcon,
+} from "@mantine/core";
+import { IconHelp } from "@tabler/icons-react";
+import type { SalaryResult as SalaryResultType } from "@/types/salary";
+import { formatCurrencyWithUnit } from "@/utils/salaryCalculator";
 
 interface SalaryResultProps {
   result: SalaryResultType;
@@ -34,62 +42,38 @@ function DeductionItem({ label, amount, tooltip }: DeductionItemProps) {
 }
 
 export function SalaryResult({ result }: SalaryResultProps) {
-
   return (
-    <Stack gap="lg">
+    <Stack gap="md">
       <Text fw={700} size="lg">
         급여명세서
       </Text>
 
-      <Divider />
-
-      {/* 지급내역 */}
-      <Stack gap="md">
-        <Text fw={600} size="md">
-          지급내역
+      {/* 지급내역 - 간소화 */}
+      <Group
+        justify="space-between"
+        p="md"
+        bg="gray.0"
+        style={{ borderRadius: 8 }}
+      >
+        <div>
+          <Text size="xs" c="dimmed" mb={4}>
+            지급내역
+          </Text>
+          <Text fw={600}>월 급여</Text>
+        </div>
+        <Text fw={700} size="xl">
+          {formatCurrencyWithUnit(result.monthlyGrossSalary)}
         </Text>
-        
-        <Table>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>구분</Table.Th>
-              <Table.Th>임금항목</Table.Th>
-              <Table.Th ta="right">지급 금액</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            <Table.Tr>
-              <Table.Td>매월</Table.Td>
-              <Table.Td>기본급</Table.Td>
-              <Table.Td ta="right">{formatCurrencyWithUnit(result.monthlyGrossSalary)}</Table.Td>
-            </Table.Tr>
-            <Table.Tr>
-              <Table.Td>매월</Table.Td>
-              <Table.Td>연장근로수당</Table.Td>
-              <Table.Td ta="right">0 원</Table.Td>
-            </Table.Tr>
-          </Table.Tbody>
-        </Table>
-        
-        <Divider />
-        
-        <Group justify="space-between">
-          <Text fw={600}>지급총액</Text>
-          <Text fw={600} size="lg">{formatCurrencyWithUnit(result.monthlyGrossSalary)}</Text>
-        </Group>
-      </Stack>
+      </Group>
 
-      {/* 구분선과 간격 */}
-      <div style={{ margin: '24px 0' }}>
-        <Divider size="md" />
-      </div>
+      <Divider />
 
       {/* 공제내역 */}
       <Stack gap="md">
         <Text fw={600} size="md">
           공제내역
         </Text>
-        
+
         {/* 4대 보험 상세 */}
         <div>
           <Group justify="space-between" mb="md">
@@ -141,45 +125,67 @@ export function SalaryResult({ result }: SalaryResultProps) {
               tooltip="간이세액표에 따라 계산됩니다. 부양가족 및 자녀 수에 따라 공제액이 조정됩니다."
             />
             {result.deductions.tax.incomeTaxReduction > 0 && (
-              <Group justify="space-between" bg="violet.0" p="xs" style={{ borderRadius: 4 }}>
+              <Group
+                justify="space-between"
+                bg="violet.0"
+                p="xs"
+                style={{ borderRadius: 4 }}
+              >
                 <Group gap="xs">
                   <Text size="sm" c="violet" fw={600}>
                     중소기업 소득세 감면 (90%)
                   </Text>
                 </Group>
                 <Text size="sm" fw={600} c="violet">
-                  -{formatCurrencyWithUnit(result.deductions.tax.incomeTaxReduction)}
+                  -
+                  {formatCurrencyWithUnit(
+                    result.deductions.tax.incomeTaxReduction
+                  )}
                 </Text>
               </Group>
             )}
             <DeductionItem
-              label={result.deductions.tax.incomeTaxReduction > 0 ? "소득세 (감면 후)" : "소득세"}
+              label={
+                result.deductions.tax.incomeTaxReduction > 0
+                  ? "소득세 (감면 후)"
+                  : "소득세"
+              }
               amount={result.deductions.tax.finalIncomeTax}
-              tooltip={result.deductions.tax.incomeTaxReduction > 0
-                ? "중소기업 취업자 감면이 적용된 최종 소득세입니다."
-                : "간이세액표에 따라 계산됩니다. 부양가족 및 자녀 수에 따라 공제액이 조정됩니다."
+              tooltip={
+                result.deductions.tax.incomeTaxReduction > 0
+                  ? "중소기업 취업자 감면이 적용된 최종 소득세입니다."
+                  : "간이세액표에 따라 계산됩니다. 부양가족 및 자녀 수에 따라 공제액이 조정됩니다."
               }
             />
             <DeductionItem
               label="지방소득세 (10%)"
               amount={result.deductions.tax.localIncomeTax}
-              tooltip={result.deductions.tax.incomeTaxReduction > 0
-                ? "감면 후 소득세의 10%가 추가로 공제됩니다."
-                : "소득세의 10%가 추가로 공제됩니다."
+              tooltip={
+                result.deductions.tax.incomeTaxReduction > 0
+                  ? "감면 후 소득세의 10%가 추가로 공제됩니다."
+                  : "소득세의 10%가 추가로 공제됩니다."
               }
             />
           </Stack>
         </div>
-        
+
         <Divider />
-        
+
         <Group justify="space-between">
           <Text fw={600}>공제총액</Text>
-          <Text fw={600} size="lg" c="red">{formatCurrencyWithUnit(result.deductions.total)}</Text>
+          <Text fw={600} size="lg" c="red">
+            {formatCurrencyWithUnit(result.deductions.total)}
+          </Text>
         </Group>
 
         {/* 안내 문구 */}
-        <div style={{ backgroundColor: 'var(--mantine-color-blue-0)', padding: '12px', borderRadius: '8px' }}>
+        <div
+          style={{
+            backgroundColor: "var(--mantine-color-blue-0)",
+            padding: "12px",
+            borderRadius: "8px",
+          }}
+        >
           <Text size="xs" c="dimmed" ta="center">
             * 실제 공제액은 회사 및 개인 상황에 따라 다를 수 있습니다.
           </Text>
@@ -196,8 +202,8 @@ export function SalaryResult({ result }: SalaryResultProps) {
         radius="md"
         withBorder
         style={{
-          backgroundColor: '#228be6',
-          color: 'white',
+          backgroundColor: "#228be6",
+          color: "white",
         }}
       >
         <Group justify="space-between" align="center">
