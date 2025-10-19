@@ -1,7 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   AppShell,
-  Burger,
   Group,
   Title,
   ActionIcon,
@@ -11,6 +10,7 @@ import {
   Avatar,
   Menu,
   Divider,
+  Affix,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
@@ -23,6 +23,8 @@ import {
   IconReceipt,
   IconWallet,
   IconCalculator,
+  IconMenu2,
+  IconX,
 } from "@tabler/icons-react";
 import { useAuth } from "../hooks/useAuth";
 
@@ -31,7 +33,8 @@ interface DashboardLayoutProps {
 }
 
 export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
-  const [opened, { toggle }] = useDisclosure();
+  const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
+  const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const navigate = useNavigate();
   const location = useLocation();
@@ -85,37 +88,23 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       navbar={{
         width: 300,
         breakpoint: "sm",
-        collapsed: { mobile: !opened },
+        collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
       }}
       padding="md"
     >
       <AppShell.Header>
-        <Group h="100%" px="md" justify="space-between">
-          <Group>
-            <Burger
-              opened={opened}
-              onClick={toggle}
-              hiddenFrom="sm"
-              size="sm"
-            />
-            <Group gap="md">
-              <Title order={3}>워크라이프 대시보드</Title>
-              {currentPage && (
-                <>
-                  <Text c="dimmed">|</Text>
-                  <div>
-                    <Text fw={600} size="md">
-                      {currentPage.pageTitle}
-                    </Text>
-                    {currentPage.pageDescription && (
-                      <Text size="xs" c="dimmed">
-                        {currentPage.pageDescription}
-                      </Text>
-                    )}
-                  </div>
-                </>
-              )}
-            </Group>
+        <Group h="100%" px="md" justify="space-between" wrap="nowrap">
+          <Group gap="md" wrap="nowrap" style={{ minWidth: 0, flex: 1 }}>
+            <ActionIcon
+              variant="subtle"
+              size="lg"
+              onClick={() => navigate("/dashboard")}
+              title="홈으로 이동"
+            >
+              <IconHome size={24} />
+            </ActionIcon>
+            <Divider orientation="vertical" />
+            <Title order={3}>워크라이프 대시보드</Title>
           </Group>
 
           <Group gap="sm">
@@ -171,6 +160,15 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
       <AppShell.Navbar p="md">
         <AppShell.Section>
+          <Title order={5} mb={4}>
+            {currentPage?.pageTitle || "대시보드"}
+          </Title>
+          {currentPage?.pageDescription && (
+            <Text size="xs" c="dimmed" mb="xs">
+              {currentPage.pageDescription}
+            </Text>
+          )}
+          <Divider mb="sm" />
           <Text size="xs" tt="uppercase" fw={700} c="dimmed" mb="sm">
             메뉴
           </Text>
@@ -198,7 +196,27 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         </AppShell.Section>
       </AppShell.Navbar>
 
-      <AppShell.Main>{children}</AppShell.Main>
+      <AppShell.Main>
+        {children}
+
+        {/* Floating 메뉴 버튼 */}
+        <Affix position={{ bottom: 20, left: 20 }}>
+          <ActionIcon
+            size="xl"
+            radius="xl"
+            variant="filled"
+            color="blue"
+            onClick={() => {
+              toggleMobile();
+              toggleDesktop();
+            }}
+            title={desktopOpened ? "메뉴 닫기" : "메뉴 열기"}
+            style={{ boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)" }}
+          >
+            {desktopOpened ? <IconX size={24} /> : <IconMenu2 size={24} />}
+          </ActionIcon>
+        </Affix>
+      </AppShell.Main>
     </AppShell>
   );
 };
