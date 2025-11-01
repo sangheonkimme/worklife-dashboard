@@ -52,6 +52,8 @@ npm run db:studio        # Prisma Studio 열기 (시각적 DB 편집기)
 npm test                 # 모든 테스트 실행
 npm run test:watch       # watch 모드로 테스트 실행
 npm run test:coverage    # 테스트 커버리지 리포트 생성
+npm test -- path/to/test.ts        # 단일 테스트 파일 실행
+npm test -- --testNamePattern="test name"  # 특정 테스트 실행
 ```
 
 ### 풀스택 개발
@@ -72,8 +74,10 @@ cd client && npm run dev
 
 **상태 관리 전략:**
 
-- **TanStack Query (React Query)**: 서버 상태 (사용자 데이터, 거래 내역, 카테고리, 예산)
+- **TanStack Query (React Query)**: 서버 상태 (사용자 데이터, 거래 내역, 카테고리, 예산, 노트)
 - **Redux Toolkit**: 클라이언트 전용 UI 상태 (사이드바, 테마, 캐시된 인증)
+
+**참고**: Zustand가 package.json에 포함되어 있으나 현재 코드베이스에서는 사용되지 않습니다. 향후 추가 상태 관리가 필요한 경우 Redux Toolkit 대신 고려할 수 있습니다.
 
 **주요 기술:**
 
@@ -107,6 +111,7 @@ client/src/
 - JWT 액세스 토큰은 localStorage에 저장
 - 리프레시 토큰은 HttpOnly 쿠키에 저장
 - Axios 인터셉터를 통해 401 에러 시 자동 토큰 갱신
+- 토큰 갱신 실패 시 자동으로 /login 페이지로 리다이렉트
 - `useAuth` 훅 제공: `user`, `login`, `register`, `logout`, `isAuthenticated`
 
 ### 서버 아키텍처
@@ -140,8 +145,13 @@ server/src/
 - `Budget`: 카테고리별 월간 예산 추적
 - `SalaryCalculation`: 급여 및 공제 계산
 - `Note`: 메모 관리 (마크다운, 태그, 체크리스트, 공개/비공개/암호보호)
+  - 소프트 삭제 지원 (deletedAt 필드)
+  - 암호화 및 비밀번호 보호 옵션 (visibility: PRIVATE/PUBLIC/PROTECTED)
+  - 디바이스 동기화를 위한 리비전 추적 (deviceRevision)
+  - 공개 URL을 통한 노트 공유 (publishedUrl)
 - `NoteTag`: 메모 태그 (다대다 관계)
 - `Attachment`: 메모 첨부파일 (이미지, 오디오, 일반 파일)
+  - 파일 해시 기반 중복 제거 (hash 필드)
 
 ### 데이터 흐름 패턴
 
@@ -183,9 +193,11 @@ server/src/
 
 ```bash
 cd server
-npm run db:generate    # Prisma Client 타입 업데이트
-npm run db:migrate     # 데이터베이스에 변경사항 적용
+npm run db:generate    # ⚠️ 1단계: Prisma Client 타입 업데이트 (먼저 실행)
+npm run db:migrate     # ⚠️ 2단계: 데이터베이스에 변경사항 적용 (그 다음 실행)
 ```
+
+**중요**: 반드시 `db:generate` → `db:migrate` 순서로 실행해야 합니다.
 
 ### 환경 변수
 
