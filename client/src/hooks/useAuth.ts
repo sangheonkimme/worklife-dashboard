@@ -3,15 +3,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { notifications } from "@mantine/notifications";
 import { authApi } from "../services/api/authApi";
-import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { setUser, clearUser } from "../store/slices/authSlice";
+import { useAuthStore } from "../store/useAuthStore";
 import type { LoginCredentials, RegisterData } from "../types";
 
 export const useAuth = () => {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { user } = useAppSelector((state) => state.auth);
+  const { user, setUser, clearUser } = useAuthStore();
 
   // 현재 사용자 정보 조회
   const { data: currentUser, isLoading, error } = useQuery({
@@ -42,24 +40,24 @@ export const useAuth = () => {
 
       // 에러 발생 시 로그인 페이지로 이동
       localStorage.removeItem("accessToken");
-      dispatch(clearUser());
+      clearUser();
       navigate("/login");
     }
-  }, [error, dispatch, navigate]);
+  }, [error, clearUser, navigate]);
 
-  // 리프레시 후에도 Redux에 사용자 정보를 채워 넣어 인증 상태를 복원
+  // 리프레시 후에도 Zustand에 사용자 정보를 채워 넣어 인증 상태를 복원
   useEffect(() => {
     if (currentUser) {
-      dispatch(setUser(currentUser));
+      setUser(currentUser);
     }
-  }, [currentUser, dispatch]);
+  }, [currentUser, setUser]);
 
   // 로그인 mutation
   const loginMutation = useMutation({
     mutationFn: authApi.login,
     onSuccess: (data) => {
       localStorage.setItem("accessToken", data.accessToken);
-      dispatch(setUser(data.user));
+      setUser(data.user);
       queryClient.invalidateQueries({ queryKey: ["auth"] });
       navigate("/dashboard");
     },
@@ -70,7 +68,7 @@ export const useAuth = () => {
     mutationFn: authApi.register,
     onSuccess: (data) => {
       localStorage.setItem("accessToken", data.accessToken);
-      dispatch(setUser(data.user));
+      setUser(data.user);
       queryClient.invalidateQueries({ queryKey: ["auth"] });
       navigate("/dashboard");
     },
@@ -81,7 +79,7 @@ export const useAuth = () => {
     mutationFn: authApi.logout,
     onSuccess: () => {
       localStorage.removeItem("accessToken");
-      dispatch(clearUser());
+      clearUser();
       queryClient.clear();
       navigate("/login");
     },
@@ -92,7 +90,7 @@ export const useAuth = () => {
     mutationFn: authApi.googleLogin,
     onSuccess: (data) => {
       localStorage.setItem("accessToken", data.accessToken);
-      dispatch(setUser(data.user));
+      setUser(data.user);
       queryClient.invalidateQueries({ queryKey: ["auth"] });
       navigate("/dashboard");
     },

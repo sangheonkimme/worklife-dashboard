@@ -75,9 +75,9 @@ cd client && npm run dev
 **상태 관리 전략:**
 
 - **TanStack Query (React Query)**: 서버 상태 (사용자 데이터, 거래 내역, 카테고리, 예산, 노트)
-- **Redux Toolkit**: 클라이언트 전용 UI 상태 (사이드바, 테마, 캐시된 인증)
-
-**참고**: Zustand가 package.json에 포함되어 있으나 현재 코드베이스에서는 사용되지 않습니다. 향후 추가 상태 관리가 필요한 경우 Redux Toolkit 대신 고려할 수 있습니다.
+- **Zustand**: 클라이언트 전용 UI 상태 (사이드바, 테마, 캐시된 인증)
+  - localStorage 자동 동기화 (persist 미들웨어)
+  - 간단하고 타입 안전한 API
 
 **주요 기술:**
 
@@ -99,10 +99,9 @@ client/src/
 │   └── queryClient.ts # TanStack Query 설정
 ├── services/        # API 서비스 함수
 │   └── api/         # API 모듈 (authApi.ts 등)
-├── store/           # Redux 스토어
-│   ├── slices/      # Redux 슬라이스 (uiSlice, authSlice)
-│   ├── hooks.ts     # 타입이 지정된 Redux 훅 (useAppDispatch, useAppSelector)
-│   └── index.ts     # 스토어 설정
+├── store/           # Zustand 스토어
+│   ├── useUiStore.ts    # UI 상태 스토어 (사이드바, 테마, 로딩)
+│   └── useAuthStore.ts  # 인증 상태 스토어 (사용자, 인증 여부)
 └── types/           # TypeScript 타입 정의
 ```
 
@@ -183,7 +182,7 @@ server/src/
 
 1. `client/src/types/`에 타입 추가
 2. 서버 상태의 경우: TanStack Query 사용
-3. UI 상태의 경우: `client/src/store/slices/`에 Redux 슬라이스 생성
+3. UI 상태의 경우: `client/src/store/`에 Zustand 스토어 생성
 4. `client/src/pages/` 또는 `client/src/components/`에 페이지/컴포넌트 생성
 5. `client/src/App.tsx`에 라우트 추가
 
@@ -242,24 +241,33 @@ const { data, isLoading } = useQuery({
 });
 ```
 
-**UI 상태를 위한 Redux:**
+**UI 상태를 위한 Zustand:**
 
 ```typescript
-// store/slices/exampleSlice.ts
-import { createSlice } from '@reduxjs/toolkit';
+// store/useExampleStore.ts
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-const exampleSlice = createSlice({
-  name: 'example',
-  initialState: { value: '' },
-  reducers: {
-    setValue: (state, action) => { state.value = action.payload; },
-  },
-});
+interface ExampleState {
+  value: string;
+  setValue: (value: string) => void;
+}
+
+export const useExampleStore = create<ExampleState>()(
+  persist(
+    (set) => ({
+      value: '',
+      setValue: (value) => set({ value }),
+    }),
+    {
+      name: 'example-storage', // localStorage 키
+    }
+  )
+);
 
 // 컴포넌트에서
-const value = useAppSelector(state => state.example.value);
-const dispatch = useAppDispatch();
-dispatch(setValue('new value'));
+const { value, setValue } = useExampleStore();
+setValue('new value');
 ```
 
 ### 서버 패턴
