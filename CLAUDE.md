@@ -1,10 +1,14 @@
 # CLAUDE.md
 
-이 파일은 이 저장소에서 작업할 때 Claude Code (claude.ai/code)에게 지침을 제공합니다.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## 프로젝트 개요
 
-WorkLife Dashboard는 React 프론트엔드와 Express 백엔드를 갖춘 풀스택 개인 재무 관리 애플리케이션으로, 수입/지출 추적, 예산 관리, 급여 공제 계산 기능을 제공합니다.
+WorkLife Dashboard는 React 프론트엔드와 Express 백엔드를 갖춘 풀스택 개인 생산성 및 재무 관리 애플리케이션으로, 다음 기능을 제공합니다:
+
+- 수입/지출 추적 및 예산 관리
+- 급여 공제 계산
+- 메모 및 노트 관리 (마크다운 지원, 태그, 첨부파일)
 
 ## 프로젝트 구조
 
@@ -43,6 +47,11 @@ npm run db:generate      # Prisma Client 생성 (스키마 변경 후 실행)
 npm run db:migrate       # 마이그레이션 실행 (DB 스키마 생성/업데이트)
 npm run db:seed          # 초기 데이터로 데이터베이스 시드
 npm run db:studio        # Prisma Studio 열기 (시각적 DB 편집기)
+
+# 테스트 명령어 (Jest)
+npm test                 # 모든 테스트 실행
+npm run test:watch       # watch 모드로 테스트 실행
+npm run test:coverage    # 테스트 커버리지 리포트 생성
 ```
 
 ### 풀스택 개발
@@ -125,11 +134,14 @@ server/src/
 
 **데이터베이스 스키마 (Prisma):**
 
-- `User`: 인증 및 사용자 프로필
+- `User`: 인증 및 사용자 프로필 (이메일/비밀번호, Google OAuth 지원)
 - `Category`: 수입/지출 카테고리 (사용자별 및 기본)
 - `Transaction`: 수입/지출 기록
 - `Budget`: 카테고리별 월간 예산 추적
 - `SalaryCalculation`: 급여 및 공제 계산
+- `Note`: 메모 관리 (마크다운, 태그, 체크리스트, 공개/비공개/암호보호)
+- `NoteTag`: 메모 태그 (다대다 관계)
+- `Attachment`: 메모 첨부파일 (이미지, 오디오, 일반 파일)
 
 ### 데이터 흐름 패턴
 
@@ -281,8 +293,10 @@ export const exampleService = {
 
 ## 중요 사항
 
-- 클라이언트는 경로 별칭 `@/` → `client/src/` 사용 (tsconfig에 설정됨)
-- 서버는 strict TypeScript 설정 사용 (noImplicitAny, strictNullChecks 등)
-- 스키마 변경 후 서버 실행 전 항상 Prisma generate 실행 필요
-- Nodemon이 `server/src/` 변경사항을 감시하고 자동 재시작
-- Vite HMR이 클라이언트 개발 중 즉각적인 피드백 제공
+- **경로 별칭**: 클라이언트와 서버 모두 `@/` → `src/` 별칭 사용 (tsconfig 및 jest.config에 설정됨)
+- **TypeScript**: 서버는 strict 설정 사용 (noImplicitAny, strictNullChecks 등)
+- **Prisma 워크플로우**: 스키마 변경 후 반드시 `npm run db:generate` → `npm run db:migrate` 순서로 실행
+- **개발 모드 자동 새로고침**:
+  - 서버: Nodemon이 `server/src/` 변경사항을 감시하고 자동 재시작
+  - 클라이언트: Vite HMR이 즉각적인 핫 리로드 제공
+- **테스트**: 서버는 Jest + ts-jest 사용, `__tests__/` 디렉토리에 테스트 파일 위치
