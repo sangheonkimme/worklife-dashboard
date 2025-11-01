@@ -25,6 +25,7 @@ import {
   IconCalculator,
   IconMenu2,
   IconX,
+  IconNotes,
 } from "@tabler/icons-react";
 import { useAuth } from "../hooks/useAuth";
 
@@ -72,6 +73,14 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       description: "거래 내역 조회",
       pageTitle: "거래내역",
       pageDescription: "모든 거래 내역을 조회합니다",
+    },
+    {
+      icon: IconNotes,
+      label: "메모",
+      path: "/notes",
+      description: "메모 관리",
+      pageTitle: "메모",
+      pageDescription: "메모를 작성하고 관리합니다",
     },
   ];
 
