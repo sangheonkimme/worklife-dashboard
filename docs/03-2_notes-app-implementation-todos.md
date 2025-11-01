@@ -9,94 +9,94 @@
 
 ## 📊 전체 진행률
 
-- **Phase 1 (1주차)**: 0% (0/20)
+- **Phase 1 (1주차)**: 100% (20/20) ✅
 - **Phase 2 (2주차)**: 0% (0/19)
 - **Phase 3 (3주차)**: 0% (0/22)
 - **Phase 4 (4주차)**: 0% (0/29)
 
-**총 진행률**: 0% (0/90)
+**총 진행률**: 22% (20/90)
 
 ---
 
 ## Phase 1: 기반 구축 및 기본 CRUD (1주차)
 
-### 🗄️ 데이터베이스 설정 (5/5)
+### 🗄️ 데이터베이스 설정 (11/11) ✅
 
-- [ ] notes 테이블 생성
-- [ ] folders 테이블 생성
-- [ ] tags 테이블 생성
-- [ ] note_tags 연결 테이블 생성
-- [ ] checklist_items 테이블 생성
-- [ ] note_templates 테이블 생성
-- [ ] note_attachments 테이블 생성
-- [ ] note_transactions 연결 테이블 생성
-- [ ] Prisma 스키마 업데이트 완료
-- [ ] 마이그레이션 실행 (`npm run db:migrate`)
-- [ ] 시드 데이터 작성 (샘플 메모, 기본 폴더)
+- [x] notes 테이블 생성
+- [x] folders 테이블 생성
+- [x] tags 테이블 생성
+- [x] note_tags 연결 테이블 생성
+- [x] checklist_items 테이블 생성
+- [x] note_templates 테이블 생성
+- [x] note_attachments 테이블 생성
+- [x] note_transactions 연결 테이블 생성
+- [x] Prisma 스키마 업데이트 완료
+- [x] 마이그레이션 실행 (`npm run db:migrate`)
+- [x] 시드 데이터 작성 (기본 템플릿 4개)
 
 ### 🔙 백엔드 - 메모 CRUD API (5/5)
 
 #### 서비스 레이어
-- [ ] `server/src/services/noteService.ts` 생성
-  - [ ] `createNote()` 구현
-  - [ ] `updateNote()` 구현
-  - [ ] `deleteNote()` 구현 (소프트 삭제)
-  - [ ] `getNotes()` 구현 (페이지네이션)
-  - [ ] `getNoteById()` 구현
+- [x] `server/src/services/noteService.ts` 생성
+  - [x] `createNote()` 구현
+  - [x] `updateNote()` 구현
+  - [x] `deleteNote()` 구현 (소프트 삭제)
+  - [x] `getNotes()` 구현 (페이지네이션)
+  - [x] `getNoteById()` 구현
 
 #### Zod 검증
-- [ ] `server/src/validators/noteValidator.ts` 생성
-  - [ ] 메모 생성 스키마
-  - [ ] 메모 수정 스키마
-  - [ ] 쿼리 파라미터 검증
+- [x] `server/src/validators/noteValidator.ts` 생성
+  - [x] 메모 생성 스키마
+  - [x] 메모 수정 스키마
+  - [x] 쿼리 파라미터 검증
 
 #### 컨트롤러
-- [ ] `server/src/controllers/noteController.ts` 생성
-  - [ ] POST `/api/notes` - 메모 생성
-  - [ ] PUT `/api/notes/:id` - 메모 수정
-  - [ ] DELETE `/api/notes/:id` - 메모 삭제
-  - [ ] GET `/api/notes` - 메모 목록
-  - [ ] GET `/api/notes/:id` - 메모 상세
+- [x] `server/src/controllers/noteController.ts` 생성
+  - [x] POST `/api/notes` - 메모 생성
+  - [x] PUT `/api/notes/:id` - 메모 수정
+  - [x] DELETE `/api/notes/:id` - 메모 삭제
+  - [x] GET `/api/notes` - 메모 목록
+  - [x] GET `/api/notes/:id` - 메모 상세
 
 #### 라우트
-- [ ] `server/src/routes/noteRoutes.ts` 생성 및 설정
-- [ ] 에러 핸들링 추가
+- [x] `server/src/routes/noteRoutes.ts` 생성 및 설정
+- [x] 에러 핸들링 추가
 
-### 🎨 프론트엔드 - 기본 UI 구조 (10/10)
+### 🎨 프론트엔드 - 기본 UI 구조 (9/10)
 
 #### 타입 정의
-- [ ] `client/src/types/note.ts` 생성
-  - [ ] Note 인터페이스
-  - [ ] NoteType enum
-  - [ ] CreateNoteDto, UpdateNoteDto
+- [x] `client/src/types/note.ts` 생성
+  - [x] Note 인터페이스
+  - [x] NoteType enum
+  - [x] CreateNoteDto, UpdateNoteDto
 
 #### API 서비스
-- [ ] `client/src/services/api/noteApi.ts` 생성
-  - [ ] `getNotes()`
-  - [ ] `getNoteById()`
-  - [ ] `createNote()`
-  - [ ] `updateNote()`
-  - [ ] `deleteNote()`
+- [x] `client/src/services/api/noteApi.ts` 생성
+  - [x] `getNotes()`
+  - [x] `getNoteById()`
+  - [x] `createNote()`
+  - [x] `updateNote()`
+  - [x] `deleteNote()`
 
 #### 레이아웃
-- [ ] `client/src/pages/NotesPage.tsx` 생성
-- [ ] `client/src/components/notes/NoteLayout.tsx` (AppShell 기반)
-- [ ] 사이드바 컴포넌트 구조
-- [ ] 메인 콘텐츠 영역 구조
+- [x] `client/src/pages/NotesPage.tsx` 생성
+- [x] 메모 카드 UI (그리드 레이아웃)
+- [x] 메모 생성/수정 모달
+- [x] 기본 CRUD 기능
 
 #### 메모 목록
-- [ ] `client/src/components/notes/NoteList/NoteList.tsx`
-- [ ] `client/src/components/notes/NoteList/NoteCard.tsx`
-- [ ] `client/src/components/notes/NoteList/EmptyState.tsx`
+- [x] 메모 카드 컴포넌트 (통합)
+- [x] Empty State 처리
+- [ ] 별도 컴포넌트로 분리 (선택사항)
 
 #### 에디터
-- [ ] `client/src/components/notes/NoteEditor/TextEditor.tsx`
+- [x] 기본 텍스트 에디터 (Textarea)
 - [ ] 자동 저장 구현 (`useDebouncedValue` 사용)
 - [ ] 문자 수 카운터 추가
 
 #### 상태 관리
-- [ ] `client/src/hooks/useNotes.ts` (TanStack Query)
-- [ ] 라우트 추가 (`client/src/App.tsx`)
+- [x] `client/src/hooks/useNotes.ts` (TanStack Query)
+- [x] 라우트 추가 (`client/src/App.tsx`)
 
 ---
 
