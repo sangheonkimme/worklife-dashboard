@@ -1,7 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   AppShell,
-  Burger,
   Group,
   Title,
   ActionIcon,
@@ -11,6 +10,7 @@ import {
   Avatar,
   Menu,
   Divider,
+  Affix,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
@@ -22,6 +22,9 @@ import {
   IconBell,
   IconReceipt,
   IconWallet,
+  IconCalculator,
+  IconMenu2,
+  IconX,
 } from "@tabler/icons-react";
 import { useAuth } from "../hooks/useAuth";
 
@@ -30,21 +33,53 @@ interface DashboardLayoutProps {
 }
 
 export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
-  const [opened, { toggle }] = useDisclosure();
+  const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
+  const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
 
   const navItems = [
-    { icon: IconHome, label: "대시보드", path: "/dashboard", description: "홈 대시보드" },
-    { icon: IconWallet, label: "가계부", path: "/expense", description: "수입/지출 관리" },
-    { icon: IconReceipt, label: "거래내역", path: "/transactions", description: "거래 내역 조회" },
+    {
+      icon: IconHome,
+      label: "대시보드",
+      path: "/dashboard",
+      description: "홈 대시보드",
+      pageTitle: "대시보드",
+      pageDescription: "",
+    },
+    {
+      icon: IconCalculator,
+      label: "연봉계산기",
+      path: "/salary",
+      description: "실수령액 계산",
+      pageTitle: "연봉 계산기",
+      pageDescription: "2025년 기준 세율로 실수령액을 계산합니다",
+    },
+    {
+      icon: IconWallet,
+      label: "가계부",
+      path: "/expense",
+      description: "수입/지출 관리",
+      pageTitle: "가계부",
+      pageDescription: "수입과 지출을 관리합니다",
+    },
+    {
+      icon: IconReceipt,
+      label: "거래내역",
+      path: "/transactions",
+      description: "거래 내역 조회",
+      pageTitle: "거래내역",
+      pageDescription: "모든 거래 내역을 조회합니다",
+    },
   ];
+
+  const currentPage = navItems.find((item) => item.path === location.pathname);
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
@@ -53,19 +88,22 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       navbar={{
         width: 300,
         breakpoint: "sm",
-        collapsed: { mobile: !opened },
+        collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
       }}
       padding="md"
     >
       <AppShell.Header>
-        <Group h="100%" px="md" justify="space-between">
-          <Group>
-            <Burger
-              opened={opened}
-              onClick={toggle}
-              hiddenFrom="sm"
-              size="sm"
-            />
+        <Group h="100%" px="md" justify="space-between" wrap="nowrap">
+          <Group gap="md" wrap="nowrap" style={{ minWidth: 0, flex: 1 }}>
+            <ActionIcon
+              variant="subtle"
+              size="lg"
+              onClick={() => navigate("/dashboard")}
+              title="홈으로 이동"
+            >
+              <IconHome size={24} />
+            </ActionIcon>
+            <Divider orientation="vertical" />
             <Title order={3}>워크라이프 대시보드</Title>
           </Group>
 
@@ -90,7 +128,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <Menu.Target>
                 <ActionIcon variant="default" size="lg" radius="xl">
                   <Avatar size="sm" radius="xl" color="blue">
-                    {user?.name?.charAt(0).toUpperCase() || 'U'}
+                    {user?.name?.charAt(0).toUpperCase() || "U"}
                   </Avatar>
                 </ActionIcon>
               </Menu.Target>
@@ -99,7 +137,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 <Menu.Label>계정</Menu.Label>
                 <Menu.Item
                   leftSection={<IconUser size={14} />}
-                  onClick={() => navigate('/profile')}
+                  onClick={() => navigate("/profile")}
                 >
                   프로필
                 </Menu.Item>
@@ -122,6 +160,15 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
       <AppShell.Navbar p="md">
         <AppShell.Section>
+          <Title order={5} mb={4}>
+            {currentPage?.pageTitle || "대시보드"}
+          </Title>
+          {currentPage?.pageDescription && (
+            <Text size="xs" c="dimmed" mb="xs">
+              {currentPage.pageDescription}
+            </Text>
+          )}
+          <Divider mb="sm" />
           <Text size="xs" tt="uppercase" fw={700} c="dimmed" mb="sm">
             메뉴
           </Text>
@@ -149,7 +196,27 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         </AppShell.Section>
       </AppShell.Navbar>
 
-      <AppShell.Main>{children}</AppShell.Main>
+      <AppShell.Main>
+        {children}
+
+        {/* Floating 메뉴 버튼 */}
+        <Affix position={{ bottom: 20, left: 20 }}>
+          <ActionIcon
+            size="xl"
+            radius="xl"
+            variant="filled"
+            color="blue"
+            onClick={() => {
+              toggleMobile();
+              toggleDesktop();
+            }}
+            title={desktopOpened ? "메뉴 닫기" : "메뉴 열기"}
+            style={{ boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)" }}
+          >
+            {desktopOpened ? <IconX size={24} /> : <IconMenu2 size={24} />}
+          </ActionIcon>
+        </Affix>
+      </AppShell.Main>
     </AppShell>
   );
 };

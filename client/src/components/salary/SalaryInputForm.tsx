@@ -8,17 +8,20 @@ import {
   Checkbox,
   Card,
 } from "@mantine/core";
-import { IconMinus, IconPlus } from "@tabler/icons-react";
+import { IconMinus, IconPlus, IconRefresh } from "@tabler/icons-react";
 import type { SalaryInput } from "@/types/salary";
-import { NON_TAXABLE_MAX } from "@/utils/salaryCalculator";
 
 interface SalaryInputFormProps {
   input: SalaryInput;
   onChange: (input: SalaryInput) => void;
+  onReset: () => void;
 }
 
-export function SalaryInputForm({ input, onChange }: SalaryInputFormProps) {
-  const handleChange = (field: keyof SalaryInput, value: string | number | boolean) => {
+export function SalaryInputForm({ input, onChange, onReset }: SalaryInputFormProps) {
+  const handleChange = (
+    field: keyof SalaryInput,
+    value: string | number | boolean
+  ) => {
     onChange({
       ...input,
       [field]: value,
@@ -45,9 +48,19 @@ export function SalaryInputForm({ input, onChange }: SalaryInputFormProps) {
 
   return (
     <Stack gap="md">
-      <Text fw={700} size="lg">
-        급여 정보 입력
-      </Text>
+      <Group justify="space-between" align="center">
+        <Text fw={700} size="lg">
+          급여 정보 입력
+        </Text>
+        <ActionIcon
+          variant="subtle"
+          color="gray"
+          onClick={onReset}
+          title="초기화"
+        >
+          <IconRefresh size={20} />
+        </ActionIcon>
+      </Group>
 
       {/* 기본 정보 */}
       <Card shadow="sm" padding="lg" radius="md" withBorder>
@@ -120,27 +133,29 @@ export function SalaryInputForm({ input, onChange }: SalaryInputFormProps) {
           {/* 비과세액 */}
           <div>
             <Text size="sm" fw={500} mb="xs">
-              비과세액 (식대 포함)
+              비과세액 (연간 총액)
             </Text>
             <NumberInput
               value={input.nonTaxableAmount}
-              onChange={(value) => {
-                const numValue = Number(value) || 0;
-                const limitedValue = Math.min(numValue, NON_TAXABLE_MAX);
-                handleChange("nonTaxableAmount", limitedValue);
-              }}
+              onChange={(value) =>
+                handleChange("nonTaxableAmount", Number(value) || 0)
+              }
               thousandSeparator=","
               suffix=" 원"
               min={0}
-              max={NON_TAXABLE_MAX}
               hideControls
-              placeholder="최대 200,000원"
+              placeholder="예) 2,400,000원 (월 200,000원)"
               styles={{
                 input: {
                   textAlign: "right",
                 },
               }}
             />
+            {input.nonTaxableAmount > 0 && (
+              <Text size="xs" c="dimmed" mt="xs">
+                월 {Math.floor(input.nonTaxableAmount / 12).toLocaleString()}원
+              </Text>
+            )}
           </div>
 
           {/* 부양가족수 */}

@@ -59,7 +59,7 @@ export const initialSalaryInput: SalaryInput = {
   salaryType: "annual",
   retirementType: "separate",
   amount: 0,
-  nonTaxableAmount: 200000,
+  nonTaxableAmount: 2400000,
   dependents: 1,
   childrenUnder20: 0,
   isSmallCompany: false,
