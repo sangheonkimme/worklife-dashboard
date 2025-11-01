@@ -28,6 +28,10 @@ model User {
   categories   Category[]
   budgets      Budget[]
   salaryCalculations SalaryCalculation[]
+  notes        Note[]
+  folders      Folder[]
+  tags         Tag[]
+  templates    NoteTemplate[]
 
   @@map("users")
 }
@@ -68,6 +72,8 @@ model Transaction {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  noteTransactions NoteTransaction[]
 
   @@map("transactions")
   @@index([userId, date])
@@ -110,4 +116,180 @@ model SalaryCalculation {
 
   @@map("salary_calculations")
   @@index([userId, createdAt])
+}
+
+// 폴더 모델
+model Folder {
+  id        String   @id @default(cuid())
+  name      String
+  color     String?
+  icon      String?
+  parentId  String?  // 중첩 폴더를 위한 자기 참조
+  parent    Folder?  @relation("FolderToFolder", fields: [parentId], references: [id], onDelete: Cascade)
+  children  Folder[] @relation("FolderToFolder")
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  notes     Note[]
+
+  @@map("folders")
+  @@index([userId])
+  @@index([parentId])
+}
+
+// 태그 모델
+model Tag {
+  id        String   @id @default(cuid())
+  name      String
+  color     String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  noteTags  NoteTag[]
+
+  @@map("tags")
+  @@unique([userId, name])
+  @@index([userId])
+}
+
+// 메모 타입 enum
+enum NoteType {
+  TEXT
+  CHECKLIST
+  MARKDOWN
+  QUICK
+}
+
+// 공개 설정 enum
+enum NoteVisibility {
+  PRIVATE
+  PUBLIC
+  PROTECTED
+}
+
+// 메모 모델
+model Note {
+  id             String         @id @default(cuid())
+  title          String
+  content        String         @db.Text
+  type           NoteType       @default(TEXT)
+  visibility     NoteVisibility @default(PRIVATE)
+  password       String?        // PROTECTED일 때만 사용
+  isPinned       Boolean        @default(false)
+  isFavorite     Boolean        @default(false)
+  isArchived     Boolean        @default(false)
+  deletedAt      DateTime?      // 소프트 삭제
+  publishedUrl   String?        @unique // 공개 URL
+  deviceRevision Int            @default(0) // 디바이스 동기화용
+  folderId       String?
+  folder         Folder?        @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  userId         String
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  noteTags         NoteTag[]
+  checklistItems   ChecklistItem[]
+  attachments      Attachment[]
+  noteTransactions NoteTransaction[]
+
+  @@map("notes")
+  @@index([userId, createdAt])
+  @@index([userId, updatedAt])
+  @@index([userId, isPinned])
+  @@index([userId, isFavorite])
+  @@index([folderId])
+  @@index([deletedAt])
+}
+
+// 메모-태그 연결 테이블 (다대다)
+model NoteTag {
+  id        String   @id @default(cuid())
+  noteId    String
+  note      Note     @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  tagId     String
+  tag       Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@map("note_tags")
+  @@unique([noteId, tagId])
+  @@index([noteId])
+  @@index([tagId])
+}
+
+// 체크리스트 항목 모델
+model ChecklistItem {
+  id          String   @id @default(cuid())
+  content     String
+  isCompleted Boolean  @default(false)
+  order       Int      @default(0)
+  noteId      String
+  note        Note     @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("checklist_items")
+  @@index([noteId, order])
+}
+
+// 메모 템플릿 모델
+model NoteTemplate {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  content     String   @db.Text
+  type        NoteType @default(TEXT)
+  isDefault   Boolean  @default(false) // 기본 제공 템플릿
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("note_templates")
+  @@index([userId])
+}
+
+// 첨부파일 타입 enum
+enum AttachmentType {
+  IMAGE
+  AUDIO
+  FILE
+}
+
+// 첨부파일 모델
+model Attachment {
+  id           String         @id @default(cuid())
+  fileName     String
+  fileSize     Int
+  mimeType     String
+  type         AttachmentType
+  url          String         // 저장된 파일 경로 또는 URL
+  hash         String?        // 파일 해시 (중복 제거용)
+  thumbnailUrl String?        // 이미지 썸네일
+  noteId       String
+  note         Note           @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  createdAt    DateTime       @default(now())
+
+  @@map("attachments")
+  @@index([noteId])
+  @@index([hash])
+}
+
+// 메모-거래 연결 테이블 (다대다)
+model NoteTransaction {
+  id            String      @id @default(cuid())
+  noteId        String
+  note          Note        @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  transactionId String
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+
+  @@map("note_transactions")
+  @@unique([noteId, transactionId])
+  @@index([noteId])
+  @@index([transactionId])
 }

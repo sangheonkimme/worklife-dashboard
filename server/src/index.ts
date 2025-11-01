@@ -11,6 +11,7 @@ import authRoutes from './routes/authRoutes';
 import transactionRoutes from './routes/transactionRoutes';
 import categoryRoutes from './routes/categoryRoutes';
 import budgetRoutes from './routes/budgetRoutes';
+import noteRoutes from './routes/noteRoutes';
 
 // 환경 변수 로드
 dotenv.config();
@@ -44,6 +45,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/budgets', budgetRoutes);
+app.use('/api/notes', noteRoutes);
 // app.use('/api/salary', salaryRoutes);
 
 // 404 핸들러

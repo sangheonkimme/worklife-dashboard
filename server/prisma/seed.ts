@@ -1,4 +1,4 @@
-import { PrismaClient, CategoryType } from '@prisma/client';
+import { PrismaClient, CategoryType, NoteType } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -56,9 +56,100 @@ async function main() {
     });
   }
 
-  console.log('✅ 시드 데이터 생성이 완료되었습니다!');
+  console.log('✅ 카테고리 시드 데이터 생성 완료!');
   console.log(`   - 수입 카테고리: ${incomeCategories.length}개`);
   console.log(`   - 지출 카테고리: ${expenseCategories.length}개`);
+
+  // Notes 시스템 시드 데이터
+  console.log('\n📝 메모 시스템 시드 데이터 생성 중...');
+
+  // 기본 템플릿 생성
+  console.log('📋 기본 템플릿 생성 중...');
+  const templates = [
+    {
+      name: '회의록',
+      description: '회의 내용을 기록하기 위한 템플릿',
+      content: `# 회의록
+
+## 일시
+- 날짜:
+- 시간:
+
+## 참석자
+-
+
+## 안건
+1.
+
+## 논의 내용
+-
+
+## 결정 사항
+-
+
+## 다음 액션
+- [ ] `,
+      type: NoteType.MARKDOWN,
+      isDefault: true,
+    },
+    {
+      name: '업무 일지',
+      description: '일일 업무 내용을 기록하기 위한 템플릿',
+      content: `# 업무 일지 -
+
+## 오늘의 할 일
+- [ ]
+- [ ]
+- [ ]
+
+## 완료한 작업
+-
+
+## 이슈/문제
+-
+
+## 내일 할 일
+- [ ] `,
+      type: NoteType.MARKDOWN,
+      isDefault: true,
+    },
+    {
+      name: '아이디어 메모',
+      description: '새로운 아이디어를 빠르게 기록',
+      content: `# 아이디어
+
+## 핵심 아이디어
+
+
+## 배경/동기
+
+
+## 실행 방안
+-
+
+## 예상 결과
+`,
+      type: NoteType.MARKDOWN,
+      isDefault: true,
+    },
+    {
+      name: '할 일 목록',
+      description: '체크리스트 형식의 할 일 목록',
+      content: '',
+      type: NoteType.CHECKLIST,
+      isDefault: true,
+    },
+  ];
+
+  for (const template of templates) {
+    await prisma.noteTemplate.create({
+      data: template,
+    });
+  }
+
+  console.log(`✅ 템플릿 생성 완료: ${templates.length}개`);
+
+  console.log('\n✨ 모든 시드 데이터 생성이 완료되었습니다!');
 }
 
 main()
