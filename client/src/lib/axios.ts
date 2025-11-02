@@ -26,6 +26,25 @@ api.interceptors.request.use(
   }
 );
 
+// 토큰 갱신 상태 관리
+let isRefreshing = false;
+let failedQueue: Array<{
+  resolve: (value?: unknown) => void;
+  reject: (reason?: unknown) => void;
+}> = [];
+
+const processQueue = (error: unknown, token: string | null = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+
+  failedQueue = [];
+};
+
 // 응답 인터셉터: 에러 처리 및 토큰 갱신
 api.interceptors.response.use(
   (response) => {
@@ -38,7 +57,32 @@ api.interceptors.response.use(
 
     // 401 에러이고 재시도하지 않은 경우
     if (error.response?.status === 401 && !originalRequest._retry) {
+      // refresh 요청 자체가 실패한 경우 로그아웃
+      if (originalRequest.url?.includes('/api/auth/refresh')) {
+        localStorage.removeItem("accessToken");
+        window.location.href = "/login";
+        return Promise.reject(error);
+      }
+
       originalRequest._retry = true;
+
+      // 이미 토큰 갱신 중이면 대기
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            if (originalRequest.headers) {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+            }
+            return api(originalRequest);
+          })
+          .catch((err) => {
+            return Promise.reject(err);
+          });
+      }
+
+      isRefreshing = true;
 
       try {
         // 리프레시 토큰으로 새 액세스 토큰 요청
@@ -51,6 +95,9 @@ api.interceptors.response.use(
         const { accessToken } = response.data;
         localStorage.setItem("accessToken", accessToken);
 
+        // 대기 중인 요청들 처리
+        processQueue(null, accessToken);
+
         // 원래 요청에 새 토큰 추가
         if (originalRequest.headers) {
           originalRequest.headers.Authorization = `Bearer ${accessToken}`;
@@ -60,9 +107,12 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         // 리프레시 토큰도 만료된 경우 로그아웃 처리
+        processQueue(refreshError, null);
         localStorage.removeItem("accessToken");
         window.location.href = "/login";
         return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
       }
     }
 
