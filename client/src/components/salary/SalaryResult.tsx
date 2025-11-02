@@ -42,6 +42,31 @@ function DeductionItem({ label, amount, tooltip }: DeductionItemProps) {
 }
 
 export function SalaryResult({ result }: SalaryResultProps) {
+  // 금액이 0보다 큰 경우에만 실제 계산값 사용, 아니면 0으로 표시
+  const isValidAmount = result.monthlyGrossSalary > 0;
+
+  const displayResult = isValidAmount ? result : {
+    monthlyGrossSalary: 0,
+    monthlyNetSalary: 0,
+    deductions: {
+      insurance: {
+        nationalPension: 0,
+        healthInsurance: 0,
+        longTermCare: 0,
+        employmentInsurance: 0,
+        total: 0,
+      },
+      tax: {
+        incomeTax: 0,
+        incomeTaxReduction: 0,
+        finalIncomeTax: 0,
+        localIncomeTax: 0,
+        total: 0,
+      },
+      total: 0,
+    },
+  };
+
   return (
     <Stack gap="md">
       <Text fw={700} size="lg">
@@ -62,7 +87,7 @@ export function SalaryResult({ result }: SalaryResultProps) {
           <Text fw={600}>월 급여</Text>
         </div>
         <Text fw={700} size="xl">
-          {formatCurrencyWithUnit(result.monthlyGrossSalary)}
+          {formatCurrencyWithUnit(displayResult.monthlyGrossSalary)}
         </Text>
       </Group>
 
@@ -79,29 +104,29 @@ export function SalaryResult({ result }: SalaryResultProps) {
           <Group justify="space-between" mb="md">
             <Text fw={600}>4대 보험</Text>
             <Text fw={600} c="blue">
-              {formatCurrencyWithUnit(result.deductions.insurance.total)}
+              {formatCurrencyWithUnit(displayResult.deductions.insurance.total)}
             </Text>
           </Group>
 
           <Stack gap="sm">
             <DeductionItem
               label="국민연금 (4.5%)"
-              amount={result.deductions.insurance.nationalPension}
+              amount={displayResult.deductions.insurance.nationalPension}
               tooltip="소득의 4.5%가 공제됩니다. (상한: 월 590만원)"
             />
             <DeductionItem
               label="건강보험 (3.545%)"
-              amount={result.deductions.insurance.healthInsurance}
+              amount={displayResult.deductions.insurance.healthInsurance}
               tooltip="소득의 3.545%가 공제됩니다."
             />
             <DeductionItem
               label="장기요양보험료 (12.95%)"
-              amount={result.deductions.insurance.longTermCare}
+              amount={displayResult.deductions.insurance.longTermCare}
               tooltip="건강보험료의 12.95%가 추가로 공제됩니다."
             />
             <DeductionItem
               label="고용보험 (0.9%)"
-              amount={result.deductions.insurance.employmentInsurance}
+              amount={displayResult.deductions.insurance.employmentInsurance}
               tooltip="소득의 0.9%가 공제됩니다."
             />
           </Stack>
@@ -114,17 +139,17 @@ export function SalaryResult({ result }: SalaryResultProps) {
           <Group justify="space-between" mb="md">
             <Text fw={600}>소득세</Text>
             <Text fw={600} c="grape">
-              {formatCurrencyWithUnit(result.deductions.tax.total)}
+              {formatCurrencyWithUnit(displayResult.deductions.tax.total)}
             </Text>
           </Group>
 
           <Stack gap="sm">
             <DeductionItem
               label="소득세 (기본)"
-              amount={result.deductions.tax.incomeTax}
+              amount={displayResult.deductions.tax.incomeTax}
               tooltip="간이세액표에 따라 계산됩니다. 부양가족 및 자녀 수에 따라 공제액이 조정됩니다."
             />
-            {result.deductions.tax.incomeTaxReduction > 0 && (
+            {displayResult.deductions.tax.incomeTaxReduction > 0 && (
               <Group
                 justify="space-between"
                 bg="violet.0"
@@ -139,29 +164,29 @@ export function SalaryResult({ result }: SalaryResultProps) {
                 <Text size="sm" fw={600} c="violet">
                   -
                   {formatCurrencyWithUnit(
-                    result.deductions.tax.incomeTaxReduction
+                    displayResult.deductions.tax.incomeTaxReduction
                   )}
                 </Text>
               </Group>
             )}
             <DeductionItem
               label={
-                result.deductions.tax.incomeTaxReduction > 0
+                displayResult.deductions.tax.incomeTaxReduction > 0
                   ? "소득세 (감면 후)"
                   : "소득세"
               }
-              amount={result.deductions.tax.finalIncomeTax}
+              amount={displayResult.deductions.tax.finalIncomeTax}
               tooltip={
-                result.deductions.tax.incomeTaxReduction > 0
+                displayResult.deductions.tax.incomeTaxReduction > 0
                   ? "중소기업 취업자 감면이 적용된 최종 소득세입니다."
                   : "간이세액표에 따라 계산됩니다. 부양가족 및 자녀 수에 따라 공제액이 조정됩니다."
               }
             />
             <DeductionItem
               label="지방소득세 (10%)"
-              amount={result.deductions.tax.localIncomeTax}
+              amount={displayResult.deductions.tax.localIncomeTax}
               tooltip={
-                result.deductions.tax.incomeTaxReduction > 0
+                displayResult.deductions.tax.incomeTaxReduction > 0
                   ? "감면 후 소득세의 10%가 추가로 공제됩니다."
                   : "소득세의 10%가 추가로 공제됩니다."
               }
@@ -174,7 +199,7 @@ export function SalaryResult({ result }: SalaryResultProps) {
         <Group justify="space-between">
           <Text fw={600}>공제총액</Text>
           <Text fw={600} size="lg" c="red">
-            {formatCurrencyWithUnit(result.deductions.total)}
+            {formatCurrencyWithUnit(displayResult.deductions.total)}
           </Text>
         </Group>
 
@@ -211,7 +236,7 @@ export function SalaryResult({ result }: SalaryResultProps) {
             실지급액
           </Text>
           <Text size="2rem" fw={700} c="white">
-            {formatCurrencyWithUnit(result.monthlyNetSalary)}
+            {formatCurrencyWithUnit(displayResult.monthlyNetSalary)}
           </Text>
         </Group>
       </Card>
