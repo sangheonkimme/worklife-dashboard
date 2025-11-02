@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Textarea, Paper, SegmentedControl, Stack } from '@mantine/core';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useDebouncedValue } from '@mantine/hooks';
 
 interface MarkdownEditorProps {
   value: string;
@@ -19,6 +20,24 @@ export function MarkdownEditor({
   maxRows = 30,
 }: MarkdownEditorProps) {
   const [mode, setMode] = useState<'edit' | 'preview' | 'split'>('edit');
+  const [localValue, setLocalValue] = useState(value);
+  const [debouncedValue] = useDebouncedValue(localValue, 300);
+
+  // 외부 value가 변경되면 localValue도 업데이트
+  useEffect(() => {
+    setLocalValue(value);
+  }, [value]);
+
+  // debounced value가 변경되면 onChange 호출
+  useEffect(() => {
+    if (debouncedValue !== value) {
+      onChange(debouncedValue);
+    }
+  }, [debouncedValue]);
+
+  const handleChange = (newValue: string) => {
+    setLocalValue(newValue);
+  };
 
   return (
     <Stack gap="md">
@@ -38,8 +57,8 @@ export function MarkdownEditor({
       <Box>
         {mode === 'edit' && (
           <Textarea
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
+            value={localValue}
+            onChange={(e) => handleChange(e.target.value)}
             placeholder={placeholder}
             minRows={minRows}
             maxRows={maxRows}
@@ -55,7 +74,7 @@ export function MarkdownEditor({
 
         {mode === 'preview' && (
           <Paper p="md" withBorder mih={200}>
-            <MarkdownPreview content={value} />
+            <MarkdownPreview content={localValue} />
           </Paper>
         )}
 
@@ -68,8 +87,8 @@ export function MarkdownEditor({
             }}
           >
             <Textarea
-              value={value}
-              onChange={(e) => onChange(e.target.value)}
+              value={localValue}
+              onChange={(e) => handleChange(e.target.value)}
               placeholder={placeholder}
               minRows={minRows}
               maxRows={maxRows}
@@ -82,7 +101,7 @@ export function MarkdownEditor({
               }}
             />
             <Paper p="md" withBorder mih={200}>
-              <MarkdownPreview content={value} />
+              <MarkdownPreview content={localValue} />
             </Paper>
           </Box>
         )}

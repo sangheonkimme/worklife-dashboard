@@ -1,5 +1,11 @@
 import { prisma } from '../lib/prisma';
 import { NoteType, NoteVisibility, Prisma } from '@prisma/client';
+import crypto from 'crypto';
+
+// 공개 URL 생성 함수
+function generatePublishedUrl(): string {
+  return crypto.randomBytes(16).toString('hex');
+}
 
 // 메모 생성 DTO
 export interface CreateNoteDto {
@@ -268,6 +274,10 @@ export const noteService = {
       }
     }
 
+    // PUBLIC 메모인 경우 공개 URL 생성
+    const publishedUrl =
+      noteData.visibility === 'PUBLIC' ? generatePublishedUrl() : undefined;
+
     // 메모 생성
     const note = await prisma.note.create({
       data: {
@@ -276,6 +286,7 @@ export const noteService = {
         type: noteData.type || 'TEXT',
         visibility: noteData.visibility || 'PRIVATE',
         password: noteData.password,
+        publishedUrl,
         isPinned: noteData.isPinned || false,
         isFavorite: noteData.isFavorite || false,
         isArchived: noteData.isArchived || false,
@@ -368,6 +379,16 @@ export const noteService = {
       }
     }
 
+    // visibility가 PUBLIC으로 변경되었고 publishedUrl이 없으면 생성
+    let publishedUrlUpdate = {};
+    if (noteData.visibility === 'PUBLIC' && !existingNote.publishedUrl) {
+      publishedUrlUpdate = { publishedUrl: generatePublishedUrl() };
+    }
+    // visibility가 PUBLIC이 아니면 publishedUrl 제거
+    if (noteData.visibility && noteData.visibility !== 'PUBLIC') {
+      publishedUrlUpdate = { publishedUrl: null };
+    }
+
     // 메모 업데이트
     const note = await prisma.note.update({
       where: { id },
@@ -381,6 +402,7 @@ export const noteService = {
         ...(noteData.isFavorite !== undefined && { isFavorite: noteData.isFavorite }),
         ...(noteData.isArchived !== undefined && { isArchived: noteData.isArchived }),
         ...(noteData.folderId !== undefined && { folderId: noteData.folderId }),
+        ...publishedUrlUpdate,
       },
       include: {
         folder: {
