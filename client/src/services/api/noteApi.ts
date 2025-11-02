@@ -6,6 +6,7 @@ import type {
   NoteFilters,
   NoteListResponse,
 } from '@/types/note';
+import type { SearchOptions, SearchSuggestions } from '@/types/search';
 
 // Note API
 export const noteApi = {
@@ -66,5 +67,15 @@ export const noteApi = {
         flag: 'archived',
         value,
       })
+      .then((res) => res.data),
+
+  // 메모 검색
+  searchNotes: (options: SearchOptions) =>
+    api.get<NoteListResponse>('/api/notes/search', { params: options }).then((res) => res.data),
+
+  // 검색 제안
+  getSearchSuggestions: (query: string, limit = 5) =>
+    api
+      .get<SearchSuggestions>('/api/notes/search/suggestions', { params: { q: query, limit } })
       .then((res) => res.data),
 };

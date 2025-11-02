@@ -1,5 +1,6 @@
 import { Response, NextFunction } from 'express';
 import { noteService } from '../services/noteService';
+import { searchService } from '../services/searchService';
 import { AuthRequest } from '../middlewares/auth';
 
 export const noteController = {
@@ -133,6 +134,38 @@ export const noteController = {
       const { flag, value } = req.body;
 
       const result = await noteService.toggleNoteFlag(id, userId, flag, value);
+
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  // 메모 검색
+  async searchNotes(req: AuthRequest, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const userId = req.user!.userId;
+      const options = req.query;
+
+      const result = await searchService.searchNotes(userId, options as any);
+
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  // 검색 제안
+  async getSearchSuggestions(req: AuthRequest, res: Response, next: NextFunction): Promise<any> {
+    try {
+      const userId = req.user!.userId;
+      const { q, limit } = req.query;
+
+      const result = await searchService.getSearchSuggestions(
+        userId,
+        q as string,
+        limit ? Number(limit) : 5
+      );
 
       res.json(result);
     } catch (error) {

@@ -13,11 +13,19 @@ import {
   permanentDeleteNoteSchema,
   toggleNoteFlagSchema,
 } from '../validators/noteValidator';
+import {
+  searchNotesSchema,
+  searchSuggestionsSchema,
+} from '../validators/searchValidator';
 
 const router = Router();
 
 // 모든 라우트에 인증 미들웨어 적용
 router.use(authenticate);
+
+// 검색 관련 라우트 (특정 라우트는 먼저 정의)
+router.get('/search', validate(searchNotesSchema), noteController.searchNotes);
+router.get('/search/suggestions', validate(searchSuggestionsSchema), noteController.getSearchSuggestions);
 
 // 휴지통 관련 라우트 (특정 라우트는 먼저 정의)
 router.get('/trash', validate(getTrashNotesSchema), noteController.getTrashNotes);

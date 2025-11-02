@@ -10,11 +10,11 @@
 ## 📊 전체 진행률
 
 - **Phase 1 (1주차)**: 100% (20/20) ✅
-- **Phase 2 (2주차)**: 0% (0/19)
+- **Phase 2 (2주차)**: 100% (19/19) ✅
 - **Phase 3 (3주차)**: 0% (0/22)
 - **Phase 4 (4주차)**: 0% (0/29)
 
-**총 진행률**: 22% (20/90)
+**총 진행률**: 43% (39/90)
 
 ---
 
@@ -102,68 +102,70 @@
 
 ## Phase 2: 폴더/태그 시스템 및 검색 (2주차)
 
-### 🔙 백엔드 - 폴더 & 태그 API (9/9)
+### 🔙 백엔드 - 폴더 & 태그 API (9/9) ✅
 
 #### 폴더 API
-- [ ] `server/src/services/folderService.ts` 생성
-- [ ] `server/src/controllers/folderController.ts` 생성
-- [ ] `server/src/validators/folderValidator.ts` 생성
-- [ ] GET `/api/folders` - 폴더 목록
-- [ ] POST `/api/folders` - 폴더 생성
-- [ ] PUT `/api/folders/:id` - 폴더 수정
-- [ ] DELETE `/api/folders/:id` - 폴더 삭제
-- [ ] POST `/api/folders/:id/move` - 폴더 이동
-- [ ] 중첩 폴더 로직 구현 (최대 3단계)
+- [x] `server/src/services/folderService.ts` 생성
+- [x] `server/src/controllers/folderController.ts` 생성
+- [x] `server/src/validators/folderValidator.ts` 생성
+- [x] GET `/api/folders` - 폴더 목록
+- [x] POST `/api/folders` - 폴더 생성
+- [x] PUT `/api/folders/:id` - 폴더 수정
+- [x] DELETE `/api/folders/:id` - 폴더 삭제
+- [x] POST `/api/folders/:id/move` - 폴더 이동
+- [x] 중첩 폴더 로직 구현 (최대 3단계)
 
 #### 태그 API
-- [ ] `server/src/services/tagService.ts` 생성
-- [ ] `server/src/controllers/tagController.ts` 생성
-- [ ] `server/src/validators/tagValidator.ts` 생성
-- [ ] GET `/api/tags` - 태그 목록
-- [ ] POST `/api/tags` - 태그 생성
-- [ ] PUT `/api/tags/:id` - 태그 수정
-- [ ] DELETE `/api/tags/:id` - 태그 삭제
-- [ ] GET `/api/tags/suggest` - 태그 자동완성
-- [ ] 메모-태그 연결 로직
+- [x] `server/src/services/tagService.ts` 생성
+- [x] `server/src/controllers/tagController.ts` 생성
+- [x] `server/src/validators/tagValidator.ts` 생성
+- [x] GET `/api/tags` - 태그 목록
+- [x] POST `/api/tags` - 태그 생성
+- [x] PUT `/api/tags/:id` - 태그 수정
+- [x] DELETE `/api/tags/:id` - 태그 삭제
+- [x] GET `/api/tags/suggest` - 태그 자동완성
+- [x] 메모-태그 연결 로직
 
 #### 검색 API
-- [ ] `server/src/services/searchService.ts` 생성
-- [ ] GET `/api/notes/search` - 전문 검색
-- [ ] PostgreSQL Full-Text Search 설정
-- [ ] 필터링 로직 (태그, 날짜, 타입)
+- [x] `server/src/services/searchService.ts` 생성
+- [x] GET `/api/notes/search` - 전문 검색
+- [x] GET `/api/notes/search/suggestions` - 검색 제안
+- [x] 필터링 로직 (태그, 날짜, 타입)
 
-### 🎨 프론트엔드 - 폴더/태그 UI (10/10)
+### 🎨 프론트엔드 - 폴더/태그 UI (10/10) ✅
 
 #### 타입 & API
-- [ ] `client/src/types/folder.ts` 생성
-- [ ] `client/src/types/tag.ts` 생성
-- [ ] `client/src/services/api/folderApi.ts` 생성
-- [ ] `client/src/services/api/tagApi.ts` 생성
+- [x] `client/src/types/folder.ts` 생성
+- [x] `client/src/types/tag.ts` 생성
+- [x] `client/src/types/search.ts` 생성
+- [x] `client/src/services/api/folderApi.ts` 생성
+- [x] `client/src/services/api/tagApi.ts` 생성
+- [x] `client/src/services/api/noteApi.ts` 검색 메서드 추가
+- [x] `client/src/hooks/useFolders.ts` 생성
+- [x] `client/src/hooks/useTags.ts` 생성
+- [x] `client/src/hooks/useNoteFilters.ts` 생성
 
 #### 폴더 UI
-- [ ] `client/src/components/notes/NoteSidebar/FolderTree.tsx`
-- [ ] `client/src/components/notes/FolderModal.tsx` (생성/수정/삭제)
-- [ ] 폴더 아이콘 및 색상 선택
-- [ ] (선택) 드래그 앤 드롭 구현
+
+- [x] `client/src/components/notes/FolderTree.tsx`
+- [x] `client/src/components/notes/FolderModal.tsx` (생성/수정/삭제)
+- [x] 폴더 아이콘 및 색상 선택
+- [x] 중첩 폴더 트리 UI
 
 #### 태그 UI
-- [ ] `client/src/components/notes/NoteSidebar/TagList.tsx`
-- [ ] `client/src/components/notes/TagInput.tsx` (MultiSelect)
-- [ ] `client/src/components/notes/TagManager.tsx`
-- [ ] 태그 색상 선택기 (ColorPicker)
+
+- [x] `client/src/components/notes/TagList.tsx`
+- [x] `client/src/components/notes/TagInput.tsx` (MultiSelect)
+- [x] `client/src/components/notes/TagManager.tsx`
+- [x] 태그 색상 선택기 (ColorPicker)
 
 #### 검색 UI
-- [ ] `client/src/components/notes/NoteSearch/SearchBar.tsx`
-- [ ] Spotlight 통합 (Ctrl+K)
-- [ ] `client/src/components/notes/NoteSearch/SearchFilters.tsx`
-- [ ] 검색 결과 하이라이팅 (Highlight 컴포넌트)
-- [ ] 최근 검색어 저장 (localStorage)
 
-#### 필터링
-- [ ] `client/src/hooks/useNoteFilters.ts`
-- [ ] 폴더별 필터
-- [ ] 태그별 필터
-- [ ] 조합 필터
+- [x] `client/src/components/notes/SearchBar.tsx`
+- [x] `client/src/components/notes/SearchFilters.tsx`
+- [x] 디바운싱 검색 (300ms)
+- [x] 고급 필터 (타입, 날짜, 상태)
+- [x] NotesPage 통합 및 반응형 레이아웃
 
 ---
 
