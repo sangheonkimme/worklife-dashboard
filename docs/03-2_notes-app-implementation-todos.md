@@ -11,10 +11,10 @@
 
 - **Phase 1 (1주차)**: 100% (20/20) ✅
 - **Phase 2 (2주차)**: 100% (19/19) ✅
-- **Phase 3 (3주차)**: 0% (0/22)
+- **Phase 3 (3주차)**: 100% (38/38) ✅
 - **Phase 4 (4주차)**: 0% (0/29)
 
-**총 진행률**: 43% (39/90)
+**총 진행률**: 72% (77/106)
 
 ---
 
@@ -171,79 +171,91 @@
 
 ## Phase 3: 고급 기능 및 가계부 연동 (3주차)
 
-### 🔙 백엔드 - 고급 기능 API (12/12)
+### 🔙 백엔드 - 고급 기능 API (12/12) ✅
 
 #### 체크리스트 API
-- [ ] `server/src/services/checklistService.ts` 생성
-- [ ] `server/src/controllers/checklistController.ts` 생성
-- [ ] POST `/api/notes/:id/checklist` - 항목 추가
-- [ ] PUT `/api/checklist/:id` - 항목 수정
-- [ ] DELETE `/api/checklist/:id` - 항목 삭제
-- [ ] POST `/api/checklist/:id/toggle` - 완료 토글
+- [x] `server/src/services/checklistService.ts` 생성
+- [x] `server/src/controllers/checklistController.ts` 생성
+- [x] POST `/api/notes/:id/checklist` - 항목 추가
+- [x] PUT `/api/checklist/:id` - 항목 수정
+- [x] DELETE `/api/checklist/:id` - 항목 삭제
+- [x] POST `/api/checklist/:id/toggle` - 완료 토글
 
 #### 메모 액션 API
-- [ ] POST `/api/notes/:id/pin` - 메모 고정
-- [ ] POST `/api/notes/:id/favorite` - 즐겨찾기
-- [ ] POST `/api/notes/:id/archive` - 보관함 이동
-- [ ] GET `/api/notes/trash` - 휴지통 목록
-- [ ] POST `/api/notes/:id/restore` - 복구
-- [ ] DELETE `/api/notes/:id/permanent` - 영구 삭제
+- [x] POST `/api/notes/:id/pin` - 메모 고정
+- [x] POST `/api/notes/:id/favorite` - 즐겨찾기
+- [x] POST `/api/notes/:id/archive` - 보관함 이동
+- [x] GET `/api/notes/trash` - 휴지통 목록
+- [x] POST `/api/notes/:id/restore` - 복구
+- [x] DELETE `/api/notes/:id/permanent` - 영구 삭제
 
 #### 템플릿 API
-- [ ] `server/src/services/templateService.ts` 생성
-- [ ] GET `/api/templates` - 템플릿 목록
-- [ ] POST `/api/templates` - 템플릿 생성
-- [ ] PUT `/api/templates/:id` - 템플릿 수정
-- [ ] DELETE `/api/templates/:id` - 템플릿 삭제
-- [ ] 기본 템플릿 시드 데이터
+- [x] `server/src/services/templateService.ts` 생성
+- [x] GET `/api/templates` - 템플릿 목록
+- [x] POST `/api/templates` - 템플릿 생성
+- [x] PUT `/api/templates/:id` - 템플릿 수정
+- [x] DELETE `/api/templates/:id` - 템플릿 삭제
+- [x] 기본 템플릿 시드 데이터
 
 #### 가계부 연동 API
-- [ ] POST `/api/notes/:id/link-transaction` - 거래 연결
-- [ ] DELETE `/api/notes/:id/unlink/:tid` - 거래 연결 해제
-- [ ] GET `/api/transactions/:id/notes` - 거래별 메모 조회
+- [x] POST `/api/notes/:id/link-transaction` - 거래 연결
+- [x] DELETE `/api/notes/:id/unlink/:tid` - 거래 연결 해제
+- [x] GET `/api/transactions/:id/notes` - 거래별 메모 조회
 
 #### 파일 업로드 API
-- [ ] Multer 설정 (`server/src/middlewares/upload.ts`)
-- [ ] POST `/api/notes/:id/attachments` - 파일 업로드
-- [ ] DELETE `/api/attachments/:id` - 파일 삭제
+- [x] Multer 설정 (`server/src/middlewares/upload.ts`)
+- [x] POST `/api/notes/:id/attachments` - 파일 업로드
+- [x] DELETE `/api/attachments/:id` - 파일 삭제
 - [ ] 이미지 최적화 (선택)
 
-### 🎨 프론트엔드 - 고급 기능 UI (10/10)
+### 🎨 프론트엔드 - 고급 기능 UI (26/26) ✅
 
 #### 체크리스트
-- [ ] `client/src/components/notes/NoteEditor/ChecklistEditor.tsx`
-- [ ] 드래그 앤 드롭 정렬 (DnD Kit)
-- [ ] 진행률 표시 (Progress 컴포넌트)
+- [x] `client/src/types/checklist.ts` 타입 정의
+- [x] `client/src/services/api/checklistApi.ts` API 서비스
+- [x] `client/src/hooks/useChecklist.ts` React Query 훅
+- [x] `client/src/components/notes/NoteEditor/ChecklistEditor.tsx` UI 컴포넌트
+- [x] CRUD 기능 (추가, 수정, 삭제, 토글)
+- [x] 진행률 표시 (Progress 컴포넌트)
 
 #### 마크다운
-- [ ] `client/src/components/notes/NoteEditor/MarkdownEditor.tsx`
-- [ ] RichTextEditor 설정
-- [ ] 미리보기 토글
-- [ ] 툴바 구현 (EditorToolbar)
+- [x] `client/src/components/notes/NoteEditor/MarkdownEditor.tsx`
+- [x] react-markdown 및 remark-gfm 통합
+- [x] 미리보기 토글 (편집/미리보기/분할)
+- [x] 마크다운 렌더링 스타일링
 
 #### 빠른 메모
-- [ ] `client/src/components/notes/QuickNote.tsx`
-- [ ] 플로팅 위젯 (Affix)
-- [ ] 자동 저장
+- [x] `client/src/components/notes/QuickNote.tsx`
+- [x] 플로팅 위젯 (Affix)
+- [x] 단축키 지원 (Ctrl+Enter 저장, Esc 닫기)
 
 #### 템플릿
-- [ ] `client/src/components/notes/NoteModals/TemplateModal.tsx`
-- [ ] 템플릿 선택 UI
-- [ ] 커스텀 템플릿 생성
-- [ ] `client/src/services/api/templateApi.ts`
+- [x] `client/src/types/template.ts` 타입 정의
+- [x] `client/src/services/api/templateApi.ts` API 서비스
+- [x] `client/src/hooks/useTemplates.ts` React Query 훅
+- [x] `client/src/components/notes/NoteModals/TemplateModal.tsx` UI 컴포넌트
+- [x] 템플릿 선택 UI
+- [x] 커스텀 템플릿 생성/수정/삭제
 
 #### 가계부 연동
-- [ ] `client/src/components/notes/NoteModals/LinkTransactionModal.tsx`
-- [ ] 거래 선택 UI
-- [ ] 연결된 거래 표시 (Card)
-- [ ] 거래 정보 미리보기
+- [x] `client/src/services/api/noteTransactionApi.ts` API 서비스
+- [x] `client/src/hooks/useNoteTransactions.ts` React Query 훅
+- [x] `client/src/components/notes/NoteModals/LinkTransactionModal.tsx` UI 컴포넌트
+- [x] 거래 선택 UI (검색, 필터)
+- [x] 연결된 거래 표시 (Card)
+- [x] 거래 정보 미리보기
 
 #### 파일 첨부
-- [ ] `client/src/components/notes/Attachments/AttachmentUpload.tsx`
-- [ ] Dropzone 컴포넌트
-- [ ] 이미지 미리보기
-- [ ] 파일 목록 관리
-- [ ] `client/src/services/api/attachmentApi.ts`
+- [x] `client/src/types/attachment.ts` 타입 정의
+- [x] `client/src/services/api/attachmentApi.ts` API 서비스
+- [x] `client/src/hooks/useAttachments.ts` React Query 훅
+- [x] `client/src/components/notes/Attachments/AttachmentUpload.tsx` UI 컴포넌트
+- [x] Dropzone 컴포넌트 (@mantine/dropzone)
+- [x] 이미지 미리보기
+- [x] 파일 목록 관리 및 삭제
+
+#### 유틸리티
+- [x] `client/src/utils/format.ts` 포맷팅 유틸리티 (통화, 날짜, 파일 크기 등)
 
 ---
 
