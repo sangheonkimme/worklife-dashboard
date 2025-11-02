@@ -17,7 +17,7 @@ import {
   Textarea,
 } from '@mantine/core';
 import { IconPlus, IconStar, IconPin, IconTrash, IconEdit } from '@tabler/icons-react';
-import { useNotes, useCreateNote, useDeleteNote, useTogglePinned, useToggleFavorite } from '@/hooks/useNotes';
+import { useNotes, useCreateNote, useUpdateNote, useDeleteNote, useTogglePinned, useToggleFavorite } from '@/hooks/useNotes';
 import type { Note, CreateNoteDto } from '@/types/note';
 import { useDisclosure } from '@mantine/hooks';
 
@@ -25,6 +25,7 @@ export default function NotesPage() {
   const [filters] = useState({});
   const { data, isLoading } = useNotes(filters);
   const createNoteMutation = useCreateNote();
+  const updateNoteMutation = useUpdateNote();
   const deleteNoteMutation = useDeleteNote();
   const togglePinnedMutation = useTogglePinned();
   const toggleFavoriteMutation = useToggleFavorite();
@@ -58,12 +59,27 @@ export default function NotesPage() {
       return;
     }
 
-    createNoteMutation.mutate(formData, {
-      onSuccess: () => {
-        close();
-        setFormData({ title: '', content: '' });
-      },
-    });
+    if (editingNote) {
+      // 수정 모드
+      updateNoteMutation.mutate(
+        { id: editingNote.id, data: formData },
+        {
+          onSuccess: () => {
+            close();
+            setFormData({ title: '', content: '' });
+            setEditingNote(null);
+          },
+        }
+      );
+    } else {
+      // 생성 모드
+      createNoteMutation.mutate(formData, {
+        onSuccess: () => {
+          close();
+          setFormData({ title: '', content: '' });
+        },
+      });
+    }
   };
 
   const handleDelete = (id: string) => {
@@ -102,9 +118,18 @@ export default function NotesPage() {
         )}
 
         <Grid>
-          {data?.notes.map((note) => (
-            <Grid.Col key={note.id} span={{ base: 12, sm: 6, md: 4 }}>
-              <Card withBorder padding="lg" radius="md" h="100%">
+          {data?.notes
+            .slice()
+            .sort((a, b) => {
+              // 고정된 메모를 먼저 표시
+              if (a.isPinned && !b.isPinned) return -1;
+              if (!a.isPinned && b.isPinned) return 1;
+              // 고정 상태가 같으면 업데이트 날짜로 정렬 (최신순)
+              return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+            })
+            .map((note) => (
+              <Grid.Col key={note.id} span={{ base: 12, sm: 6, md: 4 }}>
+                <Card withBorder padding="lg" radius="md" h="100%">
                 <Stack gap="sm">
                   <Group justify="space-between">
                     <Text fw={600} lineClamp={1}>
@@ -185,7 +210,10 @@ export default function NotesPage() {
             <Button variant="subtle" onClick={close}>
               취소
             </Button>
-            <Button onClick={handleSubmit} loading={createNoteMutation.isPending}>
+            <Button
+              onClick={handleSubmit}
+              loading={createNoteMutation.isPending || updateNoteMutation.isPending}
+            >
               {editingNote ? '수정' : '생성'}
             </Button>
           </Group>
