@@ -7,6 +7,7 @@
 - [개요](#개요)
 - [로컬 개발 환경](#로컬-개발-환경)
 - [클라이언트 배포 (Vercel)](#클라이언트-배포-vercel)
+- [서버 배포 (Cloudtype)](#서버-배포-cloudtype) ⭐ 추천
 - [서버 배포 (Docker)](#서버-배포-docker)
 - [GitHub Actions CI/CD](#github-actions-cicd)
 - [로컬 Docker 테스트](#로컬-docker-테스트)
@@ -148,6 +149,168 @@ git push origin main
 ```
 
 Pull Request 생성 시 미리보기 배포가 자동으로 생성됩니다.
+
+## 서버 배포 (Cloudtype)
+
+Cloudtype은 한국의 클라우드 플랫폼으로, Dockerfile 기반 배포를 쉽게 할 수 있습니다.
+
+### 1. 사전 준비
+
+#### 데이터베이스 준비
+
+Cloudtype에서는 서버만 배포하므로, PostgreSQL 데이터베이스를 먼저 준비해야 합니다:
+
+**옵션 1: Supabase (무료, 권장)**
+1. [Supabase](https://supabase.com)에 가입
+2. 새 프로젝트 생성
+3. Settings > Database에서 연결 정보 확인
+4. Connection String 복사 (형식: `postgresql://postgres:[PASSWORD]@[HOST]:5432/postgres`)
+
+**옵션 2: 다른 PostgreSQL 서비스**
+- [Neon](https://neon.tech) (무료)
+- [Railway](https://railway.app)
+- AWS RDS, Google Cloud SQL 등
+
+### 2. Cloudtype 프로젝트 생성
+
+1. [Cloudtype](https://app.cloudtype.io)에 로그인
+2. "새 프로젝트" 클릭
+3. GitHub 저장소 연결
+4. 저장소에서 `worklife-dashboard` 선택
+
+### 3. 배포 설정
+
+#### 기본 설정 (방법 1 - 권장)
+
+Cloudtype은 두 가지 방법으로 설정할 수 있습니다:
+
+**방법 1: 서브 디렉토리 컨텍스트 사용**
+- **배포 방식**: Dockerfile
+- **Dockerfile 경로**: `Dockerfile`
+- **컨텍스트 경로**: `server`
+- **포트**: `5001`
+
+**방법 2: 루트 컨텍스트 사용**
+- **배포 방식**: Dockerfile
+- **Dockerfile 경로**: `Dockerfile.cloudtype`
+- **컨텍스트 경로**: `.` (루트)
+- **포트**: `5001`
+
+> **참고**: 방법 1이 실패하면 방법 2를 사용하세요. 루트에 `Dockerfile.cloudtype` 파일이 준비되어 있습니다.
+
+#### 환경 변수 설정
+
+Cloudtype 프로젝트 설정 > 환경변수에서 다음 변수를 추가:
+
+```bash
+# 데이터베이스 (필수)
+DATABASE_URL=postgresql://user:password@host:5432/database
+
+# JWT 시크릿 (필수 - 강력한 랜덤 문자열 사용)
+JWT_SECRET=your-strong-jwt-secret-min-32-characters
+JWT_REFRESH_SECRET=your-strong-refresh-secret-min-32-characters
+
+# JWT 만료 시간
+JWT_EXPIRES_IN=1h
+JWT_REFRESH_EXPIRES_IN=7d
+
+# 서버 설정
+PORT=5001
+NODE_ENV=production
+
+# CORS 설정 (Vercel 클라이언트 URL)
+CLIENT_URL=https://your-app.vercel.app
+```
+
+**환경 변수 입력 방법:**
+- Cloudtype 대시보드에서 한 줄씩 추가
+- 또는 `.env` 형식으로 한 번에 붙여넣기 가능
+
+### 4. 빌드 및 시작 명령어
+
+Cloudtype은 Dockerfile을 사용하므로 별도 설정이 필요 없지만, 확인이 필요한 경우:
+
+- **빌드 명령어**: Dockerfile에 정의됨 (자동)
+- **시작 명령어**: `npx prisma migrate deploy && node dist/index.js`
+  - 이미 `server/package.json`의 `start` 스크립트에 설정되어 있음
+
+### 5. 배포 실행
+
+1. "배포" 버튼 클릭
+2. Cloudtype이 자동으로:
+   - Dockerfile 빌드
+   - 이미지 생성
+   - 컨테이너 시작
+   - 마이그레이션 실행 (start 스크립트에 포함)
+
+### 6. 배포 확인
+
+배포가 완료되면:
+
+1. Cloudtype이 제공하는 URL 확인 (예: `https://port-5001-xxx.app.cloudtype.io`)
+2. 헬스 체크 테스트:
+   ```bash
+   curl https://your-cloudtype-url/health
+   ```
+3. 응답 예시:
+   ```json
+   {
+     "status": "ok",
+     "timestamp": "2025-11-02T10:30:00.000Z",
+     "uptime": 123.456
+   }
+   ```
+
+### 7. 클라이언트 연결
+
+Vercel 클라이언트의 환경 변수를 Cloudtype URL로 업데이트:
+
+1. Vercel 대시보드 > 프로젝트 > Settings > Environment Variables
+2. `VITE_API_URL` 수정:
+   ```
+   VITE_API_URL=https://port-5001-xxx.app.cloudtype.io
+   ```
+3. Vercel 재배포 (환경 변수 적용)
+
+### 8. Cloudtype 서버의 CLIENT_URL 업데이트
+
+서버 환경 변수에서 `CLIENT_URL`을 Vercel URL로 설정했는지 확인:
+
+```bash
+CLIENT_URL=https://your-app.vercel.app
+```
+
+### 주요 장점
+
+- ✅ **한국 서비스**: 빠른 응답 속도, 한글 지원
+- ✅ **Dockerfile 지원**: 기존 설정 그대로 사용
+- ✅ **무료 티어**: 소규모 프로젝트에 충분
+- ✅ **자동 배포**: GitHub 연동 시 자동 배포
+- ✅ **쉬운 설정**: 복잡한 설정 없이 바로 배포
+
+### 트러블슈팅
+
+#### 빌드 실패
+- **Dockerfile 경로 확인**: `server/Dockerfile`
+- **컨텍스트 경로 확인**: `server`
+
+#### 연결 실패
+- **DATABASE_URL 확인**: PostgreSQL 연결 문자열 형식 검증
+- **포트 설정**: Cloudtype에서 5001 포트가 열려있는지 확인
+
+#### 마이그레이션 실패
+- **DATABASE_URL 권한**: 데이터베이스 사용자가 테이블 생성 권한이 있는지 확인
+- **로그 확인**: Cloudtype 대시보드에서 로그 확인
+
+#### CORS 에러
+- **CLIENT_URL**: 서버 환경 변수가 Vercel URL과 일치하는지 확인
+- **프로토콜**: `https://`로 시작하는지 확인 (http:// 아님)
+
+### 모니터링
+
+- **로그**: Cloudtype 대시보드 > 로그 탭
+- **메트릭**: CPU, 메모리 사용량 확인
+- **재시작**: 필요 시 대시보드에서 재시작
 
 ## 서버 배포 (Docker)
 
