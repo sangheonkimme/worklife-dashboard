@@ -5,8 +5,15 @@ import crypto from 'crypto';
 
 // 업로드 디렉토리 생성
 const uploadDir = path.join(__dirname, '../../uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+
+// 디렉토리가 없으면 생성 시도
+try {
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+} catch (error) {
+  console.warn('Upload directory creation failed, it may already exist or lack permissions:', error);
+  // 디렉토리가 이미 존재하거나 권한이 없는 경우 계속 진행
 }
 
 // 파일 저장 설정

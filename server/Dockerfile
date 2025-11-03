@@ -39,8 +39,9 @@ COPY --from=builder /app/dist ./dist
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001
 
-# Change ownership
-RUN chown -R nodejs:nodejs /app
+# Create uploads directory and change ownership
+RUN mkdir -p /app/uploads && \
+    chown -R nodejs:nodejs /app
 
 USER nodejs
 
