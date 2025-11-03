@@ -28,8 +28,12 @@ const PORT = process.env.PORT || 5000;
 
 // 미들웨어 설정
 app.use(helmet()); // 보안 헤더
+
+// CLIENT_URL에서 끝의 슬래시 제거
+const clientUrl = (process.env.CLIENT_URL || 'http://localhost:5173').replace(/\/$/, '');
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: clientUrl,
   credentials: true,
 })); // CORS
 app.use(morgan('dev')); // 로깅
