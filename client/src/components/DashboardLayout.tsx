@@ -28,6 +28,8 @@ import {
   IconNotes,
 } from "@tabler/icons-react";
 import { useAuth } from "../hooks/useAuth";
+import { WidgetDock } from "./widget-dock/WidgetDock";
+import { WidgetSidePanel } from "./widget-dock/WidgetSidePanel";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -226,6 +228,12 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           </ActionIcon>
         </Affix>
       </AppShell.Main>
+
+      {/* 위젯 독 */}
+      <WidgetDock />
+
+      {/* 위젯 사이드 패널 */}
+      <WidgetSidePanel />
     </AppShell>
   );
 };
