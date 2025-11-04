@@ -229,7 +229,9 @@ function generateFileName(): string {
  * PDF 다운로드
  */
 export function downloadPdf(pdfBytes: Uint8Array, fileName: string): void {
-  const blob = new Blob([pdfBytes], { type: "application/pdf" });
+  const blob = new Blob([pdfBytes.buffer as ArrayBuffer], {
+    type: "application/pdf",
+  });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
