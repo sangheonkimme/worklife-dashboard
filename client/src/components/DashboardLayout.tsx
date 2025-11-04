@@ -50,7 +50,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       path: "/dashboard",
       description: "홈 대시보드",
       pageTitle: "대시보드",
-      pageDescription: "",
+      pageDescription: "자주쓰는 기능을 한 눈에 확인 할 수 있습니다.",
     },
     {
       icon: IconCalculator,

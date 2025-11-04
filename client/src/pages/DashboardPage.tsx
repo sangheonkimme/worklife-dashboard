@@ -20,6 +20,7 @@ import {
   IconCoin,
 } from "@tabler/icons-react";
 import { SalaryCalculatorCard } from "@/components/salary/SalaryCalculatorCard";
+import { StickyNotes } from "@/components/dashboard/StickyNotes";
 
 export const DashboardPage = () => {
   const [count, setCount] = useState(0);
@@ -57,13 +58,10 @@ export const DashboardPage = () => {
 
   return (
     <Stack gap="lg">
-      <div>
-        <Title order={2}>대시보드 개요</Title>
-        <Text c="dimmed" size="sm">
-          실시간 비즈니스 메트릭과 성과 지표
-        </Text>
-      </div>
+      {/* 스티커 메모 */}
+      <StickyNotes />
 
+      {/* 
       <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }}>
         {stats.map((stat) => {
           const Icon = stat.icon;
@@ -117,7 +115,7 @@ export const DashboardPage = () => {
             </Card>
           );
         })}
-      </SimpleGrid>
+      </SimpleGrid> */}
 
       {/* 주요 기능 카드 */}
       <div>

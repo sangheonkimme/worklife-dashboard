@@ -32,6 +32,7 @@ model User {
   folders      Folder[]
   tags         Tag[]
   templates    NoteTemplate[]
+  stickyNotes  StickyNote[]
 
   @@map("users")
 }
@@ -292,4 +293,19 @@ model NoteTransaction {
   @@unique([noteId, transactionId])
   @@index([noteId])
   @@index([transactionId])
+}
+
+// 스티커 메모 모델
+model StickyNote {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  color     String   @default("#FFF9C4") // 배경색
+  position  Int      @default(0) // 표시 순서 (0-3)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("sticky_notes")
+  @@index([userId])
 }
