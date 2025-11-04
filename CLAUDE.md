@@ -54,6 +54,12 @@ npm run test:watch       # watch 모드로 테스트 실행
 npm run test:coverage    # 테스트 커버리지 리포트 생성
 npm test -- path/to/test.ts        # 단일 테스트 파일 실행
 npm test -- --testNamePattern="test name"  # 특정 테스트 실행
+
+# Docker 명령어 (개발 환경 - DB 포함)
+npm run docker:dev       # 서버 + PostgreSQL 시작
+npm run docker:dev:detach # 백그라운드 모드로 시작
+npm run docker:dev:down  # 컨테이너 중지 및 제거
+npm run docker:dev:logs  # 로그 확인
 ```
 
 ### 풀스택 개발
@@ -61,11 +67,16 @@ npm test -- --testNamePattern="test name"  # 특정 테스트 실행
 별도의 터미널에서 두 서버를 동시에 실행:
 
 ```bash
+# 방법 1: 별도 터미널에서 실행
 # 터미널 1
 cd server && npm run dev
 
 # 터미널 2
 cd client && npm run dev
+
+# 방법 2: Docker 사용 (권장 - DB 포함)
+cd server && npm run docker:dev  # 서버 + PostgreSQL
+cd client && npm run dev          # 별도 터미널에서 클라이언트 실행
 ```
 
 ## 아키텍처
@@ -75,17 +86,22 @@ cd client && npm run dev
 **상태 관리 전략:**
 
 - **TanStack Query (React Query)**: 서버 상태 (사용자 데이터, 거래 내역, 카테고리, 예산, 노트)
-- **Zustand**: 클라이언트 전용 UI 상태 (사이드바, 테마, 캐시된 인증)
-  - localStorage 자동 동기화 (persist 미들웨어)
-  - 간단하고 타입 안전한 API
+  - 5분 stale time, 10분 cache time 설정
+  - 자동 재시도 및 백그라운드 리프레시
+- **Zustand**: 클라이언트 전용 UI 상태
+  - `useAuthStore`: 인증 상태 (user, isAuthenticated)
+  - `useUiStore`: UI 설정 (사이드바, 테마, 로딩) - localStorage 자동 동기화
+  - `useWidgetStore`: 위젯 관련 상태
 
 **주요 기술:**
 
 - React 19 with TypeScript
 - Vite 빌드 도구
 - Mantine v7 UI 컴포넌트 라이브러리
-- React Router 라우팅
-- Axios HTTP 요청 (자동 토큰 주입)
+- React Router v7 라우팅
+- Axios HTTP 요청 (자동 토큰 주입 및 리프레시)
+- Google OAuth 통합 (@react-oauth/google)
+- 모든 페이지는 React.lazy()로 lazy loading 적용
 
 **디렉토리 구조:**
 
@@ -144,13 +160,19 @@ server/src/
 - `Budget`: 카테고리별 월간 예산 추적
 - `SalaryCalculation`: 급여 및 공제 계산
 - `Note`: 메모 관리 (마크다운, 태그, 체크리스트, 공개/비공개/암호보호)
+  - 노트 타입: TEXT, CHECKLIST, MARKDOWN, QUICK
   - 소프트 삭제 지원 (deletedAt 필드)
   - 암호화 및 비밀번호 보호 옵션 (visibility: PRIVATE/PUBLIC/PROTECTED)
   - 디바이스 동기화를 위한 리비전 추적 (deviceRevision)
   - 공개 URL을 통한 노트 공유 (publishedUrl)
-- `NoteTag`: 메모 태그 (다대다 관계)
+  - 고정(pinned), 즐겨찾기(favorite), 보관(archived) 기능
+- `Folder`: 중첩 폴더 구조 (자기 참조 관계)
+- `Tag`: 노트 태그
+- `ChecklistItem`: 체크리스트 항목
+- `NoteTemplate`: 재사용 가능한 노트 템플릿
 - `Attachment`: 메모 첨부파일 (이미지, 오디오, 일반 파일)
   - 파일 해시 기반 중복 제거 (hash 필드)
+- `NoteTransaction`: 노트와 거래 내역 간 다대다 관계
 
 ### 데이터 흐름 패턴
 
@@ -204,6 +226,7 @@ npm run db:migrate     # ⚠️ 2단계: 데이터베이스에 변경사항 적�
 
 ```
 VITE_API_URL=http://localhost:5001
+VITE_GOOGLE_CLIENT_ID=your-google-oauth-client-id  # Google OAuth 사용 시
 ```
 
 **서버** (.env):
@@ -320,3 +343,5 @@ export const exampleService = {
   - 서버: Nodemon이 `server/src/` 변경사항을 감시하고 자동 재시작
   - 클라이언트: Vite HMR이 즉각적인 핫 리로드 제공
 - **테스트**: 서버는 Jest + ts-jest 사용, `__tests__/` 디렉토리에 테스트 파일 위치
+- **토큰 리프레시**: Axios 인터셉터가 401 에러 발생 시 자동으로 토큰 갱신 시도, 동시 요청은 큐에 대기
+- **Docker 개발**: `npm run docker:dev`로 서버와 PostgreSQL을 한 번에 시작 가능 (권장)
