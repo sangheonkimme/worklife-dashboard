@@ -41,6 +41,10 @@ export const useWidgetStore = create<WidgetStoreState>()(
     }),
     {
       name: 'widget-store',
+      partialize: (state) => ({
+        preferences: state.preferences,
+        widgetHistory: state.widgetHistory,
+      }),
     }
   )
 );
