@@ -10,14 +10,6 @@ export const PdfOptionsPanel = ({
   options,
   onChange,
 }: PdfOptionsPanelProps) => {
-  // 안전한 기본값 처리
-  const safeOptions = {
-    pageSize: options?.pageSize || "A4",
-    orientation: options?.orientation || "portrait",
-    imageFit: options?.imageFit || "fit",
-    margin: options?.margin || 20,
-  } as PdfOptions;
-
   return (
     <Stack gap="sm">
       <Text size="sm" fw={500}>
@@ -29,9 +21,9 @@ export const PdfOptionsPanel = ({
           페이지 크기
         </Text>
         <Select
-          value={safeOptions.pageSize}
+          value={options.pageSize}
           onChange={(value) =>
-            onChange({ ...safeOptions, pageSize: value as PdfOptions["pageSize"] })
+            onChange({ ...options, pageSize: value as PdfOptions["pageSize"] })
           }
           data={[
             { value: "A4", label: "A4" },
@@ -46,10 +38,10 @@ export const PdfOptionsPanel = ({
           페이지 방향
         </Text>
         <SegmentedControl
-          value={safeOptions.orientation}
+          value={options.orientation}
           onChange={(value) =>
             onChange({
-              ...safeOptions,
+              ...options,
               orientation: value as PdfOptions["orientation"],
             })
           }
@@ -67,9 +59,9 @@ export const PdfOptionsPanel = ({
           이미지 맞춤
         </Text>
         <SegmentedControl
-          value={safeOptions.imageFit}
+          value={options.imageFit}
           onChange={(value) =>
-            onChange({ ...safeOptions, imageFit: value as PdfOptions["imageFit"] })
+            onChange({ ...options, imageFit: value as PdfOptions["imageFit"] })
           }
           data={[
             { value: "fit", label: "맞춤" },
@@ -80,9 +72,9 @@ export const PdfOptionsPanel = ({
           size="sm"
         />
         <Text size="xs" c="dimmed">
-          {safeOptions.imageFit === "fit" && "비율 유지하며 페이지에 맞춤"}
-          {safeOptions.imageFit === "fill" && "페이지를 채우도록 크기 조정"}
-          {safeOptions.imageFit === "original" && "원본 크기 유지"}
+          {options.imageFit === "fit" && "비율 유지하며 페이지에 맞춤"}
+          {options.imageFit === "fill" && "페이지를 채우도록 크기 조정"}
+          {options.imageFit === "original" && "원본 크기 유지"}
         </Text>
       </Stack>
     </Stack>

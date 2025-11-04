@@ -15,7 +15,7 @@ import {
 
 export const ImageToPdfWidget = () => {
   const [images, setImages] = useState<ImageFile[]>([]);
-  const [pdfOptions, setPdfOptions] = useState<PdfOptions>(() => DEFAULT_PDF_OPTIONS);
+  const [pdfOptions, setPdfOptions] = useState<PdfOptions>(DEFAULT_PDF_OPTIONS);
   const [isGenerating, setIsGenerating] = useState(false);
 
   // 이미지 추가
@@ -131,9 +131,7 @@ export const ImageToPdfWidget = () => {
 
         <Divider />
 
-        {pdfOptions && pdfOptions.pageSize && (
-          <PdfOptionsPanel options={pdfOptions} onChange={setPdfOptions} />
-        )}
+        <PdfOptionsPanel options={pdfOptions} onChange={setPdfOptions} />
 
         <Button
           leftSection={<IconFileTypePdf size={20} />}
