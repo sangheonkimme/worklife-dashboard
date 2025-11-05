@@ -109,9 +109,6 @@ export function StickyNotes() {
 
   // 사용된 position 찾기
   const usedPositions = new Set(notes.map((note) => note.position));
-  const slots: (StickyNote | null)[] = Array.from({ length: 4 }, (_, i) => {
-    return notes.find((note) => note.position === i) || null;
-  });
 
   // 다음 사용 가능한 색상 찾기
   const usedColors = new Set(notes.map((note) => note.color));

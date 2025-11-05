@@ -30,6 +30,7 @@ import {
 import { useAuth } from "../hooks/useAuth";
 import { WidgetDock } from "./widget-dock/WidgetDock";
 import { WidgetSidePanel } from "./widget-dock/WidgetSidePanel";
+import { PomodoroWidget } from "./pomodoro/PomodoroWidget";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -234,6 +235,9 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
       {/* 위젯 사이드 패널 */}
       <WidgetSidePanel />
+
+      {/* 포모도로 타이머 플로팅 위젯 */}
+      <PomodoroWidget />
     </AppShell>
   );
 };

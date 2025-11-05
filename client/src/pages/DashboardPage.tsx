@@ -1,6 +1,5 @@
 import { useState } from "react";
 import {
-  Title,
   Button,
   Text,
   Stack,
@@ -11,21 +10,14 @@ import {
   Progress,
   RingProgress,
 } from "@mantine/core";
-import {
-  IconArrowUpRight,
-  IconArrowDownRight,
-  IconUsers,
-  IconShoppingCart,
-  IconReceipt,
-  IconCoin,
-} from "@tabler/icons-react";
 import { SalaryCalculatorCard } from "@/components/salary/SalaryCalculatorCard";
 import { StickyNotes } from "@/components/dashboard/StickyNotes";
+import { PomodoroTimerCard } from "@/components/dashboard/PomodoroTimerCard";
 
 export const DashboardPage = () => {
   const [count, setCount] = useState(0);
 
-  const stats = [
+  /* const stats = [
     {
       title: "총 사용자",
       value: "13,456",
@@ -54,7 +46,7 @@ export const DashboardPage = () => {
       icon: IconReceipt,
       color: "grape",
     },
-  ];
+  ]; */
 
   return (
     <Stack gap="lg">
@@ -124,6 +116,7 @@ export const DashboardPage = () => {
         </Text>
         <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
           <SalaryCalculatorCard />
+          <PomodoroTimerCard />
           {/* 추가 기능 카드는 여기에 추가 */}
         </SimpleGrid>
       </div>
