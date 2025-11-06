@@ -177,7 +177,7 @@ export const useStopwatchStore = create<StopwatchState>()(
         const { elapsedTime, laps, sessionStartedAt, savedSessions } = get();
 
         if (!sessionStartedAt) {
-          console.error('[Stopwatch] No session to save');
+          // 세션이 시작되지 않았으면 저장하지 않음
           return;
         }
 
@@ -190,12 +190,10 @@ export const useStopwatchStore = create<StopwatchState>()(
           createdAt: new Date().toISOString(),
         };
 
-        // 최대 100개 세션만 유지
+        // 최대 100개 세션만 유지 (FIFO)
         const updatedSessions = [newSession, ...savedSessions].slice(0, 100);
 
         set({ savedSessions: updatedSessions });
-
-        console.log('[Stopwatch] Session saved to localStorage');
 
         // 저장 후 리셋
         get().resetTimer();
@@ -227,19 +225,12 @@ export const useStopwatchStore = create<StopwatchState>()(
           const lastTick = new Date(lastTickAt);
           const elapsedMs = now.getTime() - lastTick.getTime();
 
-          // 경과 시간만큼 elapsedTime에 추가
+          // 경과 시간만큼 elapsedTime에 추가 (새로고침 후에도 시간이 계속 흐르도록)
           const newElapsedTime = elapsedTime + elapsedMs;
-
-          console.log('[Stopwatch] Session restored:', {
-            status,
-            elapsedMs,
-            oldElapsedTime: elapsedTime,
-            newElapsedTime,
-          });
 
           set({ elapsedTime: newElapsedTime });
 
-          // running 상태였다면 타이머 재개
+          // running 상태였다면 타이머 자동 재개
           if (status === 'running') {
             if (intervalId) {
               clearInterval(intervalId);
@@ -252,8 +243,6 @@ export const useStopwatchStore = create<StopwatchState>()(
             intervalId = window.setInterval(() => {
               get().tick();
             }, 10);
-
-            console.log('[Stopwatch] Timer resumed after page reload');
           }
         }
       },
