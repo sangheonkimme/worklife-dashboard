@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Lap, SavedSession, StopwatchStatus } from '@/types/stopwatch';
+import { formatTime } from '@/utils/timeFormat';
 
 interface StopwatchState {
   // 타이머 상태
@@ -18,6 +19,11 @@ interface StopwatchState {
   // 로컬 히스토리 (최대 100개)
   savedSessions: SavedSession[];
 
+  // 알림 설정
+  goalTime: number | null; // 목표 시간 (밀리초)
+  notificationsEnabled: boolean;
+  goalReached: boolean; // 목표 도달 여부 (중복 알림 방지)
+
   // 액션
   startTimer: () => void;
   pauseTimer: () => void;
@@ -34,6 +40,10 @@ interface StopwatchState {
   // 세션 복원
   restoreSession: () => void;
   setWidgetVisible: (visible: boolean) => void;
+
+  // 알림 설정
+  setGoalTime: (time: number | null) => void;
+  setNotificationsEnabled: (enabled: boolean) => void;
 
   // 통계 계산
   getFastestLap: () => Lap | null;
@@ -55,6 +65,9 @@ export const useStopwatchStore = create<StopwatchState>()(
       lastTickAt: null,
       isWidgetVisible: true,
       savedSessions: [],
+      goalTime: null,
+      notificationsEnabled: true,
+      goalReached: false,
 
       // 타이머 시작
       startTimer: () => {
@@ -106,6 +119,7 @@ export const useStopwatchStore = create<StopwatchState>()(
           laps: [],
           sessionStartedAt: null,
           lastTickAt: null,
+          goalReached: false, // 목표 도달 플래그 리셋
         });
       },
 
@@ -130,10 +144,32 @@ export const useStopwatchStore = create<StopwatchState>()(
 
       // 1초마다 호출 (10ms 단위)
       tick: () => {
-        set((state) => ({
-          elapsedTime: state.elapsedTime + 10,
+        const { goalTime, notificationsEnabled, goalReached, elapsedTime } = get();
+        const newElapsedTime = elapsedTime + 10;
+
+        // 목표 시간 도달 체크
+        if (
+          goalTime &&
+          notificationsEnabled &&
+          !goalReached &&
+          newElapsedTime >= goalTime
+        ) {
+          // 브라우저 알림 표시
+          if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification('스톱워치 목표 시간 도달', {
+              body: `목표 시간 ${formatTime(goalTime)}에 도달했습니다!`,
+              icon: '/stopwatch-icon.png',
+            });
+          }
+
+          // 목표 도달 플래그 설정 (중복 알림 방지)
+          set({ goalReached: true });
+        }
+
+        set({
+          elapsedTime: newElapsedTime,
           lastTickAt: new Date().toISOString(),
-        }));
+        });
       },
 
       // 현재 세션 저장 (로컬 히스토리)
@@ -255,6 +291,16 @@ export const useStopwatchStore = create<StopwatchState>()(
         const totalLapTime = laps.reduce((sum, lap) => sum + lap.lapTime, 0);
         return totalLapTime / laps.length;
       },
+
+      // 목표 시간 설정
+      setGoalTime: (time: number | null) => {
+        set({ goalTime: time, goalReached: false });
+      },
+
+      // 알림 활성화/비활성화
+      setNotificationsEnabled: (enabled: boolean) => {
+        set({ notificationsEnabled: enabled });
+      },
     }),
     {
       name: 'stopwatch-storage',
@@ -267,6 +313,9 @@ export const useStopwatchStore = create<StopwatchState>()(
         lastTickAt: state.lastTickAt,
         isWidgetVisible: state.isWidgetVisible,
         savedSessions: state.savedSessions,
+        goalTime: state.goalTime,
+        notificationsEnabled: state.notificationsEnabled,
+        goalReached: state.goalReached,
       }),
     }
   )

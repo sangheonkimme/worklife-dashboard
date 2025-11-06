@@ -10,6 +10,9 @@ import {
   ThemeIcon,
   ScrollArea,
   Table,
+  Menu,
+  NumberInput,
+  Switch,
 } from '@mantine/core';
 import {
   IconPlayerPlay,
@@ -17,16 +20,26 @@ import {
   IconPlayerStop,
   IconFlag,
   IconStopwatch,
+  IconHistory,
+  IconDeviceFloppy,
+  IconBell,
+  IconSettings,
 } from '@tabler/icons-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useStopwatchStore } from '@/store/useStopwatchStore';
 import { formatTime } from '@/utils/timeFormat';
+import { SaveSessionModal } from '@/components/stopwatch/SaveSessionModal';
+import { HistoryPanel } from '@/components/stopwatch/HistoryPanel';
+import { notifications } from '@mantine/notifications';
 
 export function StopwatchCard() {
   const {
     status,
     elapsedTime,
     laps,
+    savedSessions,
+    goalTime,
+    notificationsEnabled,
     startTimer,
     pauseTimer,
     resumeTimer,
@@ -36,11 +49,24 @@ export function StopwatchCard() {
     getFastestLap,
     getSlowestLap,
     getAverageLapTime,
+    setGoalTime,
+    setNotificationsEnabled,
   } = useStopwatchStore();
 
-  // 컴포넌트 마운트 시 세션 복원
+  const [saveModalOpened, setSaveModalOpened] = useState(false);
+  const [historyOpened, setHistoryOpened] = useState(false);
+  const [goalTimeMinutes, setGoalTimeMinutes] = useState<number>(
+    goalTime ? Math.floor(goalTime / 60000) : 60
+  );
+
+  // 컴포넌트 마운트 시 세션 복원 및 알림 권한 요청
   useEffect(() => {
     restoreSession();
+
+    // 알림 권한 요청
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
   }, [restoreSession]);
 
   // 상태별 색상
@@ -85,14 +111,85 @@ export function StopwatchCard() {
       }}
     >
       <Stack gap="md" align="center" justify="space-between" style={{ height: '100%' }}>
-        {/* 제목 */}
-        <Group gap="xs">
-          <ThemeIcon size="lg" variant="light" color="blue">
-            <IconStopwatch size={20} />
-          </ThemeIcon>
-          <Text fw={600} size="lg">
-            스톱워치
-          </Text>
+        {/* 제목 & 액션 버튼 */}
+        <Group justify="space-between" style={{ width: '100%' }}>
+          <Group gap="xs">
+            <ThemeIcon size="lg" variant="light" color="blue">
+              <IconStopwatch size={20} />
+            </ThemeIcon>
+            <Text fw={600} size="lg">
+              스톱워치
+            </Text>
+          </Group>
+          <Group gap="xs">
+            {/* 히스토리 버튼 */}
+            <ActionIcon
+              variant="subtle"
+              color="blue"
+              onClick={() => setHistoryOpened(true)}
+              aria-label="히스토리"
+            >
+              <IconHistory size={18} />
+              {savedSessions.length > 0 && (
+                <Badge
+                  size="xs"
+                  variant="filled"
+                  color="blue"
+                  style={{
+                    position: 'absolute',
+                    top: -4,
+                    right: -4,
+                    minWidth: 16,
+                    height: 16,
+                    padding: 0,
+                  }}
+                >
+                  {savedSessions.length}
+                </Badge>
+              )}
+            </ActionIcon>
+
+            {/* 설정 메뉴 */}
+            <Menu shadow="md" width={250}>
+              <Menu.Target>
+                <ActionIcon variant="subtle" color="blue" aria-label="설정">
+                  <IconSettings size={18} />
+                </ActionIcon>
+              </Menu.Target>
+
+              <Menu.Dropdown>
+                <Menu.Label>알림 설정</Menu.Label>
+                <Menu.Item closeMenuOnClick={false}>
+                  <Switch
+                    label="알림 활성화"
+                    checked={notificationsEnabled}
+                    onChange={(e) => setNotificationsEnabled(e.currentTarget.checked)}
+                    size="sm"
+                  />
+                </Menu.Item>
+
+                <Menu.Item closeMenuOnClick={false}>
+                  <Stack gap="xs">
+                    <Text size="xs" fw={500}>
+                      목표 시간 (분)
+                    </Text>
+                    <NumberInput
+                      value={goalTimeMinutes}
+                      onChange={(value) => {
+                        const minutes = typeof value === 'number' ? value : 0;
+                        setGoalTimeMinutes(minutes);
+                        setGoalTime(minutes > 0 ? minutes * 60000 : null);
+                      }}
+                      min={0}
+                      max={999}
+                      size="xs"
+                      placeholder="0 = 목표 없음"
+                    />
+                  </Stack>
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+          </Group>
         </Group>
 
         {/* 타이머 디스플레이 */}
@@ -236,26 +333,51 @@ export function StopwatchCard() {
           </Stack>
         )}
 
-        {/* 통계 */}
-        <Group gap="xs">
-          <Text size="sm" c="dimmed">
-            랩:
-          </Text>
-          <Badge color="blue" variant="light">
-            {laps.length}개
-          </Badge>
-          {laps.length > 0 && (
-            <>
-              <Text size="sm" c="dimmed">
-                평균:
-              </Text>
-              <Badge color="cyan" variant="light">
-                {formatTime(avgLapTime)}
-              </Badge>
-            </>
+        {/* 통계 & 세션 저장 */}
+        <Stack gap="xs" style={{ width: '100%' }}>
+          <Group gap="xs" justify="center">
+            <Text size="sm" c="dimmed">
+              랩:
+            </Text>
+            <Badge color="blue" variant="light">
+              {laps.length}개
+            </Badge>
+            {laps.length > 0 && (
+              <>
+                <Text size="sm" c="dimmed">
+                  평균:
+                </Text>
+                <Badge color="cyan" variant="light">
+                  {formatTime(avgLapTime)}
+                </Badge>
+              </>
+            )}
+          </Group>
+
+          {/* 세션 저장 버튼 (타이머가 시작되었을 때만 표시) */}
+          {(status !== 'idle' || elapsedTime > 0 || laps.length > 0) && (
+            <Button
+              variant="light"
+              color="blue"
+              size="xs"
+              leftSection={<IconDeviceFloppy size={14} />}
+              onClick={() => setSaveModalOpened(true)}
+              fullWidth
+            >
+              세션 저장
+            </Button>
           )}
-        </Group>
+        </Stack>
       </Stack>
+
+      {/* 세션 저장 모달 */}
+      <SaveSessionModal
+        opened={saveModalOpened}
+        onClose={() => setSaveModalOpened(false)}
+      />
+
+      {/* 히스토리 패널 */}
+      <HistoryPanel opened={historyOpened} onClose={() => setHistoryOpened(false)} />
     </Card>
   );
 }
