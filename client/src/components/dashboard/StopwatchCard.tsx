@@ -22,7 +22,6 @@ import {
   IconStopwatch,
   IconHistory,
   IconDeviceFloppy,
-  IconBell,
   IconSettings,
 } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
@@ -30,7 +29,6 @@ import { useStopwatchStore } from '@/store/useStopwatchStore';
 import { formatTime } from '@/utils/timeFormat';
 import { SaveSessionModal } from '@/components/stopwatch/SaveSessionModal';
 import { HistoryPanel } from '@/components/stopwatch/HistoryPanel';
-import { notifications } from '@mantine/notifications';
 
 export function StopwatchCard() {
   const {
@@ -299,7 +297,7 @@ export function StopwatchCard() {
               랩 타임 (최근 3개)
             </Text>
             <ScrollArea h={100} type="auto">
-              <Table fontSize="xs">
+              <Table>
                 <Table.Tbody>
                   {recentLaps.map((lap) => {
                     const isFastest = fastestLap?.id === lap.id && laps.length > 1;

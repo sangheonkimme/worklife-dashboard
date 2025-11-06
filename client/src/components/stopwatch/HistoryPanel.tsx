@@ -188,7 +188,7 @@ function SessionItem({ session, expanded, onToggleExpand, onDelete }: SessionIte
           <Divider my="xs" />
           {session.laps.length > 0 ? (
             <ScrollArea h={200} type="auto">
-              <Table fontSize="xs">
+              <Table>
                 <Table.Thead>
                   <Table.Tr>
                     <Table.Th>랩</Table.Th>
