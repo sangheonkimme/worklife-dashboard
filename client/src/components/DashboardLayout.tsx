@@ -11,6 +11,7 @@ import {
   Menu,
   Divider,
   Affix,
+  UnstyledButton,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
@@ -20,7 +21,6 @@ import {
   IconUser,
   IconLogout,
   IconBell,
-  IconReceipt,
   IconWallet,
   IconCalculator,
   IconMenu2,
@@ -32,6 +32,7 @@ import { WidgetDock } from "./widget-dock/WidgetDock";
 import { WidgetSidePanel } from "./widget-dock/WidgetSidePanel";
 import { PomodoroWidget } from "./pomodoro/PomodoroWidget";
 import { StopwatchWidget } from "./stopwatch/StopwatchWidget";
+import logoPc from "@/assets/logo_pc.png";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -46,6 +47,15 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const { user, logout } = useAuth();
 
   const navItems = [
+    {
+      icon: IconWallet,
+      label: "가계부 대시보드",
+      path: "/transactions",
+      aliasPaths: ["/expense"],
+      description: "예산 · 거래내역 · 통계",
+      pageTitle: "가계부 대시보드",
+      pageDescription: "예산, 거래내역, 통계를 한 곳에서 확인합니다",
+    },
     {
       icon: IconHome,
       label: "대시보드",
@@ -63,22 +73,6 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       pageDescription: "2025년 기준 세율로 실수령액을 계산합니다",
     },
     {
-      icon: IconWallet,
-      label: "가계부",
-      path: "/expense",
-      description: "수입/지출 관리",
-      pageTitle: "가계부",
-      pageDescription: "수입과 지출을 관리합니다",
-    },
-    {
-      icon: IconReceipt,
-      label: "거래내역",
-      path: "/transactions",
-      description: "거래 내역 조회",
-      pageTitle: "거래내역",
-      pageDescription: "모든 거래 내역을 조회합니다",
-    },
-    {
       icon: IconNotes,
       label: "메모",
       path: "/notes",
@@ -88,7 +82,11 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     },
   ];
 
-  const currentPage = navItems.find((item) => item.path === location.pathname);
+  const currentPage = navItems.find(
+    (item) =>
+      item.path === location.pathname ||
+      item.aliasPaths?.includes(location.pathname)
+  );
 
   const handleLogout = () => {
     logout();
@@ -108,16 +106,13 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       <AppShell.Header>
         <Group h="100%" px="md" justify="space-between" wrap="nowrap">
           <Group gap="md" wrap="nowrap" style={{ minWidth: 0, flex: 1 }}>
-            <ActionIcon
-              variant="subtle"
-              size="lg"
-              onClick={() => navigate("/dashboard")}
-              title="홈으로 이동"
-            >
-              <IconHome size={24} />
-            </ActionIcon>
-            <Divider orientation="vertical" />
-            <Title order={3}>워크라이프 대시보드</Title>
+            <UnstyledButton onClick={() => navigate("/dashboard")} aria-label="홈으로 이동">
+              <img
+                src={logoPc}
+                alt="WorkLife Dashboard"
+                style={{ height: 32, objectFit: "contain", display: "block" }}
+              />
+            </UnstyledButton>
           </Group>
 
           <Group gap="sm">
@@ -188,17 +183,23 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         </AppShell.Section>
 
         <AppShell.Section grow>
-          {navItems.map((item) => (
-            <NavLink
-              key={item.path}
-              active={location.pathname === item.path}
-              label={item.label}
-              description={item.description}
-              leftSection={<item.icon size={20} stroke={1.5} />}
-              onClick={() => navigate(item.path)}
-              mb="xs"
-            />
-          ))}
+          {navItems.map((item) => {
+            const isActive =
+              location.pathname === item.path ||
+              item.aliasPaths?.includes(location.pathname);
+
+            return (
+              <NavLink
+                key={item.path}
+                active={isActive}
+                label={item.label}
+                description={item.description}
+                leftSection={<item.icon size={20} stroke={1.5} />}
+                onClick={() => navigate(item.path)}
+                mb="xs"
+              />
+            );
+          })}
         </AppShell.Section>
 
         <AppShell.Section>
