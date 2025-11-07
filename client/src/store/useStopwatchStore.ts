@@ -142,10 +142,13 @@ export const useStopwatchStore = create<StopwatchState>()(
         }));
       },
 
-      // 1초마다 호출 (10ms 단위)
+      // 주기적으로 호출 (브라우저 탭 비활성화 시에도 실제 경과 시간을 반영)
       tick: () => {
-        const { goalTime, notificationsEnabled, goalReached, elapsedTime } = get();
-        const newElapsedTime = elapsedTime + 10;
+        const { goalTime, notificationsEnabled, goalReached, elapsedTime, lastTickAt } = get();
+        const now = Date.now();
+        const lastTick = lastTickAt ? new Date(lastTickAt).getTime() : now;
+        const delta = Math.max(0, now - lastTick);
+        const newElapsedTime = elapsedTime + delta;
 
         // 목표 시간 도달 체크
         if (
@@ -168,7 +171,7 @@ export const useStopwatchStore = create<StopwatchState>()(
 
         set({
           elapsedTime: newElapsedTime,
-          lastTickAt: new Date().toISOString(),
+          lastTickAt: new Date(now).toISOString(),
         });
       },
 

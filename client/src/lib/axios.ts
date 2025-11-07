@@ -92,7 +92,12 @@ api.interceptors.response.use(
           { withCredentials: true }
         );
 
-        const { accessToken } = response.data;
+        const { data } = response.data || {};
+        const accessToken = data?.accessToken;
+
+        if (!accessToken) {
+          throw new Error("Failed to retrieve access token from refresh response");
+        }
         localStorage.setItem("accessToken", accessToken);
 
         // 대기 중인 요청들 처리
