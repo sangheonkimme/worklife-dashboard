@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction, CookieOptions } from 'express';
 import {
   createUser,
   findUserByEmail,
@@ -12,6 +12,15 @@ import {
 } from '../services/userService';
 import { generateAccessToken, generateRefreshToken } from '../utils/jwt';
 import { OAuth2Client } from 'google-auth-library';
+
+const isProduction = process.env.NODE_ENV === 'production';
+const refreshTokenCookieOptions: CookieOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? 'none' : 'lax',
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7일
+  domain: process.env.COOKIE_DOMAIN || undefined,
+};
 
 /**
  * 회원가입
@@ -48,12 +57,7 @@ export const register = async (
     });
 
     // 리프레시 토큰을 HttpOnly 쿠키로 설정
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7일
-    });
+    res.cookie('refreshToken', refreshToken, refreshTokenCookieOptions);
 
     res.status(201).json({
       success: true,
@@ -110,12 +114,7 @@ export const login = async (
     });
 
     // 리프레시 토큰을 HttpOnly 쿠키로 설정
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7일
-    });
+    res.cookie('refreshToken', refreshToken, refreshTokenCookieOptions);
 
     // 비밀번호 제외한 사용자 정보
     const { password: _, ...userWithoutPassword } = user;
@@ -143,7 +142,7 @@ export const logout = async (
 ): Promise<void> => {
   try {
     // 쿠키 삭제
-    res.clearCookie('refreshToken');
+    res.clearCookie('refreshToken', refreshTokenCookieOptions);
 
     res.status(200).json({
       success: true,
@@ -361,12 +360,7 @@ export const googleLogin = async (
     });
 
     // 리프레시 토큰을 HttpOnly 쿠키로 설정
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7일
-    });
+    res.cookie('refreshToken', refreshToken, refreshTokenCookieOptions);
 
     res.status(200).json({
       success: true,
