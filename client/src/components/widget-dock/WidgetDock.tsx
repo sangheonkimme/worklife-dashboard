@@ -2,6 +2,7 @@ import { Stack, ActionIcon, Tooltip, Paper, Divider } from '@mantine/core';
 import { useWidgetStore } from '@/store/useWidgetStore';
 import { getEnabledWidgets } from './WidgetRegistry';
 import { PomodoroDockIcon } from './PomodoroDockIcon';
+import { StopwatchDockIcon } from './StopwatchDockIcon';
 
 export const WidgetDock = () => {
   const { activeWidgetId, toggleWidget } = useWidgetStore();
@@ -49,9 +50,10 @@ export const WidgetDock = () => {
           );
         })}
 
-        {/* 포모도로 타이머 아이콘 (항상 마지막에 표시) */}
+        {/* 포모도로 타이머 & 스톱워치 아이콘 (항상 마지막에 표시) */}
         <Divider my={4} />
         <PomodoroDockIcon />
+        <StopwatchDockIcon />
       </Stack>
     </Paper>
   );

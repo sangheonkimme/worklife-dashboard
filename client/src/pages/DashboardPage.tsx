@@ -13,6 +13,7 @@ import {
 import { SalaryCalculatorCard } from "@/components/salary/SalaryCalculatorCard";
 import { StickyNotes } from "@/components/dashboard/StickyNotes";
 import { PomodoroTimerCard } from "@/components/dashboard/PomodoroTimerCard";
+import { StopwatchCard } from "@/components/dashboard/StopwatchCard";
 
 export const DashboardPage = () => {
   const [count, setCount] = useState(0);
@@ -117,7 +118,7 @@ export const DashboardPage = () => {
         <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
           <SalaryCalculatorCard />
           <PomodoroTimerCard />
-          {/* 추가 기능 카드는 여기에 추가 */}
+          <StopwatchCard />
         </SimpleGrid>
       </div>
 
