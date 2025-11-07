@@ -39,7 +39,7 @@ interface DashboardLayoutProps {
 }
 
 export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
-  const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
+  const [mobileOpened, { toggle: toggleMobile, close: closeMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const navigate = useNavigate();
@@ -195,7 +195,10 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 label={item.label}
                 description={item.description}
                 leftSection={<item.icon size={20} stroke={1.5} />}
-                onClick={() => navigate(item.path)}
+                onClick={() => {
+                  navigate(item.path);
+                  closeMobile();
+                }}
                 mb="xs"
               />
             );
