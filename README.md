@@ -7,6 +7,7 @@ React 프론트엔드와 Express 백엔드를 갖춘 풀스택 개인 생산성 
 - 💰 수입/지출 추적 및 예산 관리
 - 📊 급여 공제 계산
 - 📝 메모 및 노트 관리 (마크다운 지원, 태그, 첨부파일)
+- ✅ 대시보드 스티커 메모 & 체크리스트 위젯 (스티커 메모 최대 3개, 체크리스트 최대 7개)
 
 ## 기술 스택
 
@@ -199,6 +200,23 @@ worklife-dashboard/
 ```bash
 VITE_API_URL=http://localhost:5001
 ```
+
+## 대시보드 체크리스트 & 스티커 메모
+
+- **체크리스트 API**: `/api/dashboard-checklist` (GET/POST/PATCH/DELETE). 활성/완료 항목을 분리해서 응답하며 사용자당 7개까지 저장됩니다.
+- **프론트엔드 파일**:
+  - `client/src/components/dashboard/DashboardChecklist.tsx`: 우측 고정 체크리스트 카드
+  - `client/src/components/dashboard/StickyNotes.tsx`: 좌측 3칸 스티커 메모
+- **스티커 메모 제한**: 서버(`server/src/services/stickyNoteService.ts`)와 프론트 모두 3개까지만 허용합니다. 포지션 인덱스는 0~2 범위를 사용합니다.
+- **DB 마이그레이션**: 체크리스트를 사용하려면 아래 명령으로 스키마를 최신 상태로 만든 뒤 Prisma Client를 다시 생성하세요.
+
+```bash
+cd server
+npm run db:migrate -- --name add_dashboard_checklist_items
+npm run db:generate
+```
+
+- **문서**: 세부 PRD와 구현 계획은 `docs/08-1_dashboard-checklist-prd.md`, `docs/08-2_dashboard-checklist-implementation-plan.md`에서 확인할 수 있습니다.
 
 ### 서버 (.env)
 

@@ -5,7 +5,7 @@ export const createStickyNoteSchema = z.object({
   body: z.object({
     content: z.string().default(''),
     color: z.string().regex(/^#[0-9A-F]{6}$/i, '유효한 색상 코드를 입력해주세요 (예: #FFF9C4)').default('#FFF9C4'),
-    position: z.number().int().min(0).max(3, '위치는 0-3 사이여야 합니다').default(0),
+    position: z.number().int().min(0).max(2, '위치는 0-2 사이여야 합니다').default(0),
   }),
 });
 
@@ -17,7 +17,7 @@ export const updateStickyNoteSchema = z.object({
   body: z.object({
     content: z.string().optional(),
     color: z.string().regex(/^#[0-9A-F]{6}$/i, '유효한 색상 코드를 입력해주세요 (예: #FFF9C4)').optional(),
-    position: z.number().int().min(0).max(3, '위치는 0-3 사이여야 합니다').optional(),
+    position: z.number().int().min(0).max(2, '위치는 0-2 사이여야 합니다').optional(),
   }),
 });
 

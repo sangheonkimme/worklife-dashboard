@@ -7,6 +7,9 @@ import { CreateStickyNoteButton } from "./CreateStickyNoteButton";
 import { STICKY_NOTE_COLOR_ARRAY } from "@/types/stickyNote";
 import type { StickyNote } from "@/types/stickyNote";
 
+const MAX_NOTES = 3;
+const POSITIONS = [0, 1, 2];
+
 export function StickyNotes() {
   const queryClient = useQueryClient();
 
@@ -117,7 +120,7 @@ export function StickyNotes() {
     STICKY_NOTE_COLOR_ARRAY[notes.length % STICKY_NOTE_COLOR_ARRAY.length];
 
   // 다음 사용 가능한 position 찾기
-  const nextPosition = [0, 1, 2, 3].find((pos) => !usedPositions.has(pos)) || 0;
+  const nextPosition = POSITIONS.find((pos) => !usedPositions.has(pos)) ?? 0;
 
   if (isLoading) {
     return (
@@ -139,7 +142,7 @@ export function StickyNotes() {
       <Grid gutter="md">
         {/* 기존 메모들 렌더링 */}
         {notes.map((note) => (
-          <Grid.Col key={note.id} span={{ base: 12, xs: 6, sm: 3 }}>
+          <Grid.Col key={note.id} span={{ base: 12, xs: 6, md: 4 }}>
             <StickyNoteCard
               note={note}
               onUpdate={handleUpdate}
@@ -148,9 +151,9 @@ export function StickyNotes() {
           </Grid.Col>
         ))}
 
-        {/* 4개 미만일 때만 새 메모 버튼 1개 표시 */}
-        {notes.length < 4 && (
-          <Grid.Col span={{ base: 12, xs: 6, sm: 3 }}>
+        {/* 3개 미만일 때만 새 메모 버튼 1개 표시 */}
+        {notes.length < MAX_NOTES && (
+          <Grid.Col span={{ base: 12, xs: 6, md: 4 }}>
             <CreateStickyNoteButton
               onCreate={handleCreate}
               nextPosition={nextPosition}
@@ -159,6 +162,12 @@ export function StickyNotes() {
           </Grid.Col>
         )}
       </Grid>
+
+      {notes.length >= MAX_NOTES && (
+        <Text size="sm" c="dimmed" mt="sm">
+          스티커 메모는 최대 {MAX_NOTES}개까지 추가할 수 있습니다.
+        </Text>
+      )}
     </Box>
   );
 }

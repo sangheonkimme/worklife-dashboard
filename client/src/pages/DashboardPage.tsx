@@ -9,11 +9,13 @@ import {
   SimpleGrid,
   Progress,
   RingProgress,
+  Grid,
 } from "@mantine/core";
 import { SalaryCalculatorCard } from "@/components/salary/SalaryCalculatorCard";
 import { StickyNotes } from "@/components/dashboard/StickyNotes";
 import { PomodoroTimerCard } from "@/components/dashboard/PomodoroTimerCard";
 import { StopwatchCard } from "@/components/dashboard/StopwatchCard";
+import { DashboardChecklist } from "@/components/dashboard/DashboardChecklist";
 
 export const DashboardPage = () => {
   const [count, setCount] = useState(0);
@@ -51,8 +53,19 @@ export const DashboardPage = () => {
 
   return (
     <Stack gap="lg">
-      {/* 스티커 메모 */}
-      <StickyNotes />
+      <Stack gap="sm">
+        <Text fw={600} size="lg">
+          빠른 메모 & 체크리스트
+        </Text>
+        <Grid gutter="lg" align="stretch">
+          <Grid.Col span={{ base: 12, lg: 9 }}>
+            <StickyNotes />
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, lg: 3 }}>
+            <DashboardChecklist />
+          </Grid.Col>
+        </Grid>
+      </Stack>
 
       {/* 
       <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }}>

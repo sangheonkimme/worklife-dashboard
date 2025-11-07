@@ -40,9 +40,9 @@ export const stickyNoteService = {
       where: { userId },
     });
 
-    // 최대 4개까지만 생성 가능
-    if (count >= 4) {
-      throw new Error('최대 4개의 스티커 메모만 생성할 수 있습니다');
+    // 최대 3개까지만 생성 가능
+    if (count >= 3) {
+      throw new Error('최대 3개의 스티커 메모만 생성할 수 있습니다');
     }
 
     // position이 지정되지 않았으면 다음 사용 가능한 position 찾기
@@ -54,7 +54,7 @@ export const stickyNoteService = {
       });
 
       const usedPositions = new Set(existingNotes.map((n) => n.position));
-      for (let i = 0; i < 4; i++) {
+      for (let i = 0; i < 3; i++) {
         if (!usedPositions.has(i)) {
           data.position = i;
           break;

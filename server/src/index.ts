@@ -20,6 +20,7 @@ import noteTransactionRoutes from './routes/noteTransactionRoutes';
 import attachmentRoutes from './routes/attachmentRoutes';
 import stickyNoteRoutes from './routes/stickyNoteRoutes';
 import pomodoroRoutes from './routes/pomodoroRoutes';
+import dashboardChecklistRoutes from './routes/dashboardChecklistRoutes';
 import path from 'path';
 
 // 환경 변수 로드
@@ -70,6 +71,7 @@ app.use('/api', noteTransactionRoutes);
 app.use('/api', attachmentRoutes);
 app.use('/api/sticky-notes', stickyNoteRoutes);
 app.use('/api/pomodoro', pomodoroRoutes);
+app.use('/api/dashboard-checklist', dashboardChecklistRoutes);
 // app.use('/api/salary', salaryRoutes);
 
 // 404 핸들러
