@@ -1,4 +1,24 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
+import NProgress from "nprogress";
+import "@/styles/nprogress.css";
+
+NProgress.configure({ showSpinner: false, trickleSpeed: 100 });
+
+let activeRequests = 0;
+
+const startProgress = () => {
+  activeRequests += 1;
+  if (activeRequests === 1) {
+    NProgress.start();
+  }
+};
+
+const stopProgress = () => {
+  activeRequests = Math.max(activeRequests - 1, 0);
+  if (activeRequests === 0) {
+    NProgress.done();
+  }
+};
 
 // Axios 인스턴스 생성
 export const api = axios.create({
@@ -13,6 +33,8 @@ export const api = axios.create({
 // 요청 인터셉터: 토큰 자동 추가
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
+    startProgress();
+
     const token = localStorage.getItem("accessToken");
 
     if (token && config.headers) {
@@ -22,6 +44,7 @@ api.interceptors.request.use(
     return config;
   },
   (error: AxiosError) => {
+    stopProgress();
     return Promise.reject(error);
   }
 );
@@ -48,9 +71,11 @@ const processQueue = (error: unknown, token: string | null = null) => {
 // 응답 인터셉터: 에러 처리 및 토큰 갱신
 api.interceptors.response.use(
   (response) => {
+    stopProgress();
     return response;
   },
   async (error: AxiosError) => {
+    stopProgress();
     const originalRequest = error.config as InternalAxiosRequestConfig & {
       _retry?: boolean;
     };
@@ -58,7 +83,7 @@ api.interceptors.response.use(
     // 401 에러이고 재시도하지 않은 경우
     if (error.response?.status === 401 && !originalRequest._retry) {
       // refresh 요청 자체가 실패한 경우 로그아웃
-      if (originalRequest.url?.includes('/api/auth/refresh')) {
+      if (originalRequest.url?.includes("/api/auth/refresh")) {
         localStorage.removeItem("accessToken");
         window.location.href = "/login";
         return Promise.reject(error);
@@ -84,6 +109,7 @@ api.interceptors.response.use(
 
       isRefreshing = true;
 
+      startProgress();
       try {
         // 리프레시 토큰으로 새 액세스 토큰 요청
         const response = await axios.post(
@@ -96,7 +122,9 @@ api.interceptors.response.use(
         const accessToken = data?.accessToken;
 
         if (!accessToken) {
-          throw new Error("Failed to retrieve access token from refresh response");
+          throw new Error(
+            "Failed to retrieve access token from refresh response"
+          );
         }
         localStorage.setItem("accessToken", accessToken);
 
@@ -117,6 +145,7 @@ api.interceptors.response.use(
         window.location.href = "/login";
         return Promise.reject(refreshError);
       } finally {
+        stopProgress();
         isRefreshing = false;
       }
     }
