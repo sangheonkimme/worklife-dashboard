@@ -12,6 +12,7 @@ import { MonthPickerInput } from "@mantine/dates";
 import { useQuery } from "@tanstack/react-query";
 import { transactionApi } from "@/services/api/transactionApi";
 import { getCycleRange, formatCycleLabel } from "@/utils/paydayCycle";
+import { formatCurrency } from "@/utils/format";
 
 interface StatisticsTabProps {
   selectedMonth: Date;
@@ -37,13 +38,6 @@ export default function StatisticsTab({
     queryKey: ["statistics", startDate, endDate, payday],
     queryFn: () => transactionApi.getStatistics(startDate, endDate, "category"),
   });
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("ko-KR", {
-      style: "currency",
-      currency: "KRW",
-    }).format(amount);
-  };
 
   const savingsRate =
     statistics?.summary?.income && statistics.summary.income > 0

@@ -4,8 +4,9 @@ import { getWidgetById } from './WidgetRegistry';
 import { useState, useEffect } from 'react';
 
 export const WidgetSidePanel = () => {
-  const { activeWidgetId, closeWidget } = useWidgetStore();
+  const { activeWidgetId, closeWidget, preferences } = useWidgetStore();
   const [isVisible, setIsVisible] = useState(false);
+  const isLeftDock = preferences.dockPosition === 'left';
 
   useEffect(() => {
     if (activeWidgetId) {
@@ -34,6 +35,7 @@ export const WidgetSidePanel = () => {
       style={{
         position: 'fixed',
         right: 0,
+        left: 0,
         top: 0,
         bottom: 0,
         width: '100%',
@@ -46,7 +48,7 @@ export const WidgetSidePanel = () => {
         p="md"
         style={{
           position: 'absolute',
-          right: 96, // 독바에서 약간 떨어진 위치 (80 + 16)
+          ...(isLeftDock ? { left: 96 } : { right: 96 }),
           top: '50%',
           width: 'min(90vw, 420px)', // 400~450px 사이로 축소
           maxHeight: '85vh',
@@ -54,7 +56,7 @@ export const WidgetSidePanel = () => {
           backgroundColor: 'var(--mantine-color-body)',
           border: '1px solid var(--mantine-color-default-border)',
           boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)', // 연한 그림자
-          transformOrigin: 'right center',
+          transformOrigin: `${isLeftDock ? 'left' : 'right'} center`,
           transform: isVisible
             ? 'translateY(-50%) scale(1)'
             : 'translateY(-50%) scale(0.3)',

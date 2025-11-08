@@ -38,11 +38,13 @@ interface PomodoroState {
   completeSession: () => void;
   switchSession: (type: SessionType) => void;
   updateSettings: (settings: Partial<PomodoroSettings>) => void;
-  loadSettings: () => Promise<void>;
   incrementCompletedSessions: () => void;
   reset: () => void;
   restoreSession: () => void; // 새로고침 시 세션 복원
   setWidgetVisible: (visible: boolean) => void; // 위젯 표시/숨김
+  hydrateFromUserSettings: (
+    settings: Partial<Omit<PomodoroSettings, 'id' | 'userId' | 'createdAt' | 'updatedAt'>>
+  ) => void;
 }
 
 // 기본 설정
@@ -263,33 +265,6 @@ export const usePomodoroStore = create<PomodoroState>()(
         });
       },
 
-      // 서버에서 설정 로드
-      loadSettings: async () => {
-        try {
-          const serverSettings = await pomodoroApi.getSettings();
-          const { sessionType, status } = get();
-
-          set({ settings: serverSettings });
-
-          // idle 상태일 때만 시간 업데이트
-          if (status === 'idle') {
-            const duration =
-              sessionType === 'FOCUS'
-                ? serverSettings.focusDuration
-                : sessionType === 'SHORT_BREAK'
-                ? serverSettings.shortBreakDuration
-                : serverSettings.longBreakDuration;
-
-            set({
-              remainingTime: duration,
-              totalDuration: duration,
-            });
-          }
-        } catch (error) {
-          console.error('Failed to load pomodoro settings:', error);
-        }
-      },
-
       // 완료 세션 수 증가
       incrementCompletedSessions: () => {
         set((state) => ({
@@ -365,6 +340,32 @@ export const usePomodoroStore = create<PomodoroState>()(
       // 위젯 표시/숨김
       setWidgetVisible: (visible: boolean) => {
         set({ isWidgetVisible: visible });
+      },
+
+      hydrateFromUserSettings: (externalSettings) => {
+        set((state) => {
+          const merged = {
+            ...state.settings,
+            ...externalSettings,
+          };
+
+          let nextDuration = merged.focusDuration;
+          if (state.sessionType === 'SHORT_BREAK') {
+            nextDuration = merged.shortBreakDuration;
+          } else if (state.sessionType === 'LONG_BREAK') {
+            nextDuration = merged.longBreakDuration;
+          }
+
+          if (state.status === 'idle') {
+            return {
+              settings: merged,
+              remainingTime: nextDuration,
+              totalDuration: nextDuration,
+            };
+          }
+
+          return { settings: merged };
+        });
       },
     }),
     {

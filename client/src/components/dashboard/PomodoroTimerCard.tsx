@@ -19,16 +19,14 @@ export function PomodoroTimerCard() {
     pauseTimer,
     resumeTimer,
     stopTimer,
-    loadSettings,
     restoreSession,
   } = usePomodoroStore();
 
   // 컴포넌트 마운트 시 설정 로드, 세션 복원, 알림 권한 요청
   useEffect(() => {
-    loadSettings();
     restoreSession(); // 새로고침 시 타이머 상태 복원
     requestNotificationPermission();
-  }, [loadSettings, restoreSession]);
+  }, [restoreSession]);
 
   // 남은 시간을 MM:SS 형식으로 변환
   const formatTime = (seconds: number): string => {

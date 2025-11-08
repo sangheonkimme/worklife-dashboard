@@ -26,6 +26,7 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../hooks/useAuth";
 import { authApi } from "../services/api/authApi";
+import { formatDate } from "@/utils/format";
 
 interface ProfileFormValues {
   name: string;
@@ -171,7 +172,7 @@ export const ProfilePage = () => {
                   {user.createdAt && (
                     <Text size="xs" c="dimmed">
                       가입일:{" "}
-                      {new Date(user.createdAt).toLocaleDateString("ko-KR")}
+                      {formatDate(user.createdAt, "long")}
                     </Text>
                   )}
                 </Group>
@@ -304,7 +305,7 @@ export const ProfilePage = () => {
                 마지막 업데이트
               </Text>
               <Text size="sm">
-                {new Date(user.updatedAt).toLocaleDateString("ko-KR")}
+                {formatDate(user.updatedAt, "long")}
               </Text>
             </Group>
           </Stack>

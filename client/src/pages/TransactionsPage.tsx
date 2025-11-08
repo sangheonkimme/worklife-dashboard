@@ -49,6 +49,7 @@ import {
   getPreviousCycleRange,
   formatCycleLabel,
 } from "@/utils/paydayCycle";
+import { formatCurrency, formatDate } from "@/utils/format";
 
 const chartColors = [
   "#FF6B6B",
@@ -59,13 +60,6 @@ const chartColors = [
   "#DDA15E",
   "#845EC2",
 ];
-
-const formatCurrency = (amount: number) =>
-  new Intl.NumberFormat("ko-KR", {
-    style: "currency",
-    currency: "KRW",
-    maximumFractionDigits: 0,
-  }).format(amount);
 
 const calculateDiffPercent = (current: number, previous?: number | null) => {
   if (previous == null || previous === 0) return null;
@@ -368,9 +362,7 @@ export default function TransactionsPage() {
                     const isIncome = transaction.type === "INCOME";
                     const categoryColor = transaction.category?.color || "gray";
                     const categoryName = transaction.category?.name || "미분류";
-                    const dateLabel = new Date(
-                      transaction.date
-                    ).toLocaleDateString("ko-KR");
+                    const dateLabel = formatDate(transaction.date);
                     const amountLabel = `${
                       isIncome ? "+" : "-"
                     }${formatCurrency(Math.abs(transaction.amount))}`;

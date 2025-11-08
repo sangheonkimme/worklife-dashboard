@@ -17,6 +17,7 @@ interface TimerState {
   setPreset: (milliseconds: number) => void;
   setCustomDuration: (milliseconds: number) => void;
   setSettings: (settings: Partial<TimerSettings>) => void;
+  hydrateFromUserSettings: (settings: TimerSettings) => void;
   tick: () => void;
   restoreTimer: () => void;
 }
@@ -145,6 +146,35 @@ export const useTimerStore = create<TimerState>()(
             ...settings,
           },
         }));
+      },
+
+      hydrateFromUserSettings: (externalSettings) => {
+        set((state) => {
+          const mergedSettings: TimerSettings = {
+            ...state.settings,
+            ...externalSettings,
+            presets:
+              externalSettings.presets?.length
+                ? externalSettings.presets
+                : state.settings.presets,
+          };
+
+          if (state.status === "idle" && mergedSettings.presets.length > 0) {
+            const firstPreset = mergedSettings.presets[0];
+            return {
+              settings: mergedSettings,
+              totalMs: firstPreset,
+              remainingMs: firstPreset,
+              lastUpdatedAt: null,
+              preAlertTriggered: false,
+              status: "idle" as TimerStatus,
+            };
+          }
+
+          return {
+            settings: mergedSettings,
+          };
+        });
       },
 
       tick: () => {

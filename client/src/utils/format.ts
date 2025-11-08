@@ -1,12 +1,47 @@
+import { useUserSettingsStore } from '@/store/useUserSettingsStore';
+import { useFinanceSettingsStore } from '@/store/useFinanceSettingsStore';
+
+const DEFAULT_LOCALE = 'ko-KR';
+const DEFAULT_CURRENCY = 'KRW';
+const DEFAULT_TIMEZONE = (() => {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+  } catch {
+    return 'UTC';
+  }
+})();
+
+const getActiveLocale = () =>
+  useUserSettingsStore.getState().settings?.locale ?? DEFAULT_LOCALE;
+
+const getActiveCurrency = () => {
+  const settingsCurrency = useUserSettingsStore.getState().settings?.finance.currency;
+  if (settingsCurrency) return settingsCurrency;
+  const financeStoreCurrency = useFinanceSettingsStore.getState().currency;
+  return financeStoreCurrency || DEFAULT_CURRENCY;
+};
+
+const getActiveTimeZone = () =>
+  useUserSettingsStore.getState().settings?.timezone ?? DEFAULT_TIMEZONE;
+
+const ensureDate = (date: string | Date) =>
+  (typeof date === 'string' ? new Date(date) : date);
+
 /**
  * 숫자를 통화 형식으로 변환
- * @param amount 금액
- * @returns 형식화된 통화 문자열 (예: "1,234,567원")
  */
-export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('ko-KR', {
+export function formatCurrency(
+  amount: number,
+  options: Intl.NumberFormatOptions = {}
+): string {
+  const locale = getActiveLocale();
+  const currency = options.currency || getActiveCurrency();
+
+  return new Intl.NumberFormat(locale, {
     style: 'currency',
-    currency: 'KRW',
+    currency,
+    maximumFractionDigits: 0,
+    ...options,
   }).format(amount);
 }
 
@@ -16,7 +51,7 @@ export function formatCurrency(amount: number): string {
  * @returns 형식화된 숫자 문자열 (예: "1,234,567")
  */
 export function formatNumber(num: number): string {
-  return new Intl.NumberFormat('ko-KR').format(num);
+  return new Intl.NumberFormat(getActiveLocale()).format(num);
 }
 
 /**
@@ -25,28 +60,27 @@ export function formatNumber(num: number): string {
  * @param format 형식 ('short' | 'long' | 'full')
  * @returns 형식화된 날짜 문자열
  */
-export function formatDate(date: string | Date, format: 'short' | 'long' | 'full' = 'short'): string {
-  const d = typeof date === 'string' ? new Date(date) : date;
+export function formatDate(
+  date: string | Date,
+  format: 'short' | 'long' | 'full' = 'short'
+): string {
+  const locale = getActiveLocale();
+  const timeZone = getActiveTimeZone();
+  const d = ensureDate(date);
 
-  switch (format) {
-    case 'short':
-      return d.toLocaleDateString('ko-KR');
-    case 'long':
-      return d.toLocaleDateString('ko-KR', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
-    case 'full':
-      return d.toLocaleDateString('ko-KR', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        weekday: 'long',
-      });
-    default:
-      return d.toLocaleDateString('ko-KR');
+  const options: Intl.DateTimeFormatOptions = {
+    timeZone,
+  };
+
+  if (format === 'short') {
+    options.dateStyle = 'medium';
+  } else if (format === 'long') {
+    options.dateStyle = 'long';
+  } else if (format === 'full') {
+    options.dateStyle = 'full';
   }
+
+  return new Intl.DateTimeFormat(locale, options).format(d);
 }
 
 /**
@@ -55,8 +89,13 @@ export function formatDate(date: string | Date, format: 'short' | 'long' | 'full
  * @returns 형식화된 날짜시간 문자열
  */
 export function formatDateTime(date: string | Date): string {
-  const d = typeof date === 'string' ? new Date(date) : date;
-  return d.toLocaleString('ko-KR');
+  const locale = getActiveLocale();
+  const timeZone = getActiveTimeZone();
+  return new Intl.DateTimeFormat(locale, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone,
+  }).format(ensureDate(date));
 }
 
 /**
@@ -65,16 +104,31 @@ export function formatDateTime(date: string | Date): string {
  * @returns 상대 시간 문자열
  */
 export function formatRelativeTime(date: string | Date): string {
-  const d = typeof date === 'string' ? new Date(date) : date;
+  const locale = getActiveLocale();
+  const formatter = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
+  const d = ensureDate(date);
   const now = new Date();
-  const diffInSeconds = Math.floor((now.getTime() - d.getTime()) / 1000);
+  const diffInSeconds = Math.floor((d.getTime() - now.getTime()) / 1000);
 
-  if (diffInSeconds < 60) return '방금 전';
-  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}분 전`;
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}시간 전`;
-  if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)}일 전`;
-  if (diffInSeconds < 31536000) return `${Math.floor(diffInSeconds / 2592000)}개월 전`;
-  return `${Math.floor(diffInSeconds / 31536000)}년 전`;
+  const divisions = [
+    { amount: 60, unit: 'second' as const },
+    { amount: 60, unit: 'minute' as const },
+    { amount: 24, unit: 'hour' as const },
+    { amount: 7, unit: 'day' as const },
+    { amount: 4.34524, unit: 'week' as const },
+    { amount: 12, unit: 'month' as const },
+    { amount: Number.POSITIVE_INFINITY, unit: 'year' as const },
+  ];
+
+  let duration = diffInSeconds;
+  for (const division of divisions) {
+    if (Math.abs(duration) < division.amount) {
+      return formatter.format(Math.round(duration), division.unit);
+    }
+    duration /= division.amount;
+  }
+
+  return formatter.format(Math.round(duration), 'years');
 }
 
 /**

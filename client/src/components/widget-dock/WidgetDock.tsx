@@ -5,8 +5,9 @@ import { PomodoroDockIcon } from './PomodoroDockIcon';
 import { StopwatchDockIcon } from './StopwatchDockIcon';
 
 export const WidgetDock = () => {
-  const { activeWidgetId, toggleWidget } = useWidgetStore();
+  const { activeWidgetId, toggleWidget, preferences } = useWidgetStore();
   const widgets = getEnabledWidgets();
+  const isLeftDock = preferences.dockPosition === 'left';
 
   return (
     <Paper
@@ -15,7 +16,8 @@ export const WidgetDock = () => {
       p="xs"
       style={{
         position: 'fixed',
-        right: 16,
+        right: isLeftDock ? 'auto' : 16,
+        left: isLeftDock ? 16 : 'auto',
         top: '50%',
         transform: 'translateY(-50%)',
         zIndex: 100,
@@ -32,7 +34,7 @@ export const WidgetDock = () => {
             <Tooltip
               key={widget.id}
               label={widget.name}
-              position="left"
+              position={isLeftDock ? 'right' : 'left'}
               withArrow
             >
               <ActionIcon

@@ -10,6 +10,7 @@ import type {
   TaxDeductions,
   TotalDeductions,
 } from "@/types/salary";
+import { formatCurrency as formatCurrencyWithLocale } from "@/utils/format";
 
 // 2025년 기준 공제율
 const RATES = {
@@ -226,15 +227,8 @@ export function calculateSalary(input: SalaryInput): SalaryResult {
 }
 
 /**
- * 숫자를 천단위 구분 기호와 함께 포맷
- */
-export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("ko-KR").format(Math.floor(amount));
-}
-
-/**
  * 금액을 원 단위로 포맷
  */
 export function formatCurrencyWithUnit(amount: number): string {
-  return `${formatCurrency(amount)} 원`;
+  return `${formatCurrencyWithLocale(Math.floor(amount))} 원`;
 }

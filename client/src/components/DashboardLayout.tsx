@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   AppShell,
@@ -12,6 +13,8 @@ import {
   Divider,
   Affix,
   UnstyledButton,
+  Alert,
+  Button,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
@@ -26,6 +29,7 @@ import {
   IconMenu2,
   IconX,
   IconNotes,
+  IconAlertTriangle,
 } from "@tabler/icons-react";
 import { useAuth } from "../hooks/useAuth";
 import { WidgetDock } from "./widget-dock/WidgetDock";
@@ -33,6 +37,8 @@ import { WidgetSidePanel } from "./widget-dock/WidgetSidePanel";
 import { PomodoroWidget } from "./pomodoro/PomodoroWidget";
 import { StopwatchWidget } from "./stopwatch/StopwatchWidget";
 import logoPc from "@/assets/logo_pc.png";
+import { useUserSettings } from "@/hooks/useUserSettings";
+import { useUiStore } from "@/store/useUiStore";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -41,10 +47,21 @@ interface DashboardLayoutProps {
 export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [mobileOpened, { toggle: toggleMobile, close: closeMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+  const { setColorScheme: setMantineColorScheme } = useMantineColorScheme();
+  const colorScheme = useUiStore((state) => state.colorScheme);
+  const toggleColorScheme = useUiStore((state) => state.toggleColorScheme);
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
+  const {
+    status: settingsStatus,
+    error: settingsError,
+    refetch: refetchSettings,
+  } = useUserSettings();
+
+  useEffect(() => {
+    setMantineColorScheme(colorScheme);
+  }, [colorScheme, setMantineColorScheme]);
 
   const navItems = [
     {
@@ -214,6 +231,30 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       </AppShell.Navbar>
 
       <AppShell.Main>
+        {settingsStatus === "error" && (
+          <Alert
+            color="red"
+            icon={<IconAlertTriangle size={18} />}
+            mb="md"
+            title="사용자 설정 동기화 실패"
+            variant="light"
+          >
+            <Group justify="space-between" align="flex-start">
+              <div>
+                <Text size="sm" fw={500}>
+                  {settingsError || "사용자 설정을 불러오지 못했어요."}
+                </Text>
+                <Text size="xs" c="dimmed">
+                  로컬에 저장된 이전 값을 임시로 사용 중입니다.
+                </Text>
+              </div>
+              <Button size="xs" variant="light" onClick={() => refetchSettings()}>
+                다시 시도
+              </Button>
+            </Group>
+          </Alert>
+        )}
+
         {children}
 
         {/* Floating 메뉴 버튼 */}

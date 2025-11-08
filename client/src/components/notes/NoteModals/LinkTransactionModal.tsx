@@ -19,7 +19,7 @@ import { IconSearch, IconTrash, IconLink } from '@tabler/icons-react';
 import { useTransactionsForNote, useLinkTransaction, useUnlinkTransaction } from '@/hooks/useNoteTransactions';
 import { transactionApi } from '@/services/api/transactionApi';
 import { useQuery } from '@tanstack/react-query';
-import { formatCurrency } from '@/utils/format';
+import { formatCurrency, formatDate } from '@/utils/format';
 
 interface LinkTransactionModalProps {
   noteId: string;
@@ -116,7 +116,7 @@ export function LinkTransactionModal({ noteId, opened, onClose }: LinkTransactio
                         </Text>
                         <Group gap="xs" mt={4}>
                           <Text size="xs" c="dimmed">
-                            {new Date(transaction.date).toLocaleDateString('ko-KR')}
+                            {formatDate(transaction.date)}
                           </Text>
                           <Text size="sm" fw={600} c={getTypeColor(transaction.type)}>
                             {formatCurrency(transaction.amount)}
@@ -199,7 +199,7 @@ export function LinkTransactionModal({ noteId, opened, onClose }: LinkTransactio
                       </Text>
                       <Group gap="xs" mt={4}>
                         <Text size="xs" c="dimmed">
-                          {new Date(transaction.date).toLocaleDateString('ko-KR')}
+                          {formatDate(transaction.date)}
                         </Text>
                         <Text size="sm" fw={600} c={getTypeColor(transaction.type)}>
                           {formatCurrency(transaction.amount)}

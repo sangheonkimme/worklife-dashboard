@@ -1,6 +1,7 @@
 import { Table, Badge, ActionIcon, Group, Text, Paper, Stack, Pagination, Center } from '@mantine/core';
 import { IconEdit, IconTrash } from '@tabler/icons-react';
 import type { Transaction } from '@/types/transaction';
+import { formatCurrency, formatDate } from '@/utils/format';
 
 interface TransactionListProps {
   transactions: Transaction[];
@@ -21,21 +22,6 @@ export default function TransactionList({
   onDelete,
   loading,
 }: TransactionListProps) {
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('ko-KR', {
-      style: 'currency',
-      currency: 'KRW',
-    }).format(amount);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
-
   if (transactions.length === 0) {
     return (
       <Paper p="xl" withBorder>

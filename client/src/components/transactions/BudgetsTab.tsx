@@ -20,6 +20,7 @@ import { notifications } from '@mantine/notifications';
 import { modals } from '@mantine/modals';
 import { budgetApi, categoryApi } from '@/services/api/transactionApi';
 import type { CreateBudgetDto } from '@/types/transaction';
+import { formatCurrency } from '@/utils/format';
 
 export default function BudgetsTab() {
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
@@ -114,13 +115,6 @@ export default function BudgetsTab() {
       confirmProps: { color: 'red' },
       onConfirm: () => deleteMutation.mutate(id),
     });
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('ko-KR', {
-      style: 'currency',
-      currency: 'KRW',
-    }).format(amount);
   };
 
   const categoryOptions = [

@@ -1,3 +1,5 @@
+import { formatDate } from '@/utils/format';
+
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 const clampDayToMonth = (year: number, monthIndex: number, payday: number) => {
@@ -23,11 +25,5 @@ export const getPreviousCycleRange = (reference: Date, payday: number) => {
   return getCycleRange(prevReference, payday);
 };
 
-export const formatCycleLabel = (start: Date, end: Date) => {
-  const formatter = new Intl.DateTimeFormat("ko-KR", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-  return `${formatter.format(start)} ~ ${formatter.format(end)}`;
-};
+export const formatCycleLabel = (start: Date, end: Date) =>
+  `${formatDate(start, 'long')} ~ ${formatDate(end, 'long')}`;

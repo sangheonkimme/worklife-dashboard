@@ -55,6 +55,7 @@ import { ChecklistEditor } from '@/components/notes/NoteEditor/ChecklistEditor';
 import { AttachmentUpload } from '@/components/notes/Attachments/AttachmentUpload';
 import { TemplateModal } from '@/components/notes/NoteModals/TemplateModal';
 import { QuickNote } from '@/components/notes/QuickNote';
+import { formatDate } from '@/utils/format';
 
 export default function NotesPage() {
   const {
@@ -328,7 +329,7 @@ export default function NotesPage() {
 
                             <Group justify="space-between" mt="auto">
                               <Text size="xs" c="dimmed">
-                                {new Date(note.updatedAt).toLocaleDateString()}
+                                {formatDate(note.updatedAt)}
                               </Text>
                               <Group gap="xs">
                                 <ActionIcon variant="subtle" onClick={() => handleOpenModal(note)}>

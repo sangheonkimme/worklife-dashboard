@@ -44,6 +44,10 @@ interface StopwatchState {
   // 알림 설정
   setGoalTime: (time: number | null) => void;
   setNotificationsEnabled: (enabled: boolean) => void;
+  hydrateFromUserSettings: (settings: {
+    defaultGoalTime: number | null;
+    notificationsEnabled: boolean;
+  }) => void;
 
   // 통계 계산
   getFastestLap: () => Lap | null;
@@ -292,6 +296,13 @@ export const useStopwatchStore = create<StopwatchState>()(
       // 알림 활성화/비활성화
       setNotificationsEnabled: (enabled: boolean) => {
         set({ notificationsEnabled: enabled });
+      },
+
+      hydrateFromUserSettings: ({ defaultGoalTime, notificationsEnabled }) => {
+        set((state) => ({
+          goalTime: defaultGoalTime ?? state.goalTime,
+          notificationsEnabled,
+        }));
       },
     }),
     {

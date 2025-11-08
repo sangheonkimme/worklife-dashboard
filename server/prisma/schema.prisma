@@ -35,6 +35,7 @@ model User {
   stickyNotes  StickyNote[]
   pomodoroSessions PomodoroSession[]
   pomodoroSettings PomodoroSettings?
+  userSettings UserSettings?
   dashboardChecklistItems DashboardChecklistItem[]
 
   @@map("users")
@@ -373,4 +374,42 @@ model PomodoroSettings {
   updatedAt           DateTime @updatedAt
 
   @@map("pomodoro_settings")
+}
+
+model UserSettings {
+  id                           String   @id @default(cuid())
+  userId                       String   @unique
+  user                         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  locale                       String   @default("ko-KR")
+  timezone                     String   @default("Asia/Seoul")
+  payday                       Int      @default(1)
+  currency                     String   @default("KRW")
+  weekStartsOn                 Int      @default(1)
+  colorScheme                  String   @default("dark")
+  sidebarPinned                Boolean  @default(false)
+  widgetDockPosition           String   @default("right")
+  widgetAutoClose              Boolean  @default(false)
+  timerPresets                 Json     @default("[300000,600000,900000,1800000]")
+  timerAutoRepeat              Boolean  @default(false)
+  timerPreAlertMs              Int?
+  timerNotifications           Boolean  @default(true)
+  timerSoundEnabled            Boolean  @default(true)
+  pomodoroFocusDuration        Int      @default(1500)
+  pomodoroShortBreakDuration   Int      @default(300)
+  pomodoroLongBreakDuration    Int      @default(900)
+  pomodoroLongBreakInterval    Int      @default(4)
+  pomodoroAutoStartBreak       Boolean  @default(false)
+  pomodoroAutoStartFocus       Boolean  @default(false)
+  pomodoroSoundEnabled         Boolean  @default(true)
+  pomodoroSoundVolume          Int      @default(50)
+  pomodoroNotificationEnabled  Boolean  @default(true)
+  stopwatchDefaultGoalTime     Int?
+  stopwatchNotificationsEnabled Boolean @default(true)
+  notifyTransactions           Boolean  @default(true)
+  notifyMonthlyReport          Boolean  @default(false)
+  notifyChecklist              Boolean  @default(true)
+  createdAt                    DateTime @default(now())
+  updatedAt                    DateTime @updatedAt
+
+  @@map("user_settings")
 }

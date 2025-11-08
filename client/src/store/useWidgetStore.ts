@@ -1,16 +1,22 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+type WidgetDockPosition = 'right' | 'left';
+
+interface WidgetPreferences {
+  dockPosition: WidgetDockPosition;
+  autoClose: boolean;
+}
+
 interface WidgetStoreState {
   activeWidgetId: string | null;
   widgetHistory: string[];
-  preferences: {
-    dockPosition: 'right' | 'left';
-    autoClose: boolean;
-  };
+  preferences: WidgetPreferences;
   openWidget: (widgetId: string) => void;
   closeWidget: () => void;
   toggleWidget: (widgetId: string) => void;
+  setPreferences: (preferences: Partial<WidgetPreferences>) => void;
+  hydrateFromUserSettings: (preferences: WidgetPreferences) => void;
 }
 
 export const useWidgetStore = create<WidgetStoreState>()(
@@ -38,6 +44,17 @@ export const useWidgetStore = create<WidgetStoreState>()(
           get().openWidget(widgetId);
         }
       },
+      setPreferences: (preferences) =>
+        set((state) => ({
+          preferences: {
+            ...state.preferences,
+            ...preferences,
+          },
+        })),
+      hydrateFromUserSettings: (preferences) =>
+        set(() => ({
+          preferences,
+        })),
     }),
     {
       name: 'widget-store',
