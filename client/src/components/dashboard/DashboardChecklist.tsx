@@ -436,7 +436,7 @@ export function DashboardChecklist() {
           }
           rightSectionWidth={32}
           onKeyDown={(event) => {
-            if (event.key === "Enter") {
+            if (event.key === "Enter" && !event.nativeEvent.isComposing) {
               event.preventDefault();
               handleAdd();
             }
