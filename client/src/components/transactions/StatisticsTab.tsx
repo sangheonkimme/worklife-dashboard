@@ -1,32 +1,56 @@
-import { useState } from 'react';
-import { Stack, Paper, Group, Text, RingProgress, Grid, SimpleGrid } from '@mantine/core';
-import { MonthPickerInput } from '@mantine/dates';
-import { useQuery } from '@tanstack/react-query';
-import { transactionApi } from '@/services/api/transactionApi';
+import { useMemo } from "react";
+import {
+  Stack,
+  Paper,
+  Group,
+  Text,
+  RingProgress,
+  Grid,
+  SimpleGrid,
+} from "@mantine/core";
+import { MonthPickerInput } from "@mantine/dates";
+import { useQuery } from "@tanstack/react-query";
+import { transactionApi } from "@/services/api/transactionApi";
+import { getCycleRange, formatCycleLabel } from "@/utils/paydayCycle";
 
-export default function StatisticsTab() {
-  const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
+interface StatisticsTabProps {
+  selectedMonth: Date;
+  onMonthChange: (value: Date) => void;
+  payday: number;
+}
 
-  // 월의 시작일과 종료일 계산
-  const startDate = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth(), 1).toISOString();
-  const endDate = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1, 0, 23, 59, 59).toISOString();
+export default function StatisticsTab({
+  selectedMonth,
+  onMonthChange,
+  payday,
+}: StatisticsTabProps) {
+  const { start: cycleStart, end: cycleEnd } = useMemo(
+    () => getCycleRange(selectedMonth, payday),
+    [selectedMonth, payday]
+  );
+  const startDate = cycleStart.toISOString();
+  const endDate = cycleEnd.toISOString();
+  const cycleLabel = formatCycleLabel(cycleStart, cycleEnd);
 
   // 통계 조회
   const { data: statistics } = useQuery({
-    queryKey: ['statistics', startDate, endDate],
-    queryFn: () => transactionApi.getStatistics(startDate, endDate, 'category'),
+    queryKey: ["statistics", startDate, endDate, payday],
+    queryFn: () => transactionApi.getStatistics(startDate, endDate, "category"),
   });
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('ko-KR', {
-      style: 'currency',
-      currency: 'KRW',
+    return new Intl.NumberFormat("ko-KR", {
+      style: "currency",
+      currency: "KRW",
     }).format(amount);
   };
 
-  const savingsRate = statistics?.summary?.income && statistics.summary.income > 0
-    ? ((statistics.summary.income - statistics.summary.expense) / statistics.summary.income) * 100
-    : 0;
+  const savingsRate =
+    statistics?.summary?.income && statistics.summary.income > 0
+      ? ((statistics.summary.income - statistics.summary.expense) /
+          statistics.summary.income) *
+        100
+      : 0;
 
   return (
     <Stack gap="md">
@@ -35,12 +59,17 @@ export default function StatisticsTab() {
           월간 통계
         </Text>
         <MonthPickerInput
+          label="조회 월"
           value={selectedMonth}
-          onChange={(value) => value && setSelectedMonth(value)}
+          onChange={(value) => value && onMonthChange(value)}
           placeholder="월 선택"
           w={200}
+          size="md"
         />
       </Group>
+      <Text size="sm" c="dimmed">
+        {cycleLabel} · 월급일 {payday}일 기준
+      </Text>
 
       {/* 요약 카드 */}
       <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="md">
@@ -74,7 +103,11 @@ export default function StatisticsTab() {
             <Text
               size="xl"
               fw={700}
-              c={statistics?.summary.net && statistics.summary.net > 0 ? 'teal' : 'red'}
+              c={
+                statistics?.summary.net && statistics.summary.net > 0
+                  ? "teal"
+                  : "red"
+              }
             >
               {formatCurrency(statistics?.summary.net || 0)}
             </Text>
@@ -86,7 +119,7 @@ export default function StatisticsTab() {
             <Text size="sm" c="dimmed">
               저축률
             </Text>
-            <Text size="xl" fw={700} c={savingsRate > 0 ? 'teal' : 'gray'}>
+            <Text size="xl" fw={700} c={savingsRate > 0 ? "teal" : "gray"}>
               {savingsRate.toFixed(1)}%
             </Text>
           </Stack>
@@ -100,23 +133,29 @@ export default function StatisticsTab() {
             카테고리별 지출
           </Text>
 
-          {statistics?.byCategory.filter((item) => item.type === 'EXPENSE').length === 0 ? (
+          {statistics?.byCategory.filter((item) => item.type === "EXPENSE")
+            .length === 0 ? (
             <Text c="dimmed" ta="center" py="xl">
               지출 내역이 없습니다
             </Text>
           ) : (
             <Grid>
               {statistics?.byCategory
-                .filter((item) => item.type === 'EXPENSE')
+                .filter((item) => item.type === "EXPENSE")
                 .sort((a, b) => b.total - a.total)
                 .slice(0, 6)
                 .map((item) => {
-                  const percentage = statistics?.summary?.expense && statistics.summary.expense > 0
-                    ? (item.total / statistics.summary.expense) * 100
-                    : 0;
+                  const percentage =
+                    statistics?.summary?.expense &&
+                    statistics.summary.expense > 0
+                      ? (item.total / statistics.summary.expense) * 100
+                      : 0;
 
                   return (
-                    <Grid.Col key={item.category?.id || 'uncategorized'} span={{ base: 12, sm: 6, md: 4 }}>
+                    <Grid.Col
+                      key={item.category?.id || "uncategorized"}
+                      span={{ base: 12, sm: 6, md: 4 }}
+                    >
                       <Paper p="md" withBorder>
                         <Group justify="space-between" wrap="nowrap">
                           <Stack gap="xs" style={{ flex: 1 }}>
@@ -126,13 +165,13 @@ export default function StatisticsTab() {
                                   style={{
                                     width: 12,
                                     height: 12,
-                                    borderRadius: '50%',
+                                    borderRadius: "50%",
                                     backgroundColor: item.category.color,
                                   }}
                                 />
                               )}
                               <Text size="sm" fw={500}>
-                                {item.category?.name || '미분류'}
+                                {item.category?.name || "미분류"}
                               </Text>
                             </Group>
                             <Text size="xs" c="dimmed">
@@ -149,7 +188,7 @@ export default function StatisticsTab() {
                             sections={[
                               {
                                 value: percentage,
-                                color: item.category?.color || 'blue',
+                                color: item.category?.color || "blue",
                               },
                             ]}
                             label={
@@ -169,74 +208,81 @@ export default function StatisticsTab() {
       </Paper>
 
       {/* 카테고리별 수입 */}
-      {statistics?.byCategory && statistics.byCategory.filter((item) => item.type === 'INCOME').length > 0 && (
-        <Paper p="md" withBorder>
-          <Stack gap="md">
-            <Text size="lg" fw={600}>
-              카테고리별 수입
-            </Text>
+      {statistics?.byCategory &&
+        statistics.byCategory.filter((item) => item.type === "INCOME").length >
+          0 && (
+          <Paper p="md" withBorder>
+            <Stack gap="md">
+              <Text size="lg" fw={600}>
+                카테고리별 수입
+              </Text>
 
-            <Grid>
-              {statistics?.byCategory
-                .filter((item) => item.type === 'INCOME')
-                .sort((a, b) => b.total - a.total)
-                .map((item) => {
-                  const percentage = statistics?.summary?.income && statistics.summary.income > 0
-                    ? (item.total / statistics.summary.income) * 100
-                    : 0;
+              <Grid>
+                {statistics?.byCategory
+                  .filter((item) => item.type === "INCOME")
+                  .sort((a, b) => b.total - a.total)
+                  .map((item) => {
+                    const percentage =
+                      statistics?.summary?.income &&
+                      statistics.summary.income > 0
+                        ? (item.total / statistics.summary.income) * 100
+                        : 0;
 
-                  return (
-                    <Grid.Col key={item.category?.id || 'uncategorized'} span={{ base: 12, sm: 6, md: 4 }}>
-                      <Paper p="md" withBorder>
-                        <Group justify="space-between" wrap="nowrap">
-                          <Stack gap="xs" style={{ flex: 1 }}>
-                            <Group gap="xs">
-                              {item.category?.color && (
-                                <div
-                                  style={{
-                                    width: 12,
-                                    height: 12,
-                                    borderRadius: '50%',
-                                    backgroundColor: item.category.color,
-                                  }}
-                                />
-                              )}
-                              <Text size="sm" fw={500}>
-                                {item.category?.name || '미분류'}
+                    return (
+                      <Grid.Col
+                        key={item.category?.id || "uncategorized"}
+                        span={{ base: 12, sm: 6, md: 4 }}
+                      >
+                        <Paper p="md" withBorder>
+                          <Group justify="space-between" wrap="nowrap">
+                            <Stack gap="xs" style={{ flex: 1 }}>
+                              <Group gap="xs">
+                                {item.category?.color && (
+                                  <div
+                                    style={{
+                                      width: 12,
+                                      height: 12,
+                                      borderRadius: "50%",
+                                      backgroundColor: item.category.color,
+                                    }}
+                                  />
+                                )}
+                                <Text size="sm" fw={500}>
+                                  {item.category?.name || "미분류"}
+                                </Text>
+                              </Group>
+                              <Text size="xs" c="dimmed">
+                                {item.count}건
                               </Text>
-                            </Group>
-                            <Text size="xs" c="dimmed">
-                              {item.count}건
-                            </Text>
-                            <Text size="lg" fw={700} c="teal">
-                              {formatCurrency(item.total)}
-                            </Text>
-                          </Stack>
-
-                          <RingProgress
-                            size={80}
-                            thickness={8}
-                            sections={[
-                              {
-                                value: percentage,
-                                color: item.category?.color || 'teal',
-                              },
-                            ]}
-                            label={
-                              <Text size="xs" ta="center" fw={700}>
-                                {percentage.toFixed(0)}%
+                              <Text size="lg" fw={700} c="teal">
+                                {formatCurrency(item.total)}
                               </Text>
-                            }
-                          />
-                        </Group>
-                      </Paper>
-                    </Grid.Col>
-                  );
-                })}
-            </Grid>
-          </Stack>
-        </Paper>
-      )}
+                            </Stack>
+
+                            <RingProgress
+                              size={80}
+                              thickness={8}
+                              sections={[
+                                {
+                                  value: percentage,
+                                  color: item.category?.color || "teal",
+                                },
+                              ]}
+                              label={
+                                <Text size="xs" ta="center" fw={700}>
+                                  {percentage.toFixed(0)}%
+                                </Text>
+                              }
+                            />
+                          </Group>
+                        </Paper>
+                      </Grid.Col>
+                    );
+                  })}
+              </Grid>
+            </Stack>
+          </Paper>
+        )}
     </Stack>
   );
 }

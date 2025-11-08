@@ -11,6 +11,10 @@ WorkLife Dashboard는 React 프론트엔드와 Express 백엔드를 갖춘 풀�
 - 메모 및 노트 관리 (마크다운 지원, 태그, 첨부파일)
 - 대시보드 생산성 위젯 (스티커 메모, 포모도로, 체크리스트 등)
 
+## 최신 변경사항 메모
+
+- 2024-??-??: TransactionsPage에서 `useFinanceSettingsStore` 값을 객체로 한 번에 구조분해하면서 React 19가 `getSnapshot` 결과가 매 렌더마다 바뀐다고 판단하여 무한 렌더링 경고(`Maximum update depth exceeded`)가 발생한 이슈를 수정했습니다. `payday`와 `setPayday`를 각각 별도 selector로 호출하도록 변경해 동일 스냅샷을 재활용하며, 월급일 선택/통계 계산 로직은 그대로 유지됩니다. 동일 패턴이 필요하면 `useFinanceSettingsStore((state) => state.someValue)`처럼 각 값별 selector 또는 `useShallow`를 사용해주세요.
+
 ## 프로젝트 구조
 
 ```

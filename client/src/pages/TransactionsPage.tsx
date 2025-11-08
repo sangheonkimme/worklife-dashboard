@@ -17,6 +17,7 @@ import {
   ScrollArea,
   Badge,
   Skeleton,
+  Select,
 } from "@mantine/core";
 import { MonthPickerInput } from "@mantine/dates";
 import {
@@ -29,14 +30,35 @@ import {
   IconCalendarStats,
 } from "@tabler/icons-react";
 import { useWindowScroll } from "@mantine/hooks";
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Legend,
+  Tooltip,
+} from "recharts";
 import { useQuery } from "@tanstack/react-query";
 import { transactionApi } from "@/services/api/transactionApi";
 import TransactionsTab from "@/components/transactions/TransactionsTab";
 import StatisticsTab from "@/components/transactions/StatisticsTab";
 import BudgetsTab from "@/components/transactions/BudgetsTab";
+import { useFinanceSettingsStore } from "@/store/useFinanceSettingsStore";
+import {
+  getCycleRange,
+  getPreviousCycleRange,
+  formatCycleLabel,
+} from "@/utils/paydayCycle";
 
-const chartColors = ["#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#FFEAA7", "#DDA15E", "#845EC2"];
+const chartColors = [
+  "#FF6B6B",
+  "#4ECDC4",
+  "#45B7D1",
+  "#96CEB4",
+  "#FFEAA7",
+  "#DDA15E",
+  "#845EC2",
+];
 
 const formatCurrency = (amount: number) =>
   new Intl.NumberFormat("ko-KR", {
@@ -54,57 +76,84 @@ export default function TransactionsPage() {
   const [activeTab, setActiveTab] = useState<string | null>("transactions");
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
   const [scroll] = useWindowScroll();
+  const payday = useFinanceSettingsStore((state) => state.payday);
+  const setPayday = useFinanceSettingsStore((state) => state.setPayday);
 
-  const monthStart = useMemo(
-    () => new Date(selectedMonth.getFullYear(), selectedMonth.getMonth(), 1),
-    [selectedMonth]
-  );
-  const monthEnd = useMemo(
-    () => new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1, 0, 23, 59, 59, 999),
-    [selectedMonth]
-  );
-  const prevMonthStart = useMemo(
-    () => new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1, 1),
-    [selectedMonth]
-  );
-  const prevMonthEnd = useMemo(
-    () => new Date(selectedMonth.getFullYear(), selectedMonth.getMonth(), 0, 23, 59, 59, 999),
-    [selectedMonth]
+  const paydayOptions = useMemo(
+    () =>
+      Array.from({ length: 31 }, (_, index) => {
+        const day = index + 1;
+        return { value: day.toString(), label: `${day}일` };
+      }),
+    []
   );
 
-  const monthStartISO = monthStart.toISOString();
-  const monthEndISO = monthEnd.toISOString();
-  const prevMonthStartISO = prevMonthStart.toISOString();
-  const prevMonthEndISO = prevMonthEnd.toISOString();
-  const daysInMonth = monthEnd.getDate();
-  const prevDaysInMonth = prevMonthEnd.getDate();
+  const {
+    start: cycleStart,
+    end: cycleEnd,
+    days: cycleDays,
+  } = useMemo(
+    () => getCycleRange(selectedMonth, payday),
+    [selectedMonth, payday]
+  );
+
+  const {
+    start: prevCycleStart,
+    end: prevCycleEnd,
+    days: prevCycleDays,
+  } = useMemo(
+    () => getPreviousCycleRange(selectedMonth, payday),
+    [selectedMonth, payday]
+  );
+
+  const cycleStartISO = cycleStart.toISOString();
+  const cycleEndISO = cycleEnd.toISOString();
+  const prevCycleStartISO = prevCycleStart.toISOString();
+  const prevCycleEndISO = prevCycleEnd.toISOString();
+  const cycleLabel = formatCycleLabel(cycleStart, cycleEnd);
 
   const { data: statistics, isLoading: isStatsLoading } = useQuery({
-    queryKey: ["dashboard-statistics", monthStartISO, monthEndISO],
-    queryFn: () => transactionApi.getStatistics(monthStartISO, monthEndISO, "category"),
+    queryKey: ["dashboard-statistics", cycleStartISO, cycleEndISO, payday],
+    queryFn: () =>
+      transactionApi.getStatistics(cycleStartISO, cycleEndISO, "category"),
   });
 
   const { data: previousStatistics } = useQuery({
-    queryKey: ["dashboard-statistics", prevMonthStartISO, prevMonthEndISO],
-    queryFn: () => transactionApi.getStatistics(prevMonthStartISO, prevMonthEndISO, "category"),
+    queryKey: [
+      "dashboard-statistics",
+      "previous",
+      prevCycleStartISO,
+      prevCycleEndISO,
+      payday,
+    ],
+    queryFn: () =>
+      transactionApi.getStatistics(
+        prevCycleStartISO,
+        prevCycleEndISO,
+        "category"
+      ),
   });
 
-  const { data: recentTransactionsData, isLoading: isRecentLoading } = useQuery({
-    queryKey: ["dashboard-recent-transactions"],
-    queryFn: () =>
-      transactionApi.getTransactions({
-        page: 1,
-        limit: 8,
-        sortBy: "date",
-        sortOrder: "desc",
-      }),
-  });
+  const { data: recentTransactionsData, isLoading: isRecentLoading } = useQuery(
+    {
+      queryKey: ["dashboard-recent-transactions"],
+      queryFn: () =>
+        transactionApi.getTransactions({
+          page: 1,
+          limit: 8,
+          sortBy: "date",
+          sortOrder: "desc",
+        }),
+    }
+  );
 
   const summary = statistics?.summary;
   const previousSummary = previousStatistics?.summary;
 
-  const averageDailyExpense = summary ? summary.expense / daysInMonth : 0;
-  const prevAverageDailyExpense = previousSummary ? previousSummary.expense / prevDaysInMonth : null;
+  const averageDailyExpense = summary ? summary.expense / cycleDays : 0;
+  const prevAverageDailyExpense = previousSummary
+    ? previousSummary.expense / prevCycleDays
+    : null;
 
   const expenseCategories =
     statistics?.byCategory.filter((item) => item.type === "EXPENSE") ?? [];
@@ -123,21 +172,30 @@ export default function TransactionsPage() {
       value: summary?.expense ?? 0,
       icon: IconTrendingDown,
       color: "red",
-      diff: calculateDiffPercent(summary?.expense ?? 0, previousSummary?.expense ?? null),
+      diff: calculateDiffPercent(
+        summary?.expense ?? 0,
+        previousSummary?.expense ?? null
+      ),
     },
     {
       title: "총 수입",
       value: summary?.income ?? 0,
       icon: IconTrendingUp,
       color: "teal",
-      diff: calculateDiffPercent(summary?.income ?? 0, previousSummary?.income ?? null),
+      diff: calculateDiffPercent(
+        summary?.income ?? 0,
+        previousSummary?.income ?? null
+      ),
     },
     {
       title: "순이익",
       value: summary?.net ?? 0,
       icon: IconWallet,
       color: (summary?.net ?? 0) >= 0 ? "teal" : "red",
-      diff: calculateDiffPercent(summary?.net ?? 0, previousSummary?.net ?? null),
+      diff: calculateDiffPercent(
+        summary?.net ?? 0,
+        previousSummary?.net ?? null
+      ),
     },
     {
       title: "평균 일일 지출",
@@ -145,14 +203,9 @@ export default function TransactionsPage() {
       icon: IconCalendarStats,
       color: "orange",
       diff: calculateDiffPercent(averageDailyExpense, prevAverageDailyExpense),
-      helper: `${daysInMonth}일 기준`,
+      helper: `${cycleDays}일 기준 · 월급일 ${payday}일`,
     },
   ];
-
-  const monthLabel = selectedMonth.toLocaleDateString("ko-KR", {
-    year: "numeric",
-    month: "long",
-  });
 
   return (
     <Container size="xl" py="xl">
@@ -163,13 +216,29 @@ export default function TransactionsPage() {
             <Text c="dimmed" size="sm">
               예산, 거래내역, 통계를 한 화면에서 확인하세요.
             </Text>
+            <Text c="dimmed" size="sm">
+              {cycleLabel} · 월급일 {payday}일 기준
+            </Text>
           </div>
-          <MonthPickerInput
-            value={selectedMonth}
-            onChange={(value) => value && setSelectedMonth(value)}
-            placeholder="월 선택"
-            w={200}
-          />
+          <Group gap="sm">
+            <MonthPickerInput
+              label="조회 월"
+              value={selectedMonth}
+              onChange={(value) => value && setSelectedMonth(value)}
+              placeholder="월 선택"
+              w={200}
+              size="md"
+            />
+            <Select
+              label="월급일"
+              placeholder="선택"
+              value={payday.toString()}
+              data={paydayOptions}
+              onChange={(value) => value && setPayday(Number(value))}
+              w={120}
+              size="md"
+            />
+          </Group>
         </Group>
 
         <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }}>
@@ -204,7 +273,12 @@ export default function TransactionsPage() {
                       </Text>
                     )}
 
-                    <Text c={hasDiff ? (isPositive ? "teal" : "red") : "dimmed"} size="sm" fw={500} mt="xs">
+                    <Text
+                      c={hasDiff ? (isPositive ? "teal" : "red") : "dimmed"}
+                      size="sm"
+                      fw={500}
+                      mt="xs"
+                    >
                       {hasDiff ? (
                         <>
                           {isPositive ? "+" : ""}
@@ -231,7 +305,7 @@ export default function TransactionsPage() {
                   카테고리별 지출
                 </Text>
                 <Text size="sm" c="dimmed">
-                  {monthLabel} 총 지출 {formatCurrency(summary?.expense ?? 0)}
+                  {cycleLabel} 기준 지출 {formatCurrency(summary?.expense ?? 0)}
                 </Text>
               </div>
             </Group>
@@ -258,7 +332,9 @@ export default function TransactionsPage() {
                       <Cell key={entry.name} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value: number) => formatCurrency(value)} />
+                  <Tooltip
+                    formatter={(value: number) => formatCurrency(value)}
+                  />
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>
@@ -292,20 +368,35 @@ export default function TransactionsPage() {
                     const isIncome = transaction.type === "INCOME";
                     const categoryColor = transaction.category?.color || "gray";
                     const categoryName = transaction.category?.name || "미분류";
-                    const dateLabel = new Date(transaction.date).toLocaleDateString("ko-KR");
-                    const amountLabel = `${isIncome ? "+" : "-"}${formatCurrency(
-                      Math.abs(transaction.amount)
-                    )}`;
+                    const dateLabel = new Date(
+                      transaction.date
+                    ).toLocaleDateString("ko-KR");
+                    const amountLabel = `${
+                      isIncome ? "+" : "-"
+                    }${formatCurrency(Math.abs(transaction.amount))}`;
 
                     return (
-                      <Paper key={transaction.id} withBorder radius="md" p="md" shadow="xs">
+                      <Paper
+                        key={transaction.id}
+                        withBorder
+                        radius="md"
+                        p="md"
+                        shadow="xs"
+                      >
                         <Group justify="space-between" align="flex-start">
                           <Group>
-                            <ThemeIcon variant="light" color={categoryColor} size="lg" radius="md">
+                            <ThemeIcon
+                              variant="light"
+                              color={categoryColor}
+                              size="lg"
+                              radius="md"
+                            >
                               <IconReceipt size={18} />
                             </ThemeIcon>
                             <div>
-                              <Text fw={600}>{transaction.description || categoryName}</Text>
+                              <Text fw={600}>
+                                {transaction.description || categoryName}
+                              </Text>
                               <Text size="xs" c="dimmed">
                                 {dateLabel}
                               </Text>
@@ -335,10 +426,16 @@ export default function TransactionsPage() {
               <Tabs.Tab value="budgets" leftSection={<IconWallet size={16} />}>
                 예산
               </Tabs.Tab>
-              <Tabs.Tab value="transactions" leftSection={<IconReceipt size={16} />}>
+              <Tabs.Tab
+                value="transactions"
+                leftSection={<IconReceipt size={16} />}
+              >
                 거래내역
               </Tabs.Tab>
-              <Tabs.Tab value="statistics" leftSection={<IconChartBar size={16} />}>
+              <Tabs.Tab
+                value="statistics"
+                leftSection={<IconChartBar size={16} />}
+              >
                 통계
               </Tabs.Tab>
             </Tabs.List>
@@ -349,7 +446,11 @@ export default function TransactionsPage() {
               </Tabs.Panel>
 
               <Tabs.Panel value="statistics">
-                <StatisticsTab />
+                <StatisticsTab
+                  selectedMonth={selectedMonth}
+                  onMonthChange={setSelectedMonth}
+                  payday={payday}
+                />
               </Tabs.Panel>
 
               <Tabs.Panel value="budgets">
