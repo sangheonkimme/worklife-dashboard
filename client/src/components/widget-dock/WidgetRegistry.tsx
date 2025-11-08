@@ -1,6 +1,9 @@
-import { IconFileTypePdf } from "@tabler/icons-react";
+import { IconFileTypePdf, IconHourglassHigh } from "@tabler/icons-react";
 import type { WidgetConfig } from "@/types/widget";
-import { ImageToPdfWidget } from "@/components/widgets/ImageToPdfWidget";
+import {
+  ImageToPdfWidget,
+  TimerWidget,
+} from "@/components/widgets";
 
 /**
  * 등록된 모든 위젯 목록
@@ -19,19 +22,18 @@ export const WIDGETS: WidgetConfig[] = [
     order: 1,
     enabled: true,
   },
-  // 추가 위젯은 여기에 등록
-  // {
-  //   id: 'quick-memo',
-  //   name: '빠른 메모',
-  //   icon: IconNotes,
-  //   description: '빠르게 메모를 작성합니다',
-  //   component: QuickMemoWidget,
-  //   displayMode: 'modal',
-  //   modalSize: 'md',
-  //   color: 'green',
-  //   order: 2,
-  //   enabled: true,
-  // },
+  {
+    id: "timer",
+    name: "타이머",
+    icon: IconHourglassHigh,
+    description: "자유롭게 시간을 설정하고 카운트다운을 실행합니다",
+    component: TimerWidget,
+    displayMode: "modal",
+    modalSize: "lg",
+    color: "teal",
+    order: 2,
+    enabled: true,
+  },
 ];
 
 /**
