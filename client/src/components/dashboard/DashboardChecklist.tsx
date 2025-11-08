@@ -70,7 +70,7 @@ function ChecklistItemRow({
         alignItems: "center",
         backgroundColor: item.isCompleted
           ? "var(--mantine-color-gray-0)"
-          : "white",
+          : "var(--mantine-color-body)",
       }}
     >
       <Checkbox
@@ -78,6 +78,7 @@ function ChecklistItemRow({
         checked={item.isCompleted}
         onChange={(event) => onToggle(item.id, event.currentTarget.checked)}
         radius="sm"
+        styles={{ input: { cursor: "pointer" } }}
       />
       <TextInput
         value={value}

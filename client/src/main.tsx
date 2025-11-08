@@ -11,12 +11,16 @@ import "@mantine/notifications/styles.css";
 import "./index.css";
 import App from "./App.tsx";
 import { queryClient } from "./lib/queryClient";
-import { worklifeTheme } from "./theme";
+import { worklifeTheme, worklifeCssVariablesResolver } from "./theme";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <MantineProvider theme={worklifeTheme} defaultColorScheme="light">
+      <MantineProvider
+        theme={worklifeTheme}
+        defaultColorScheme="light"
+        cssVariablesResolver={worklifeCssVariablesResolver}
+      >
         <ModalsProvider>
           <Notifications position="top-right" />
           <App />

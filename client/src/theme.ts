@@ -1,4 +1,8 @@
-import { type MantineColorsTuple, createTheme } from "@mantine/core";
+import {
+  type MantineColorsTuple,
+  type CSSVariablesResolver,
+  createTheme,
+} from "@mantine/core";
 
 const worklifeNavy: MantineColorsTuple = [
   "#f2f4f8",
@@ -176,5 +180,21 @@ export const worklifeTheme = createTheme({
       sectionSpacing: "64px",
       cardPadding: "16px",
     },
+  },
+});
+
+export const worklifeCssVariablesResolver: CSSVariablesResolver = (theme) => ({
+  variables: {},
+  light: {
+    "--mantine-color-body": theme.colors["light-gray"][1],
+    "--mantine-color-text": theme.colors["worklife-navy"][8],
+    "--app-shell-background": theme.white,
+    "--app-shell-border-color": theme.colors["light-gray"][3],
+  },
+  dark: {
+    "--mantine-color-body": theme.colors.dark[7],
+    "--mantine-color-text": theme.colors.gray[1],
+    "--app-shell-background": theme.colors.dark[8],
+    "--app-shell-border-color": theme.colors.dark[5],
   },
 });

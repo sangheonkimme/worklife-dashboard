@@ -12,8 +12,9 @@ body {
   font-family: Pretendard, "Poppins", -apple-system, BlinkMacSystemFont,
     system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo",
     "Noto Sans KR", "Malgun Gothic", sans-serif;
-  background-color: #fafafa;
-  color: #1e2a47;
+  background-color: var(--mantine-color-body);
+  color: var(--mantine-color-text);
+  transition: background-color 150ms ease, color 150ms ease;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
