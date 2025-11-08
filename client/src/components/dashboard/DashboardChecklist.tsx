@@ -25,7 +25,10 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 import { dashboardChecklistApi } from "@/services/api/dashboardChecklistApi";
-import type { DashboardChecklistItem } from "@/types/dashboardChecklist";
+import type {
+  DashboardChecklistItem,
+  DashboardChecklistResponse,
+} from "@/types/dashboardChecklist";
 
 interface ChecklistItemRowProps {
   item: DashboardChecklistItem;
@@ -115,24 +118,67 @@ export function DashboardChecklist() {
   const queryClient = useQueryClient();
   const [inputValue, setInputValue] = useState("");
   const [showCompleted, setShowCompleted] = useState(false);
+  const queryKey = ["dashboardChecklist"] as const;
 
   const { data, isLoading } = useQuery({
-    queryKey: ["dashboardChecklist"],
+    queryKey,
     queryFn: dashboardChecklistApi.getList,
   });
 
   const invalidate = () => {
-    queryClient.invalidateQueries({ queryKey: ["dashboardChecklist"] });
+    queryClient.invalidateQueries({ queryKey });
   };
 
   const createMutation = useMutation({
     mutationFn: (content: string) =>
       dashboardChecklistApi.createItem({ content }),
-    onSuccess: () => {
-      invalidate();
-      setInputValue("");
+    onMutate: async (content) => {
+      await queryClient.cancelQueries({ queryKey });
+      const previousData =
+        queryClient.getQueryData<DashboardChecklistResponse>(queryKey);
+      if (!previousData) {
+        return { previousData };
+      }
+
+      const optimisticId = `temp-${Date.now()}`;
+      const now = new Date().toISOString();
+      const optimisticItem: DashboardChecklistItem = {
+        id: optimisticId,
+        content,
+        isCompleted: false,
+        order: previousData.activeItems.length + 1,
+        createdAt: now,
+        updatedAt: now,
+      };
+
+      queryClient.setQueryData(queryKey, {
+        ...previousData,
+        activeItems: [optimisticItem, ...previousData.activeItems],
+      });
+
+      return { previousData, optimisticId };
     },
-    onError: (error: any) => {
+    onSuccess: (newItem, _content, context) => {
+      setInputValue("");
+      if (context?.optimisticId) {
+        queryClient.setQueryData<DashboardChecklistResponse | undefined>(
+          queryKey,
+          (current) => {
+            if (!current) return current;
+            return {
+              ...current,
+              activeItems: current.activeItems.map((item) =>
+                item.id === context.optimisticId ? newItem : item
+              ),
+            };
+          }
+        );
+      }
+    },
+    onError: (error: any, _content, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(queryKey, context.previousData);
+      }
       notifications.show({
         title: "추가 실패",
         message:
@@ -141,58 +187,178 @@ export function DashboardChecklist() {
         color: "red",
       });
     },
+    onSettled: () => {
+      invalidate();
+    },
   });
 
   const updateMutation = useMutation({
     mutationFn: ({ id, content }: { id: string; content?: string }) =>
       dashboardChecklistApi.updateItem(id, { content }),
-    onSuccess: invalidate,
-    onError: () => {
+    onMutate: async ({ id, content }) => {
+      await queryClient.cancelQueries({ queryKey });
+      const previousData =
+        queryClient.getQueryData<DashboardChecklistResponse>(queryKey);
+      if (!previousData || !content) {
+        return { previousData };
+      }
+
+      const applyContentUpdate = (items: DashboardChecklistItem[]) =>
+        items.map((item) =>
+          item.id === id
+            ? { ...item, content, updatedAt: new Date().toISOString() }
+            : item
+        );
+
+      queryClient.setQueryData(queryKey, {
+        ...previousData,
+        activeItems: applyContentUpdate(previousData.activeItems),
+        completedItems: applyContentUpdate(previousData.completedItems),
+      });
+
+      return { previousData };
+    },
+    onError: (_error, _variables, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(queryKey, context.previousData);
+      }
       notifications.show({
         title: "업데이트 실패",
         message: "변경 사항을 저장하지 못했습니다",
         color: "red",
       });
     },
+    onSettled: invalidate,
   });
 
   const toggleMutation = useMutation({
     mutationFn: ({ id, isCompleted }: { id: string; isCompleted: boolean }) =>
       dashboardChecklistApi.updateItem(id, { isCompleted }),
-    onSuccess: invalidate,
-    onError: () => {
+    onMutate: async ({ id, isCompleted }) => {
+      await queryClient.cancelQueries({ queryKey });
+      const previousData =
+        queryClient.getQueryData<DashboardChecklistResponse>(queryKey);
+      if (!previousData) {
+        return { previousData };
+      }
+
+      let targetItem: DashboardChecklistItem | undefined;
+      const nextActive = previousData.activeItems.filter((item) => {
+        if (item.id === id) {
+          targetItem = { ...item };
+          return false;
+        }
+        return true;
+      });
+      const nextCompleted = previousData.completedItems.filter((item) => {
+        if (item.id === id) {
+          targetItem = { ...item };
+          return false;
+        }
+        return true;
+      });
+
+      if (!targetItem) {
+        return { previousData };
+      }
+
+      const updatedItem: DashboardChecklistItem = {
+        ...targetItem,
+        isCompleted,
+        updatedAt: new Date().toISOString(),
+      };
+
+      queryClient.setQueryData(queryKey, {
+        ...previousData,
+        activeItems: isCompleted
+          ? nextActive
+          : [updatedItem, ...nextActive],
+        completedItems: isCompleted
+          ? [updatedItem, ...nextCompleted]
+          : nextCompleted,
+      });
+
+      return { previousData };
+    },
+    onError: (_error, _variables, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(queryKey, context.previousData);
+      }
       notifications.show({
         title: "상태 변경 실패",
         message: "체크 상태를 변경할 수 없습니다",
         color: "red",
       });
     },
+    onSettled: invalidate,
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => dashboardChecklistApi.deleteItem(id),
-    onSuccess: invalidate,
-    onError: () => {
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey });
+      const previousData =
+        queryClient.getQueryData<DashboardChecklistResponse>(queryKey);
+      if (!previousData) {
+        return { previousData };
+      }
+
+      queryClient.setQueryData(queryKey, {
+        ...previousData,
+        activeItems: previousData.activeItems.filter((item) => item.id !== id),
+        completedItems: previousData.completedItems.filter(
+          (item) => item.id !== id
+        ),
+      });
+
+      return { previousData };
+    },
+    onError: (_error, _variables, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(queryKey, context.previousData);
+      }
       notifications.show({
         title: "삭제 실패",
         message: "항목을 삭제할 수 없습니다",
         color: "red",
       });
     },
+    onSettled: invalidate,
   });
 
   const clearCompletedMutation = useMutation({
     mutationFn: async (ids: string[]) => {
       await Promise.all(ids.map((id) => dashboardChecklistApi.deleteItem(id)));
     },
-    onSuccess: invalidate,
-    onError: () => {
+    onMutate: async (ids) => {
+      await queryClient.cancelQueries({ queryKey });
+      const previousData =
+        queryClient.getQueryData<DashboardChecklistResponse>(queryKey);
+      if (!previousData) {
+        return { previousData };
+      }
+
+      const idSet = new Set(ids);
+      queryClient.setQueryData(queryKey, {
+        ...previousData,
+        completedItems: previousData.completedItems.filter(
+          (item) => !idSet.has(item.id)
+        ),
+      });
+
+      return { previousData };
+    },
+    onError: (_error, _variables, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(queryKey, context.previousData);
+      }
       notifications.show({
         title: "삭제 실패",
         message: "완료 항목을 삭제할 수 없습니다",
         color: "red",
       });
     },
+    onSettled: invalidate,
   });
 
   const totalCount = useMemo(() => {
