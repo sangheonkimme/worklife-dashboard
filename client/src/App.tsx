@@ -32,6 +32,11 @@ const ProfilePage = lazy(() =>
   }))
 );
 const NotesPage = lazy(() => import("./pages/NotesPage"));
+const SettingsPage = lazy(() =>
+  import("./pages/SettingsPage").then((module) => ({
+    default: module.SettingsPage,
+  }))
+);
 
 // Loading fallback component
 const LoadingFallback = () => {
@@ -125,6 +130,16 @@ const App = () => {
                 <PrivateRoute>
                   <DashboardLayout>
                     <NotesPage />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <SettingsPage />
                   </DashboardLayout>
                 </PrivateRoute>
               }

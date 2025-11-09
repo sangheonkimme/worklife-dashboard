@@ -13,7 +13,8 @@ WorkLife Dashboard는 React 프론트엔드와 Express 백엔드를 갖춘 풀�
 
 ## 최신 변경사항 메모
 
-- 2024-??-??: TransactionsPage에서 `useFinanceSettingsStore` 값을 객체로 한 번에 구조분해하면서 React 19가 `getSnapshot` 결과가 매 렌더마다 바뀐다고 판단하여 무한 렌더링 경고(`Maximum update depth exceeded`)가 발생한 이슈를 수정했습니다. `payday`와 `setPayday`를 각각 별도 selector로 호출하도록 변경해 동일 스냅샷을 재활용하며, 월급일 선택/통계 계산 로직은 그대로 유지됩니다. 동일 패턴이 필요하면 `useFinanceSettingsStore((state) => state.someValue)`처럼 각 값별 selector 또는 `useShallow`를 사용해주세요.
+- 2025-11-09: `/settings` 페이지가 추가되어 사용자별 월급일/통화/테마/타이머 기본값을 서버와 동기화합니다. `client/src/pages/SettingsPage.tsx`는 `react-hook-form` 기반이며, 저장/되돌리기 스티키 바와 섹션별 dirty 배지가 있으므로 신규 설정 항목을 추가할 때 이 컴포넌트를 확장하세요.
+- 2025-11-07: TransactionsPage에서 `useFinanceSettingsStore` 값을 객체로 한 번에 구조분해하면서 React 19가 `getSnapshot` 결과가 매 렌더마다 바뀐다고 판단하여 무한 렌더링 경고(`Maximum update depth exceeded`)가 발생한 이슈를 수정했습니다. `payday`와 `setPayday`를 각각 별도 selector로 호출하도록 변경해 동일 스냅샷을 재활용하며, 월급일 선택/통계 계산 로직은 그대로 유지됩니다. 동일 패턴이 필요하면 `useFinanceSettingsStore((state) => state.someValue)`처럼 각 값별 selector 또는 `useShallow`를 사용해주세요.
 
 ## 프로젝트 구조
 
@@ -220,6 +221,7 @@ server/src/
 - **마이그레이션 필수**: 체크리스트 작업을 시작하거나 리뷰할 때 `cd server && npm run db:migrate -- --name add_dashboard_checklist_items`로 스키마를 최신 상태로 맞춰주세요. Prisma Client가 필요하면 `npm run db:generate`.
 - **프론트엔드 위젯**: `client/src/components/dashboard/DashboardChecklist.tsx`가 우측 고정 카드이며, TanStack Query 키 `dashboardChecklist`를 사용합니다. 새 항목 입력은 Enter 또는 + 버튼으로 실행됩니다.
 - **스티커 메모 제한**: `StickyNote` 위젯은 최대 3개까지만 생성됩니다. `server/src/services/stickyNoteService.ts`에서 서버 측 제한을, `client/src/components/dashboard/StickyNotes.tsx`에서 UI 제한과 안내 문구를 확인하세요. 위치 인덱스는 0~2만 허용하므로 하드코딩 범위를 변경할 때 백/프론트를 동시에 수정해야 합니다.
+
 9. 컴포넌트에서 TanStack Query 훅 사용
 
 **클라이언트 전용 기능:**
@@ -272,16 +274,17 @@ CLIENT_URL="http://localhost:5173"
 
 ```typescript
 // services/api/exampleApi.ts
-import api from '@/lib/axios';
+import api from "@/lib/axios";
 
 export const exampleApi = {
-  getAll: () => api.get('/api/examples').then(res => res.data),
-  getById: (id: string) => api.get(`/api/examples/${id}`).then(res => res.data),
+  getAll: () => api.get("/api/examples").then((res) => res.data),
+  getById: (id: string) =>
+    api.get(`/api/examples/${id}`).then((res) => res.data),
 };
 
 // 컴포넌트에서
 const { data, isLoading } = useQuery({
-  queryKey: ['examples'],
+  queryKey: ["examples"],
   queryFn: exampleApi.getAll,
 });
 ```
@@ -290,8 +293,8 @@ const { data, isLoading } = useQuery({
 
 ```typescript
 // store/useExampleStore.ts
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface ExampleState {
   value: string;
@@ -301,18 +304,18 @@ interface ExampleState {
 export const useExampleStore = create<ExampleState>()(
   persist(
     (set) => ({
-      value: '',
+      value: "",
       setValue: (value) => set({ value }),
     }),
     {
-      name: 'example-storage', // localStorage 키
+      name: "example-storage", // localStorage 키
     }
   )
 );
 
 // 컴포넌트에서
 const { value, setValue } = useExampleStore();
-setValue('new value');
+setValue("new value");
 ```
 
 ### 서버 패턴
@@ -321,20 +324,20 @@ setValue('new value');
 
 ```typescript
 // routes/exampleRoutes.ts
-import { Router } from 'express';
-import { validate } from '../middlewares/validate';
-import { exampleSchema } from '../validators/exampleValidator';
-import { exampleController } from '../controllers/exampleController';
+import { Router } from "express";
+import { validate } from "../middlewares/validate";
+import { exampleSchema } from "../validators/exampleValidator";
+import { exampleController } from "../controllers/exampleController";
 
 const router = Router();
-router.post('/', validate(exampleSchema), exampleController.create);
+router.post("/", validate(exampleSchema), exampleController.create);
 ```
 
 **Zod 검증:**
 
 ```typescript
 // validators/exampleValidator.ts
-import { z } from 'zod';
+import { z } from "zod";
 
 export const exampleSchema = z.object({
   body: z.object({
@@ -348,7 +351,7 @@ export const exampleSchema = z.object({
 
 ```typescript
 // services/exampleService.ts
-import { prisma } from '../lib/prisma';
+import { prisma } from "../lib/prisma";
 
 export const exampleService = {
   create: (data: CreateDto) => prisma.example.create({ data }),

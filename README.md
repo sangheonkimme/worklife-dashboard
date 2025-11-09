@@ -8,10 +8,12 @@ React 프론트엔드와 Express 백엔드를 갖춘 풀스택 개인 생산성 
 - 📊 급여 공제 계산
 - 📝 메모 및 노트 관리 (마크다운 지원, 태그, 첨부파일)
 - ✅ 대시보드 스티커 메모 & 체크리스트 위젯 (스티커 메모 최대 3개, 체크리스트 최대 7개)
+- ⚙️ 사용자 환경설정 페이지(`/settings`)에서 월급일·통화·테마·타이머/포모도로 기본값을 전역으로 저장
 
 ## 기술 스택
 
 ### 클라이언트
+
 - React 19 + TypeScript
 - Vite 빌드 도구
 - Mantine v7 UI 라이브러리
@@ -20,6 +22,7 @@ React 프론트엔드와 Express 백엔드를 갖춘 풀스택 개인 생산성 
 - React Router
 
 ### 서버
+
 - Express 5 + TypeScript
 - Prisma ORM + PostgreSQL
 - JWT 인증
@@ -52,6 +55,7 @@ npm run docker:dev:down
 ```
 
 서버가 시작되면:
+
 - 서버: http://localhost:5001
 - PostgreSQL: localhost:5432
 
@@ -247,11 +251,13 @@ CLIENT_URL="http://localhost:5173"
 ## 개발 워크플로우
 
 1. **기능 개발**
+
    - 새 브랜치 생성
    - 코드 작성 및 테스트
    - Pull Request 생성
 
 2. **데이터베이스 변경**
+
    ```bash
    cd server
    # schema.prisma 수정 후

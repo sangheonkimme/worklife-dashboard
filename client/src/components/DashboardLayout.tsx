@@ -29,6 +29,7 @@ import {
   IconMenu2,
   IconX,
   IconNotes,
+  IconSettings,
   IconAlertTriangle,
 } from "@tabler/icons-react";
 import { useAuth } from "../hooks/useAuth";
@@ -160,11 +161,17 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
               <Menu.Dropdown>
                 <Menu.Label>계정</Menu.Label>
+              <Menu.Item
+                leftSection={<IconUser size={14} />}
+                onClick={() => navigate("/profile")}
+              >
+                프로필
+              </Menu.Item>
                 <Menu.Item
-                  leftSection={<IconUser size={14} />}
-                  onClick={() => navigate("/profile")}
+                  leftSection={<IconSettings size={14} />}
+                  onClick={() => navigate("/settings")}
                 >
-                  프로필
+                  환경설정
                 </Menu.Item>
 
                 <Menu.Divider />
