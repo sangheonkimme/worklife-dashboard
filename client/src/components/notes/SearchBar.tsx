@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { TextInput, ActionIcon, Kbd, Group } from '@mantine/core';
 import { IconSearch, IconX } from '@tabler/icons-react';
 import { useDebouncedValue } from '@mantine/hooks';
+import { useTranslation } from 'react-i18next';
 
 interface SearchBarProps {
   value: string;
@@ -12,6 +13,7 @@ interface SearchBarProps {
 export function SearchBar({ value, onChange, placeholder }: SearchBarProps) {
   const [searchValue, setSearchValue] = useState(value);
   const [debouncedSearch] = useDebouncedValue(searchValue, 300);
+  const { t } = useTranslation('notes');
 
   useEffect(() => {
     onChange(debouncedSearch);
@@ -28,7 +30,7 @@ export function SearchBar({ value, onChange, placeholder }: SearchBarProps) {
 
   return (
     <TextInput
-      placeholder={placeholder || '메모 검색...'}
+      placeholder={placeholder || t('searchBar.placeholder')}
       leftSection={<IconSearch size={16} />}
       rightSection={
         searchValue ? (

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ActionIcon,
   Affix,
@@ -29,7 +30,11 @@ import type { UseFormReturnType } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import dayjs from "dayjs";
 import { useUserSettings } from "@/hooks/useUserSettings";
-import type { UserSettings, WidgetDockPosition } from "@/types/userSettings";
+import type {
+  LanguagePreference,
+  UserSettings,
+  WidgetDockPosition,
+} from "@/types/userSettings";
 
 export type SettingsFormValues = UserSettings;
 export type SettingsForm = UseFormReturnType<
@@ -37,20 +42,8 @@ export type SettingsForm = UseFormReturnType<
   (values: SettingsFormValues) => SettingsFormValues
 >;
 
-const CURRENCY_OPTIONS = [
-  { label: "대한민국 원 (KRW)", value: "KRW" },
-  { label: "미국 달러 (USD)", value: "USD" },
-  { label: "일본 엔 (JPY)", value: "JPY" },
-  { label: "유로 (EUR)", value: "EUR" },
-  { label: "싱가포르 달러 (SGD)", value: "SGD" },
-];
-
-const LOCALE_OPTIONS = [
-  { label: "한국어 (ko-KR)", value: "ko-KR" },
-  { label: "English (en-US)", value: "en-US" },
-  { label: "日本語 (ja-JP)", value: "ja-JP" },
-  { label: "Deutsch (de-DE)", value: "de-DE" },
-];
+const LANGUAGE_VALUES: LanguagePreference[] = ["system", "ko", "en"];
+const SECTION_IDS = ["finance", "locale", "appearance", "timers", "notifications"] as const;
 
 const FALLBACK_TIMEZONES = [
   "Asia/Seoul",
@@ -64,7 +57,7 @@ const FALLBACK_TIMEZONES = [
   "Australia/Sydney",
 ];
 
-export const getTimezoneOptions = () => {
+const getTimezoneOptions = () => {
   if (typeof Intl !== "undefined" && (Intl as any).supportedValuesOf) {
     try {
       return ((Intl as any).supportedValuesOf("timeZone") as string[]).map((tz) => ({
@@ -89,8 +82,9 @@ const hoursToMilliseconds = (hours: number) => hours * 60 * 60 * 1000;
 
 const MAX_TIMER_DURATION_MS = hoursToMilliseconds(24);
 
-export const createDefaultSettings = (): UserSettings => ({
+const createDefaultSettings = (): UserSettings => ({
   locale: "ko-KR",
+  language: "system",
   timezone:
     typeof Intl !== "undefined" && Intl.DateTimeFormat
       ? Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -135,75 +129,81 @@ export const createDefaultSettings = (): UserSettings => ({
   },
 });
 
-export const SECTION_META = [
-  { id: "finance", label: "재무 기본값" },
-  { id: "locale", label: "지역 & 언어" },
-  { id: "appearance", label: "테마 & 레이아웃" },
-  { id: "timers", label: "타이머 & 집중" },
-  { id: "notifications", label: "알림" },
-];
-
-const validateSettingsValues = (values: SettingsFormValues): Record<string, string> => {
+const validateSettingsValues = (
+  values: SettingsFormValues,
+  translate: (key: string) => string
+): Record<string, string> => {
   const errors: Record<string, string> = {};
 
   if (values.finance.payday < 1 || values.finance.payday > 31) {
-    errors["finance.payday"] = "월급일은 1~31 사이여야 합니다.";
+    errors["finance.payday"] = translate("validation.finance.payday");
   }
   if (!values.finance.currency) {
-    errors["finance.currency"] = "통화를 선택해주세요.";
+    errors["finance.currency"] = translate("validation.finance.currency");
   }
   if (!values.timezone) {
-    errors["timezone"] = "시간대를 선택해주세요.";
+    errors["timezone"] = translate("validation.timezone");
   }
   if (!values.locale) {
-    errors["locale"] = "언어를 선택해주세요.";
+    errors["locale"] = translate("validation.locale");
+  }
+  if (!values.language) {
+    errors["language"] = translate("validation.language");
   }
   if (!values.timers.presets.length) {
-    errors["timers.presets"] = "최소 1개 이상의 프리셋을 등록해주세요.";
+    errors["timers.presets"] = translate("validation.timers.presetRequired");
   } else if (values.timers.presets.length > 6) {
-    errors["timers.presets"] = "프리셋은 최대 6개까지 등록할 수 있어요.";
+    errors["timers.presets"] = translate("validation.timers.presetLimit");
   } else if (
     values.timers.presets.some(
       (ms) => ms < minutesToMilliseconds(1) || ms > MAX_TIMER_DURATION_MS
     )
   ) {
-    errors["timers.presets"] = "프리셋은 1분 이상, 24시간 이하로만 설정할 수 있어요.";
+    errors["timers.presets"] = translate("validation.timers.presetRange");
   }
 
   if (values.pomodoro.focusDuration < 60 || values.pomodoro.focusDuration > 3600) {
-    errors["pomodoro.focusDuration"] = "집중 시간은 1~60분(60~3600초) 범위여야 합니다.";
+    errors["pomodoro.focusDuration"] = translate("validation.pomodoro.focusDuration");
   }
   if (
     values.pomodoro.shortBreakDuration < 60 ||
     values.pomodoro.shortBreakDuration > 1800
   ) {
-    errors["pomodoro.shortBreakDuration"] = "휴식 시간은 1~30분 사이여야 합니다.";
+    errors["pomodoro.shortBreakDuration"] = translate(
+      "validation.pomodoro.shortBreakDuration"
+    );
   }
   if (
     values.pomodoro.longBreakDuration < 300 ||
     values.pomodoro.longBreakDuration > 3600
   ) {
-    errors["pomodoro.longBreakDuration"] = "롱 브레이크는 5~60분 범위여야 합니다.";
+    errors["pomodoro.longBreakDuration"] = translate(
+      "validation.pomodoro.longBreakDuration"
+    );
   }
   if (values.pomodoro.longBreakInterval < 1 || values.pomodoro.longBreakInterval > 8) {
-    errors["pomodoro.longBreakInterval"] = "롱 브레이크 주기는 1~8 사이여야 합니다.";
+    errors["pomodoro.longBreakInterval"] = translate(
+      "validation.pomodoro.longBreakInterval"
+    );
   }
   if (values.pomodoro.soundVolume < 0 || values.pomodoro.soundVolume > 100) {
-    errors["pomodoro.soundVolume"] = "볼륨은 0~100 사이여야 합니다.";
+    errors["pomodoro.soundVolume"] = translate("validation.pomodoro.soundVolume");
   }
   if (
     values.stopwatch.defaultGoalTime !== null &&
     (values.stopwatch.defaultGoalTime < minutesToMilliseconds(1) ||
       values.stopwatch.defaultGoalTime > MAX_TIMER_DURATION_MS)
   ) {
-    errors["stopwatch.defaultGoalTime"] =
-      "목표 시간은 1분 이상, 24시간 이하여야 합니다.";
+    errors["stopwatch.defaultGoalTime"] = translate(
+      "validation.stopwatch.goalTime"
+    );
   }
 
   return errors;
 };
 
 export const SettingsPage = () => {
+  const { t } = useTranslation(["settings", "common"]);
   const {
     settings,
     initialized,
@@ -217,6 +217,25 @@ export const SettingsPage = () => {
 
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
   const timezoneOptions = useMemo(() => getTimezoneOptions(), []);
+  const currencyOptions = useMemo(
+    () => [
+      { label: t("settings:finance.currencyOptions.KRW"), value: "KRW" },
+      { label: t("settings:finance.currencyOptions.USD"), value: "USD" },
+      { label: t("settings:finance.currencyOptions.JPY"), value: "JPY" },
+      { label: t("settings:finance.currencyOptions.EUR"), value: "EUR" },
+      { label: t("settings:finance.currencyOptions.SGD"), value: "SGD" },
+    ],
+    [t]
+  );
+  const formatLocaleOptions = useMemo(
+    () => [
+      { label: t("settings:locale.formatLocaleOptions.ko-KR"), value: "ko-KR" },
+      { label: t("settings:locale.formatLocaleOptions.en-US"), value: "en-US" },
+      { label: t("settings:locale.formatLocaleOptions.ja-JP"), value: "ja-JP" },
+      { label: t("settings:locale.formatLocaleOptions.de-DE"), value: "de-DE" },
+    ],
+    [t]
+  );
   const initialValues = useMemo(
     () => settings ?? createDefaultSettings(),
     [settings]
@@ -235,13 +254,13 @@ export const SettingsPage = () => {
   }, [settings]);
 
   const handleSubmit = async (values: SettingsFormValues) => {
-    const validationErrors = validateSettingsValues(values);
+    const validationErrors = validateSettingsValues(values, (key) => t(`settings:${key}`));
     if (Object.keys(validationErrors).length > 0) {
       form.setErrors(validationErrors);
       notifications.show({
         color: "yellow",
-        title: "입력을 확인해주세요",
-        message: "일부 필드에 잘못된 값이 있습니다. 안내 메시지를 확인해주세요.",
+        title: t("common:notifications.validation.title"),
+        message: t("common:notifications.validation.message"),
       });
       return;
     }
@@ -253,18 +272,18 @@ export const SettingsPage = () => {
       setLastSavedAt(new Date());
       notifications.show({
         color: "green",
-        title: "저장 완료",
-        message: "설정이 저장되었습니다.",
+        title: t("common:notifications.saveSuccess.title"),
+        message: t("common:notifications.saveSuccess.message"),
         icon: <IconCheck size={18} />,
       });
     } catch (submitError) {
       notifications.show({
         color: "red",
-        title: "저장 실패",
+        title: t("settings:page.saveErrorTitle"),
         message:
           submitError instanceof Error
             ? submitError.message
-            : "설정을 저장하지 못했어요. 잠시 후 다시 시도해주세요.",
+            : t("settings:page.saveErrorMessage"),
         icon: <IconX size={18} />,
       });
     }
@@ -285,7 +304,10 @@ export const SettingsPage = () => {
     return (
       <Container size="xl" py="xl">
         <Stack gap="lg">
-          <PageHeader title="환경설정" description="계정 전역에서 사용하는 기본값을 관리하세요." />
+          <PageHeader
+            title={t("settings:page.title")}
+            description={t("settings:page.description")}
+          />
           <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
             {Array.from({ length: 4 }).map((_, index) => (
               <Card key={index} radius="md" withBorder shadow="sm" padding="lg">
@@ -307,8 +329,8 @@ export const SettingsPage = () => {
     <Container size="xl" py="xl" id="settings-page">
       <Stack gap="lg">
         <PageHeader
-          title="환경설정"
-          description="급여 주기, 통화, 테마, 타이머 기본값 등을 한 곳에서 관리하세요."
+          title={t("settings:page.title")}
+          description={t("settings:page.description")}
           lastSavedAt={lastSavedAt}
         />
 
@@ -318,13 +340,18 @@ export const SettingsPage = () => {
           <Paper withBorder shadow="xs" p="md" radius="md" bg="var(--mantine-color-red-0)">
             <Group justify="space-between" align="flex-start">
               <div>
-                <Text fw={600}>설정을 불러오지 못했어요</Text>
+                <Text fw={600}>{t("common:errors.settingsFetchTitle")}</Text>
                 <Text size="sm" c="dimmed">
-                  {settingsError}
+                  {settingsError ?? t("settings:page.errorDescription")}
                 </Text>
               </div>
-              <Button size="xs" variant="light" leftSection={<IconRefresh size={14} />} onClick={() => refetch()}>
-                다시 시도
+              <Button
+                size="xs"
+                variant="light"
+                leftSection={<IconRefresh size={14} />}
+                onClick={() => refetch()}
+              >
+                {t("common:actions.retry")}
               </Button>
             </Group>
           </Paper>
@@ -361,6 +388,7 @@ interface PageHeaderProps {
 }
 
 const PageHeader = ({ title, description, lastSavedAt }: PageHeaderProps) => {
+  const { t } = useTranslation('settings');
   return (
     <Stack gap={4}>
       <div>
@@ -371,29 +399,34 @@ const PageHeader = ({ title, description, lastSavedAt }: PageHeaderProps) => {
       </div>
       {lastSavedAt && (
         <Text size="xs" c="dimmed">
-          마지막 저장: {dayjs(lastSavedAt).format("YYYY.MM.DD HH:mm:ss")}
+          {t("settings:status.lastSaved", {
+            timestamp: dayjs(lastSavedAt).format("YYYY.MM.DD HH:mm:ss"),
+          })}
         </Text>
       )}
     </Stack>
   );
 };
 
-const SectionNavigator = () => (
-  <Group gap="xs">
-    {SECTION_META.map((section) => (
-      <Button
-        key={section.id}
-        component="a"
-        href={`#${section.id}`}
-        variant="subtle"
-        size="xs"
-        radius="xl"
-      >
-        {section.label}
-      </Button>
-    ))}
-  </Group>
-);
+const SectionNavigator = () => {
+  const { t } = useTranslation("settings");
+  return (
+    <Group gap="xs">
+      {SECTION_IDS.map((sectionId) => (
+        <Button
+          key={sectionId}
+          component="a"
+          href={`#${sectionId}`}
+          variant="subtle"
+          size="xs"
+          radius="xl"
+        >
+          {t(`sections.${sectionId}.label`)}
+        </Button>
+      ))}
+    </Group>
+  );
+};
 
 interface SectionCardProps {
   id: string;
@@ -403,24 +436,27 @@ interface SectionCardProps {
   children: React.ReactNode;
 }
 
-const SectionCard = ({ id, title, description, dirty, children }: SectionCardProps) => (
-  <Card id={id} withBorder shadow="sm" radius="lg" padding="xl" component="section">
-    <Group justify="space-between" align="flex-start" mb="lg">
-      <div>
-        <Title order={4}>{title}</Title>
-        <Text size="sm" c="dimmed">
-          {description}
-        </Text>
-      </div>
-      {dirty && (
-        <Badge color="blue" variant="light">
-          수정됨
-        </Badge>
-      )}
-    </Group>
-    {children}
-  </Card>
-);
+const SectionCard = ({ id, title, description, dirty, children }: SectionCardProps) => {
+  const { t } = useTranslation('settings');
+  return (
+    <Card id={id} withBorder shadow="sm" radius="lg" padding="xl" component="section">
+      <Group justify="space-between" align="flex-start" mb="lg">
+        <div>
+          <Title order={4}>{title}</Title>
+          <Text size="sm" c="dimmed">
+            {description}
+          </Text>
+        </div>
+        {dirty && (
+          <Badge color="blue" variant="light">
+            {t('status.modified')}
+          </Badge>
+        )}
+      </Group>
+      {children}
+    </Card>
+  );
+};
 
 export const FinanceSection = ({
   form,
@@ -429,11 +465,15 @@ export const FinanceSection = ({
   form: SettingsForm;
   locale: string;
 }) => {
-  const weekOptions = [
-    { label: "일요일", value: "0" },
-    { label: "월요일", value: "1" },
-    { label: "토요일", value: "6" },
-  ];
+  const { t } = useTranslation("settings");
+  const weekOptions = useMemo(
+    () => [
+      { label: t("finance.weekdays.0"), value: "0" },
+      { label: t("finance.weekdays.1"), value: "1" },
+      { label: t("finance.weekdays.6"), value: "6" },
+    ],
+    [t]
+  );
 
   const currencyPreview = useMemo(() => {
     try {
@@ -442,7 +482,7 @@ export const FinanceSection = ({
         currency: form.values.finance.currency,
       }).format(1234567);
     } catch {
-      return "지원되지 않는 통화 형식입니다.";
+      return t("finance.currencyFormatError");
     }
   }, [form.values.finance.currency, locale]);
 
@@ -454,24 +494,24 @@ export const FinanceSection = ({
   return (
     <SectionCard
       id="finance"
-      title="재무 기본값"
-      description="거래 및 통계 위젯에 적용될 월급일, 통화, 주 시작 요일을 지정합니다."
+      title={t("sections.finance.title")}
+      description={t("sections.finance.description")}
       dirty={dirty}
     >
       <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
         <NumberInput
-          label="월급일"
-          description="1~31일 중 선택"
+          label={t("finance.fields.payday.label")}
+          description={t("finance.fields.payday.description")}
           min={1}
           max={31}
           withAsterisk
           {...form.getInputProps("finance.payday")}
         />
         <Select
-          label="기본 통화"
+          label={t("finance.fields.currency.label")}
           searchable
           withAsterisk
-          data={CURRENCY_OPTIONS}
+          data={currencyOptions}
           {...form.getInputProps("finance.currency")}
         />
       </SimpleGrid>
@@ -479,7 +519,7 @@ export const FinanceSection = ({
       <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg" mt="lg">
         <Stack gap={8}>
           <Text fw={500} size="sm">
-            주 시작 요일
+            {t("finance.fields.weekStartsOn")}
           </Text>
           <SegmentedControl
             value={String(form.values.finance.weekStartsOn)}
@@ -491,7 +531,7 @@ export const FinanceSection = ({
         </Stack>
         <Paper withBorder radius="md" p="md">
           <Text size="sm" c="dimmed" mb={4}>
-            통화 포맷 미리보기
+            {t("finance.fields.preview")}
           </Text>
           <Text fw={600}>{currencyPreview}</Text>
         </Paper>
@@ -507,9 +547,16 @@ export const LocaleSection = ({
   form: SettingsForm;
   timezoneOptions: { label: string; value: string }[];
 }) => {
+  const { t } = useTranslation("settings");
   const dirty =
     form.isDirty("timezone") ||
-    form.isDirty("locale");
+    form.isDirty("locale") ||
+    form.isDirty("language");
+
+  const languageOptions = LANGUAGE_VALUES.map((value) => ({
+    value,
+    label: t(`locale.languageOptions.${value}`),
+  }));
 
   const formattedDate = useMemo(() => {
     try {
@@ -526,24 +573,33 @@ export const LocaleSection = ({
   return (
     <SectionCard
       id="locale"
-      title="지역 & 언어"
-      description="시간대와 언어를 지정해 날짜, 통화 등의 표기에 반영합니다."
+      title={t("sections.locale.title")}
+      description={t("sections.locale.description")}
       dirty={dirty}
     >
       <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
         <Select
-          label="시간대"
+          label={t("locale.timezoneLabel")}
           searchable
           withAsterisk
-          nothingFoundMessage="검색 결과가 없습니다"
+          nothingFoundMessage={t("locale.noResults")}
           data={timezoneOptions}
           {...form.getInputProps("timezone")}
         />
         <Select
-          label="서비스 언어"
+          label={t("locale.serviceLanguageLabel")}
+          description={t("locale.serviceLanguageDescription")}
           searchable
           withAsterisk
-          data={LOCALE_OPTIONS}
+          data={languageOptions}
+          {...form.getInputProps("language")}
+        />
+        <Select
+          label={t("locale.formatLocaleLabel")}
+          description={t("locale.formatLocaleDescription")}
+          searchable
+          withAsterisk
+          data={formatLocaleOptions}
           {...form.getInputProps("locale")}
         />
       </SimpleGrid>
@@ -552,7 +608,7 @@ export const LocaleSection = ({
         <Group justify="space-between" align="center">
           <div>
             <Text size="sm" c="dimmed">
-              날짜/시간 미리보기
+              {t("locale.previewLabel")}
             </Text>
             <Text fw={600}>{formattedDate}</Text>
           </div>
@@ -567,6 +623,7 @@ export const AppearanceSection = ({
 }: {
   form: SettingsForm;
 }) => {
+  const { t } = useTranslation("settings");
   const dirty =
     form.isDirty("appearance.colorScheme") ||
     form.isDirty("appearance.sidebarPinned") ||
@@ -578,14 +635,14 @@ export const AppearanceSection = ({
   return (
     <SectionCard
       id="appearance"
-      title="테마 & 레이아웃"
-      description="전역 색상 모드와 사이드바, 위젯 독 기본 상태를 관리합니다."
+      title={t("sections.appearance.title")}
+      description={t("sections.appearance.description")}
       dirty={dirty}
     >
       <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg">
         <Stack gap={8}>
           <Text fw={500} size="sm">
-            컬러 스킴
+            {t('appearanceSettings.fields.colorScheme')}
           </Text>
           <SegmentedControl
             value={form.values.appearance.colorScheme}
@@ -593,25 +650,25 @@ export const AppearanceSection = ({
               form.setFieldValue("appearance.colorScheme", value as SettingsFormValues["appearance"]["colorScheme"])
             }
             data={[
-              { label: "Light", value: "light" },
-              { label: "Dark", value: "dark" },
-              { label: "System", value: "system" },
+              { label: t('appearanceSettings.colorSchemeOptions.light'), value: "light" },
+              { label: t('appearanceSettings.colorSchemeOptions.dark'), value: "dark" },
+              { label: t('appearanceSettings.colorSchemeOptions.system'), value: "system" },
             ]}
           />
         </Stack>
 
         <Stack gap="xs">
           <Switch
-            label="사이드바 고정"
-            description="로그인 시 자동으로 펼쳐진 상태를 유지합니다."
+            label={t('appearanceSettings.fields.sidebarPinned.label')}
+            description={t('appearanceSettings.fields.sidebarPinned.description')}
             checked={form.values.appearance.sidebarPinned}
             onChange={(event) =>
               form.setFieldValue("appearance.sidebarPinned", event.currentTarget.checked)
             }
           />
           <Switch
-            label="위젯 자동 닫힘"
-            description="다른 위젯을 열면 기존 위젯을 닫습니다."
+            label={t('appearanceSettings.fields.widgetAutoClose.label')}
+            description={t('appearanceSettings.fields.widgetAutoClose.description')}
             checked={form.values.appearance.widgetAutoClose}
             onChange={(event) =>
               form.setFieldValue("appearance.widgetAutoClose", event.currentTarget.checked)
@@ -624,7 +681,7 @@ export const AppearanceSection = ({
 
       <Stack gap="xs">
         <Text fw={500} size="sm">
-          위젯 독 위치
+          {t('appearanceSettings.fields.dockPosition')}
         </Text>
         <SegmentedControl
           value={dockPosition}
@@ -632,8 +689,8 @@ export const AppearanceSection = ({
             form.setFieldValue("appearance.widgetDockPosition", value as WidgetDockPosition)
           }
           data={[
-            { label: "좌측", value: "left" },
-            { label: "우측", value: "right" },
+            { label: t('appearanceSettings.dockOptions.left'), value: "left" },
+            { label: t('appearanceSettings.dockOptions.right'), value: "right" },
           ]}
         />
       </Stack>
@@ -646,6 +703,7 @@ export const TimerSection = ({
 }: {
   form: SettingsForm;
 }) => {
+  const { t } = useTranslation("settings");
   const [newPresetMinutes, setNewPresetMinutes] = useState<number | "">("");
   const dirty =
     form.isDirty("timers") ||
@@ -658,8 +716,8 @@ export const TimerSection = ({
     if (milliseconds > MAX_TIMER_DURATION_MS) {
       notifications.show({
         color: "yellow",
-        title: "프리셋 제한",
-        message: "프리셋은 24시간을 초과할 수 없습니다.",
+        title: t('timersSection.alerts.presetTooLong.title'),
+        message: t('timersSection.alerts.presetTooLong.message'),
       });
       return;
     }
@@ -667,16 +725,16 @@ export const TimerSection = ({
     if (exists) {
       notifications.show({
         color: "yellow",
-        title: "중복 프리셋",
-        message: "이미 동일한 프리셋이 존재합니다.",
+        title: t('timersSection.alerts.duplicatePreset.title'),
+        message: t('timersSection.alerts.duplicatePreset.message'),
       });
       return;
     }
     if (form.values.timers.presets.length >= 6) {
       notifications.show({
         color: "yellow",
-        title: "프리셋 한도",
-        message: "프리셋은 최대 6개까지 추가할 수 있어요.",
+        title: t('timersSection.alerts.maxPresets.title'),
+        message: t('timersSection.alerts.maxPresets.message'),
       });
       return;
     }
@@ -694,17 +752,17 @@ export const TimerSection = ({
   return (
     <SectionCard
       id="timers"
-      title="타이머 & 집중 도구"
-      description="일반 타이머, 포모도로, 스톱워치 기본값을 설정해 기기마다 동일하게 사용합니다."
+      title={t("sections.timers.title")}
+      description={t("sections.timers.description")}
       dirty={dirty}
     >
       <Stack gap="lg">
         <div>
           <Group justify="space-between">
             <div>
-              <Text fw={600}>일반 타이머</Text>
+              <Text fw={600}>{t('timersSection.timerCard.title')}</Text>
               <Text size="sm" c="dimmed">
-                프리셋과 알림 기본 옵션을 관리합니다.
+                {t('timersSection.timerCard.description')}
               </Text>
             </div>
           </Group>
@@ -725,20 +783,22 @@ export const TimerSection = ({
                     </ActionIcon>
                   }
                 >
-                  {millisecondsToMinutes(preset)}분
+                  {t('timersSection.timerCard.presetDisplay', {
+                    minutes: millisecondsToMinutes(preset),
+                  })}
                 </Badge>
               ))}
             </Group>
             <Group grow>
               <NumberInput
-                label="새 프리셋 (분)"
+                label={t('timersSection.timerCard.fields.presetLabel')}
                 min={1}
                 max={24 * 60}
                 value={newPresetMinutes}
                 onChange={(value) => setNewPresetMinutes(value === "" ? "" : Number(value))}
               />
               <Button mt="xl" variant="light" onClick={addPreset}>
-                추가
+                {t('timersSection.timerCard.fields.addButton')}
               </Button>
             </Group>
             {form.errors["timers.presets"] && (
@@ -750,32 +810,32 @@ export const TimerSection = ({
 
           <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg" mt="lg">
             <Switch
-              label="자동 반복"
-              description="완료 후 즉시 다음 타이머를 시작합니다."
+              label={t('timersSection.timerCard.fields.autoRepeat.label')}
+              description={t('timersSection.timerCard.fields.autoRepeat.description')}
               checked={form.values.timers.autoRepeat}
               onChange={(event) =>
                 form.setFieldValue("timers.autoRepeat", event.currentTarget.checked)
               }
             />
             <Switch
-              label="알림 활성화"
-              description="타이머 완료 시 브라우저 알림을 표시합니다."
+              label={t('timersSection.timerCard.fields.notifications.label')}
+              description={t('timersSection.timerCard.fields.notifications.description')}
               checked={form.values.timers.notifications}
               onChange={(event) =>
                 form.setFieldValue("timers.notifications", event.currentTarget.checked)
               }
             />
             <Switch
-              label="사운드 활성화"
-              description="완료 시 사운드를 재생합니다."
+              label={t('timersSection.timerCard.fields.sound.label')}
+              description={t('timersSection.timerCard.fields.sound.description')}
               checked={form.values.timers.soundEnabled}
               onChange={(event) =>
                 form.setFieldValue("timers.soundEnabled", event.currentTarget.checked)
               }
             />
             <NumberInput
-              label="사전 알림 (분)"
-              description="완료 전에 알려줄 시간을 분 단위로 지정합니다."
+              label={t('timersSection.timerCard.fields.preAlert.label')}
+              description={t('timersSection.timerCard.fields.preAlert.description')}
               min={0}
               max={60}
               value={form.values.timers.preAlertMs ? millisecondsToMinutes(form.values.timers.preAlertMs) : 0}
@@ -794,15 +854,15 @@ export const TimerSection = ({
         <div>
           <Group justify="space-between">
             <div>
-              <Text fw={600}>포모도로</Text>
+              <Text fw={600}>{t('timersSection.pomodoroCard.title')}</Text>
               <Text size="sm" c="dimmed">
-                집중/휴식 길이와 자동 시작, 알림 옵션을 설정합니다.
+                {t('timersSection.pomodoroCard.description')}
               </Text>
             </div>
           </Group>
           <SimpleGrid cols={{ base: 1, md: 3 }} spacing="lg" mt="md">
             <NumberInput
-              label="집중 시간 (분)"
+              label={t('timersSection.pomodoroCard.fields.focus')}
               min={1}
               max={60}
               value={secondsToMinutes(form.values.pomodoro.focusDuration)}
@@ -811,7 +871,7 @@ export const TimerSection = ({
               }
             />
             <NumberInput
-              label="짧은 휴식 (분)"
+              label={t('timersSection.pomodoroCard.fields.shortBreak')}
               min={1}
               max={30}
               value={secondsToMinutes(form.values.pomodoro.shortBreakDuration)}
@@ -820,7 +880,7 @@ export const TimerSection = ({
               }
             />
             <NumberInput
-              label="긴 휴식 (분)"
+              label={t('timersSection.pomodoroCard.fields.longBreak')}
               min={5}
               max={60}
               value={secondsToMinutes(form.values.pomodoro.longBreakDuration)}
@@ -831,22 +891,22 @@ export const TimerSection = ({
           </SimpleGrid>
           <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg" mt="md">
             <NumberInput
-              label="롱 브레이크 주기"
-              description="몇 번째 세션마다 긴 휴식을 진행할지"
+              label={t('timersSection.pomodoroCard.fields.longBreakInterval.label')}
+              description={t('timersSection.pomodoroCard.fields.longBreakInterval.description')}
               min={1}
               max={8}
               {...form.getInputProps("pomodoro.longBreakInterval")}
             />
             <Stack gap="xs">
               <Switch
-                label="집중 종료 후 자동으로 휴식 시작"
+                label={t('timersSection.pomodoroCard.fields.autoStartBreak')}
                 checked={form.values.pomodoro.autoStartBreak}
                 onChange={(event) =>
                   form.setFieldValue("pomodoro.autoStartBreak", event.currentTarget.checked)
                 }
               />
               <Switch
-                label="휴식 종료 후 자동으로 집중 시작"
+                label={t('timersSection.pomodoroCard.fields.autoStartFocus')}
                 checked={form.values.pomodoro.autoStartFocus}
                 onChange={(event) =>
                   form.setFieldValue("pomodoro.autoStartFocus", event.currentTarget.checked)
@@ -856,14 +916,14 @@ export const TimerSection = ({
           </SimpleGrid>
           <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg" mt="md">
             <Switch
-              label="알림 활성화"
+              label={t('timersSection.pomodoroCard.fields.notifications')}
               checked={form.values.pomodoro.notificationEnabled}
               onChange={(event) =>
                 form.setFieldValue("pomodoro.notificationEnabled", event.currentTarget.checked)
               }
             />
             <Switch
-              label="사운드 활성화"
+              label={t('timersSection.pomodoroCard.fields.sound')}
               checked={form.values.pomodoro.soundEnabled}
               onChange={(event) =>
                 form.setFieldValue("pomodoro.soundEnabled", event.currentTarget.checked)
@@ -872,7 +932,7 @@ export const TimerSection = ({
           </SimpleGrid>
           <Box mt="md">
             <Text fw={500} size="sm" mb="xs">
-              사운드 볼륨
+              {t('timersSection.pomodoroCard.fields.soundVolume')}
             </Text>
             <Slider
               value={form.values.pomodoro.soundVolume}
@@ -892,16 +952,16 @@ export const TimerSection = ({
         <div>
           <Group justify="space-between">
             <div>
-              <Text fw={600}>스톱워치</Text>
+              <Text fw={600}>{t('timersSection.stopwatchCard.title')}</Text>
               <Text size="sm" c="dimmed">
-                목표 시간과 알림 여부를 지정합니다.
+                {t('timersSection.stopwatchCard.description')}
               </Text>
             </div>
           </Group>
           <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg" mt="md">
             <NumberInput
-              label="기본 목표 시간 (분)"
-              description="0으로 설정하면 목표 시간을 사용하지 않습니다."
+              label={t('timersSection.stopwatchCard.fields.goalTime.label')}
+              description={t('timersSection.stopwatchCard.fields.goalTime.description')}
               min={0}
               max={24 * 60}
               value={
@@ -921,7 +981,7 @@ export const TimerSection = ({
               }}
             />
             <Switch
-              label="목표 도달 알림 수신"
+              label={t('timersSection.stopwatchCard.fields.notifications')}
               checked={form.values.stopwatch.notificationsEnabled}
               onChange={(event) =>
                 form.setFieldValue(
@@ -942,6 +1002,7 @@ export const NotificationsSection = ({
 }: {
   form: SettingsForm;
 }) => {
+  const { t } = useTranslation("settings");
   const dirty =
     form.isDirty("notifications.transactions") ||
     form.isDirty("notifications.monthlyReport") ||
@@ -950,30 +1011,30 @@ export const NotificationsSection = ({
   return (
     <SectionCard
       id="notifications"
-      title="알림"
-      description="서비스에서 제공하는 주요 알림을 제어합니다."
+      title={t("sections.notifications.title")}
+      description={t("sections.notifications.description")}
       dirty={dirty}
     >
       <Stack gap="sm">
         <Switch
-          label="거래 알림"
-          description="거래 동기화 및 이상 패턴 발견 시 알림"
+          label={t('notificationsSection.transactions.label')}
+          description={t('notificationsSection.transactions.description')}
           checked={form.values.notifications.transactions}
           onChange={(event) =>
             form.setFieldValue("notifications.transactions", event.currentTarget.checked)
           }
         />
         <Switch
-          label="월간 리포트 이메일"
-          description="매월 첫째 주 월요일 오전에 리포트를 발송합니다."
+          label={t('notificationsSection.monthlyReport.label')}
+          description={t('notificationsSection.monthlyReport.description')}
           checked={form.values.notifications.monthlyReport}
           onChange={(event) =>
             form.setFieldValue("notifications.monthlyReport", event.currentTarget.checked)
           }
         />
         <Switch
-          label="대시보드 체크리스트 알림"
-          description="체크리스트 또는 타이머 완료 알림을 받습니다."
+          label={t('notificationsSection.checklist.label')}
+          description={t('notificationsSection.checklist.description')}
           checked={form.values.notifications.checklist}
           onChange={(event) =>
             form.setFieldValue("notifications.checklist", event.currentTarget.checked)
@@ -997,6 +1058,7 @@ const SettingsActionBar = ({
   onReset,
   formId,
 }: SettingsActionBarProps) => {
+  const { t } = useTranslation("common");
   const isDesktop = useMediaQuery("(min-width: 1024px)");
 
   return (
@@ -1030,10 +1092,10 @@ const SettingsActionBar = ({
         <Group justify="space-between" align="center">
           <div>
             <Text size="sm" fw={600}>
-              {isDirty ? "저장되지 않은 변경 사항이 있어요" : "모든 변경 사항이 저장되었습니다"}
+              {isDirty ? t("status.unsaved") : t("status.allSaved")}
             </Text>
             <Text size="xs" c="dimmed">
-              {isDirty ? "페이지를 떠나기 전에 저장하세요." : "필요 시 설정을 수정할 수 있어요."}
+              {isDirty ? t("status.unsavedHint") : t("status.allSavedHint")}
             </Text>
           </div>
           <Group gap="xs">
@@ -1043,7 +1105,7 @@ const SettingsActionBar = ({
               onClick={onReset}
               leftSection={<IconRefresh size={14} />}
             >
-              되돌리기
+              {t("actions.reset")}
             </Button>
             <Button
               type="submit"
@@ -1051,7 +1113,7 @@ const SettingsActionBar = ({
               disabled={!isDirty}
               loading={isSubmitting}
             >
-              저장
+              {t("actions.saveChanges")}
             </Button>
           </Group>
         </Group>

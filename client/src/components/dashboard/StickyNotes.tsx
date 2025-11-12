@@ -1,6 +1,7 @@
 import { Box, Title, Grid, Text } from "@mantine/core";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { notifications } from "@mantine/notifications";
+import { useTranslation } from "react-i18next";
 import { stickyNotesApi } from "@/services/api/stickyNotesApi";
 import { StickyNoteCard } from "./StickyNoteCard";
 import { CreateStickyNoteButton } from "./CreateStickyNoteButton";
@@ -12,6 +13,7 @@ const POSITIONS = [0, 1, 2];
 
 export function StickyNotes() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation(["dashboard", "system"]);
 
   // 스티커 메모 목록 조회
   const { data: notes = [], isLoading } = useQuery({
@@ -26,15 +28,17 @@ export function StickyNotes() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["stickyNotes"] });
       notifications.show({
-        title: "성공",
-        message: "스티커 메모가 생성되었습니다",
+        title: t("system:notifications.successTitle"),
+        message: t("dashboard:stickyNotes.notifications.createSuccess"),
         color: "green",
       });
     },
     onError: (error: any) => {
       notifications.show({
-        title: "오류",
-        message: error.response?.data?.message || "메모 생성에 실패했습니다",
+        title: t("system:notifications.errorTitle"),
+        message:
+          error.response?.data?.message ||
+          t("dashboard:stickyNotes.notifications.createError"),
         color: "red",
       });
     },
@@ -67,8 +71,8 @@ export function StickyNotes() {
         queryClient.setQueryData(["stickyNotes"], context.previousNotes);
       }
       notifications.show({
-        title: "오류",
-        message: "메모 수정에 실패했습니다",
+        title: t("system:notifications.errorTitle"),
+        message: t("dashboard:stickyNotes.notifications.updateError"),
         color: "red",
       });
     },
@@ -83,15 +87,15 @@ export function StickyNotes() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["stickyNotes"] });
       notifications.show({
-        title: "성공",
-        message: "스티커 메모가 삭제되었습니다",
+        title: t("system:notifications.successTitle"),
+        message: t("dashboard:stickyNotes.notifications.deleteSuccess"),
         color: "green",
       });
     },
     onError: () => {
       notifications.show({
-        title: "오류",
-        message: "메모 삭제에 실패했습니다",
+        title: t("system:notifications.errorTitle"),
+        message: t("dashboard:stickyNotes.notifications.deleteError"),
         color: "red",
       });
     },
@@ -126,9 +130,9 @@ export function StickyNotes() {
     return (
       <Box>
         <Title order={3} mb="md">
-          스티커 메모
+          {t("dashboard:stickyNotes.title")}
         </Title>
-        <Text c="dimmed">로딩 중...</Text>
+        <Text c="dimmed">{t("dashboard:stickyNotes.loading")}</Text>
       </Box>
     );
   }
@@ -136,7 +140,7 @@ export function StickyNotes() {
   return (
     <Box>
       <Title order={4} mb="md">
-        스티커 메모
+        {t("dashboard:stickyNotes.title")}
       </Title>
 
       <Grid gutter="md">
@@ -165,7 +169,7 @@ export function StickyNotes() {
 
       {notes.length >= MAX_NOTES && (
         <Text size="sm" c="dimmed" mt="sm">
-          스티커 메모는 최대 {MAX_NOTES}개까지 추가할 수 있습니다.
+          {t("dashboard:stickyNotes.limitNotice", { count: MAX_NOTES })}
         </Text>
       )}
     </Box>

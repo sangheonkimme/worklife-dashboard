@@ -1,25 +1,27 @@
 import { ActionIcon, Tooltip, Text, Box } from '@mantine/core';
 import { IconClock } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 import { usePomodoroStore } from '@/store/usePomodoroStore';
 import { useLocation } from 'react-router-dom';
 
 export const PomodoroDockIcon = () => {
   const { status, sessionType, remainingTime, totalDuration, setWidgetVisible } = usePomodoroStore();
   const location = useLocation();
+  const { t } = useTranslation('widgets');
 
-  // 타이머가 시작되지 않았으면 아이콘 숨김
+  // Hide icon if timer never started
   if (status === 'idle' && remainingTime === totalDuration) {
     return null;
   }
 
-  // 남은 시간을 M:SS 형식으로 변환 (짧게)
+  // Format time as M:SS
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // 세션 타입별 색상
+  // Color by session type
   const getColor = () => {
     if (status === 'paused') return 'yellow';
     if (sessionType === 'FOCUS') return 'red';
@@ -27,26 +29,30 @@ export const PomodoroDockIcon = () => {
   };
 
   const color = getColor();
+  const sessionLabel =
+    sessionType === 'FOCUS'
+      ? t('pomodoro.sessionLabels.focus')
+      : sessionType === 'SHORT_BREAK'
+      ? t('pomodoro.sessionLabels.shortBreak')
+      : t('pomodoro.sessionLabels.longBreak');
 
   const handleClick = () => {
-    // 대시보드 페이지가 아니면 위젯 표시, 대시보드면 네비게이트
+    // On dashboard do nothing, elsewhere open the widget
     if (location.pathname === '/dashboard' || location.pathname === '/') {
-      // 이미 대시보드에 있으면 아무것도 안 함
       return;
     }
-    // 다른 페이지에서는 위젯 표시
     setWidgetVisible(true);
   };
 
   return (
     <Tooltip
       label={
-        <Box>
+         <Box>
           <Text size="xs" fw={600}>
-            포모도로 타이머
+            {t('pomodoro.title')}
           </Text>
           <Text size="xs" c="dimmed">
-            {sessionType === 'FOCUS' ? '집중' : '휴식'} • {formatTime(remainingTime)}
+            {sessionLabel} • {formatTime(remainingTime)}
           </Text>
         </Box>
       }
@@ -65,7 +71,7 @@ export const PomodoroDockIcon = () => {
       >
         <IconClock size={24} stroke={1.5} />
 
-        {/* 실행 중일 때 펄스 효과 */}
+        {/* Pulse indicator while running */}
         {status === 'running' && (
           <Box
             style={{
@@ -81,7 +87,7 @@ export const PomodoroDockIcon = () => {
           />
         )}
 
-        {/* 남은 시간 표시 (작은 텍스트) */}
+        {/* Small remaining-time label */}
         <Text
           size="8px"
           fw={700}

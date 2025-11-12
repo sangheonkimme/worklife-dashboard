@@ -14,6 +14,8 @@ export interface AppearanceSettings {
   widgetAutoClose: boolean;
 }
 
+export type LanguagePreference = "system" | "ko" | "en";
+
 export interface TimerPreferences {
   presets: number[];
   autoRepeat: boolean;
@@ -47,6 +49,7 @@ export interface NotificationPreferences {
 
 export interface UserSettings {
   locale: string;
+  language: LanguagePreference;
   timezone: string;
   finance: FinanceSettings;
   appearance: AppearanceSettings;

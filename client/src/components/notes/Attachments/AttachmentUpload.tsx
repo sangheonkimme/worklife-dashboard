@@ -17,6 +17,7 @@ import { IconUpload, IconX, IconFile, IconTrash } from '@tabler/icons-react';
 import { useAttachments, useUploadMultipleFiles, useDeleteAttachment } from '@/hooks/useAttachments';
 import type { Attachment } from '@/types/attachment';
 import { formatFileSize } from '@/utils/format';
+import { useTranslation } from 'react-i18next';
 
 interface AttachmentUploadProps {
   noteId: string;
@@ -28,6 +29,7 @@ export function AttachmentUpload({ noteId }: AttachmentUploadProps) {
   const { data: attachments = [], isLoading } = useAttachments(noteId);
   const uploadFiles = useUploadMultipleFiles();
   const deleteAttachment = useDeleteAttachment();
+  const { t } = useTranslation('notes');
 
   const handleDrop = async (files: FileWithPath[]) => {
     if (files.length === 0) return;
@@ -44,7 +46,7 @@ export function AttachmentUpload({ noteId }: AttachmentUploadProps) {
   };
 
   const handleDelete = (id: string) => {
-    if (confirm('이 파일을 삭제하시겠습니까?')) {
+    if (confirm(t('attachments.confirmDelete'))) {
       deleteAttachment.mutate({ id, noteId });
     }
   };
@@ -81,10 +83,10 @@ export function AttachmentUpload({ noteId }: AttachmentUploadProps) {
 
           <Box>
             <Text size="xl" inline>
-              파일을 드래그하거나 클릭하여 업로드
+              {t('attachments.dropzone.title')}
             </Text>
             <Text size="sm" c="dimmed" inline mt={7}>
-              최대 10MB, 이미지/오디오/문서 파일 지원
+              {t('attachments.dropzone.description')}
             </Text>
           </Box>
         </Group>
@@ -92,10 +94,10 @@ export function AttachmentUpload({ noteId }: AttachmentUploadProps) {
 
       {/* Upload Progress */}
       {uploading && (
-        <Alert color="blue" title="업로드 중...">
+        <Alert color="blue" title={t('attachments.uploading.title')}>
           <Group gap="xs">
             <Loader size="sm" />
-            <Text size="sm">파일을 업로드하고 있습니다</Text>
+            <Text size="sm">{t('attachments.uploading.message')}</Text>
           </Group>
         </Alert>
       )}
@@ -107,7 +109,7 @@ export function AttachmentUpload({ noteId }: AttachmentUploadProps) {
         </Box>
       ) : attachments.length === 0 ? (
         <Box ta="center" py="xl" c="dimmed">
-          <Text size="sm">첨부된 파일이 없습니다</Text>
+          <Text size="sm">{t('attachments.empty')}</Text>
         </Box>
       ) : (
         <Grid>
@@ -134,6 +136,7 @@ interface AttachmentCardProps {
 
 function AttachmentCard({ attachment, onDelete, deleting }: AttachmentCardProps) {
   const isImage = attachment.type === 'IMAGE';
+  const { t } = useTranslation('notes');
 
   return (
     <Paper withBorder p="sm">
@@ -203,7 +206,7 @@ function AttachmentCard({ attachment, onDelete, deleting }: AttachmentCardProps)
           c="blue"
           style={{ cursor: 'pointer' }}
         >
-          다운로드
+          {t('attachments.download')}
         </Text>
       </Stack>
     </Paper>

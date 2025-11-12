@@ -24,6 +24,7 @@ import { useFolders, useDeleteFolder } from '@/hooks/useFolders';
 import type { Folder } from '@/types/folder';
 import { FolderModal } from './FolderModal';
 import { modals } from '@mantine/modals';
+import { useTranslation } from 'react-i18next';
 
 interface FolderTreeProps {
   selectedFolderId?: string;
@@ -52,6 +53,7 @@ function FolderItem({
   const [isOpen, setIsOpen] = useState(true);
   const hasChildren = folder.children && folder.children.length > 0;
   const isSelected = selectedFolderId === folder.id;
+  const { t } = useTranslation('notes');
 
   return (
     <Box>
@@ -121,7 +123,7 @@ function FolderItem({
                     onAddChild(folder.id);
                   }}
                 >
-                  하위 폴더 추가
+                  {t('folderTree.addChild')}
                 </Menu.Item>
               )}
               <Menu.Item
@@ -131,7 +133,7 @@ function FolderItem({
                   onEdit(folder);
                 }}
               >
-                수정
+                {t('folderTree.menu.edit')}
               </Menu.Item>
               <Menu.Item
                 leftSection={<IconTrash size={14} />}
@@ -141,7 +143,7 @@ function FolderItem({
                   onDelete(folder);
                 }}
               >
-                삭제
+                {t('folderTree.menu.delete')}
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>
@@ -174,6 +176,7 @@ export function FolderTree({ selectedFolderId, onSelectFolder }: FolderTreeProps
   const [modalOpened, setModalOpened] = useState(false);
   const [editingFolder, setEditingFolder] = useState<Folder | null>(null);
   const [parentId, setParentId] = useState<string | undefined>();
+  const { t } = useTranslation('notes');
 
   const handleEdit = (folder: Folder) => {
     setEditingFolder(folder);
@@ -183,24 +186,25 @@ export function FolderTree({ selectedFolderId, onSelectFolder }: FolderTreeProps
 
   const handleDelete = (folder: Folder) => {
     modals.openConfirmModal({
-      title: '폴더 삭제',
+      title: t('folderTree.deleteConfirm.title'),
       children: (
         <Text size="sm">
-          {folder.name} 폴더를 삭제하시겠습니까?
+          {t('folderTree.deleteConfirm.message', { name: folder.name })}
           {folder._count && folder._count.notes > 0 && (
             <Text c="red" mt="xs">
-              이 폴더에 {folder._count.notes}개의 메모가 있습니다. 메모는 삭제되지 않고 폴더
-              없음으로 이동됩니다.
+              {t('folderTree.deleteConfirm.noteWarning', {
+                count: folder._count.notes,
+              })}
             </Text>
           )}
           {folder._count && folder._count.children && folder._count.children > 0 && (
             <Text c="orange" mt="xs">
-              하위 폴더가 있는 폴더는 삭제할 수 없습니다.
+              {t('folderTree.deleteConfirm.childWarning')}
             </Text>
           )}
         </Text>
       ),
-      labels: { confirm: '삭제', cancel: '취소' },
+      labels: { confirm: t('actions.delete'), cancel: t('actions.cancel') },
       confirmProps: { color: 'red' },
       onConfirm: () => deleteFolder.mutate(folder.id),
     });
@@ -224,11 +228,11 @@ export function FolderTree({ selectedFolderId, onSelectFolder }: FolderTreeProps
     setParentId(undefined);
   };
 
-  // 루트 폴더만 필터링 (parentId가 없는 폴더)
+  // Only show root-level folders (no parentId)
   const rootFolders = folders?.filter((f) => !f.parentId) || [];
 
   if (isLoading) {
-    return <Text size="sm">로딩 중...</Text>;
+    return <Text size="sm">{t('folderTree.loading')}</Text>;
   }
 
   return (
@@ -236,7 +240,7 @@ export function FolderTree({ selectedFolderId, onSelectFolder }: FolderTreeProps
       <Stack gap="xs">
         <Group justify="space-between" mb="xs">
           <Text size="sm" fw={600} c="dimmed">
-            폴더
+            {t('folderTree.title')}
           </Text>
           <ActionIcon size="sm" variant="subtle" onClick={handleAddRoot}>
             <IconPlus size={16} />
@@ -255,7 +259,7 @@ export function FolderTree({ selectedFolderId, onSelectFolder }: FolderTreeProps
         >
           <Group gap="xs">
             <IconFolder size={16} />
-            <Text size="sm">모든 메모</Text>
+            <Text size="sm">{t('folderTree.all')}</Text>
           </Group>
         </UnstyledButton>
 
@@ -274,7 +278,7 @@ export function FolderTree({ selectedFolderId, onSelectFolder }: FolderTreeProps
 
         {rootFolders.length === 0 && (
           <Text size="sm" c="dimmed" ta="center" py="xl">
-            폴더가 없습니다
+            {t('folderTree.empty')}
           </Text>
         )}
       </Stack>

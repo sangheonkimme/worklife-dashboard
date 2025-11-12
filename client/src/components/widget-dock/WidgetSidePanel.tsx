@@ -2,15 +2,17 @@ import { Paper, Stack, Group, Text, CloseButton, Box } from '@mantine/core';
 import { useWidgetStore } from '@/store/useWidgetStore';
 import { getWidgetById } from './WidgetRegistry';
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export const WidgetSidePanel = () => {
   const { activeWidgetId, closeWidget, preferences } = useWidgetStore();
   const [isVisible, setIsVisible] = useState(false);
   const isLeftDock = preferences.dockPosition === 'left';
+  const { t } = useTranslation('widgets');
 
   useEffect(() => {
     if (activeWidgetId) {
-      // 약간의 지연 후 애니메이션 시작
+      // Delay animation slightly to allow mount transition
       setTimeout(() => setIsVisible(true), 10);
     } else {
       setIsVisible(false);
@@ -29,6 +31,12 @@ export const WidgetSidePanel = () => {
 
   const WidgetComponent = widgetConfig.component;
   const Icon = widgetConfig.icon;
+  const widgetName = widgetConfig.nameKey
+    ? t(widgetConfig.nameKey)
+    : widgetConfig.name;
+  const widgetDescription = widgetConfig.descriptionKey
+    ? t(widgetConfig.descriptionKey)
+    : widgetConfig.description;
 
   return (
     <Box
@@ -50,12 +58,12 @@ export const WidgetSidePanel = () => {
           position: 'absolute',
           ...(isLeftDock ? { left: 96 } : { right: 96 }),
           top: '50%',
-          width: 'min(90vw, 420px)', // 400~450px 사이로 축소
+          width: 'min(90vw, 420px)', // keep between roughly 400-450px
           maxHeight: '85vh',
           overflowY: 'auto',
           backgroundColor: 'var(--mantine-color-body)',
           border: '1px solid var(--mantine-color-default-border)',
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)', // 연한 그림자
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)', // subtle shadow
           transformOrigin: `${isLeftDock ? 'left' : 'right'} center`,
           transform: isVisible
             ? 'translateY(-50%) scale(1)'
@@ -65,7 +73,7 @@ export const WidgetSidePanel = () => {
         }}
       >
         <Stack gap="lg">
-          {/* 헤더 */}
+          {/* Header */}
           <Group justify="space-between" wrap="nowrap">
             <Group gap="sm">
               <Icon
@@ -75,17 +83,17 @@ export const WidgetSidePanel = () => {
               />
               <div>
                 <Text size="lg" fw={600}>
-                  {widgetConfig.name}
+                  {widgetName}
                 </Text>
                 <Text size="xs" c="dimmed">
-                  {widgetConfig.description}
+                  {widgetDescription}
                 </Text>
               </div>
             </Group>
             <CloseButton onClick={closeWidget} size="lg" />
           </Group>
 
-          {/* 위젯 콘텐츠 */}
+          {/* Widget content */}
           <WidgetComponent onClose={closeWidget} />
         </Stack>
       </Paper>

@@ -1,19 +1,21 @@
 import { ActionIcon, Tooltip, Text, Box } from '@mantine/core';
 import { IconStopwatch } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 import { useStopwatchStore } from '@/store/useStopwatchStore';
 import { useLocation } from 'react-router-dom';
 import { formatTimeSimple } from '@/utils/timeFormat';
 
 export const StopwatchDockIcon = () => {
   const { status, elapsedTime, laps, setWidgetVisible } = useStopwatchStore();
+  const { t } = useTranslation('widgets');
   const location = useLocation();
 
-  // 타이머가 시작되지 않았으면 아이콘 숨김
+  // Hide icon if stopwatch never started
   if (status === 'idle' && elapsedTime === 0 && laps.length === 0) {
     return null;
   }
 
-  // 상태별 색상
+  // Color by status
   const getColor = () => {
     if (status === 'paused') return 'yellow';
     if (status === 'running') return 'blue';
@@ -23,30 +25,33 @@ export const StopwatchDockIcon = () => {
   const color = getColor();
 
   const handleClick = () => {
-    // 대시보드 페이지가 아니면 위젯 표시, 대시보드면 네비게이트
+    // On dashboard we do nothing, elsewhere we open the widget
     if (location.pathname === '/dashboard' || location.pathname === '/') {
-      // 이미 대시보드에 있으면 아무것도 안 함
       return;
     }
-    // 다른 페이지에서는 위젯 표시
     setWidgetVisible(true);
   };
 
-  const statusText = status === 'running' ? '실행 중' : status === 'paused' ? '일시정지' : '정지';
+  const statusText =
+    status === 'running'
+      ? t('stopwatch.dock.statusRunning')
+      : status === 'paused'
+      ? t('stopwatch.dock.statusPaused')
+      : t('stopwatch.dock.statusIdle');
 
   return (
     <Tooltip
       label={
         <Box>
           <Text size="xs" fw={600}>
-            스톱워치
+            {t('stopwatch.dock.tooltipTitle')}
           </Text>
           <Text size="xs" c="dimmed">
             {statusText} • {formatTimeSimple(elapsedTime)}
           </Text>
           {laps.length > 0 && (
             <Text size="xs" c="dimmed">
-              랩: {laps.length}개
+              {t('stopwatch.dock.lapCount', { count: laps.length })}
             </Text>
           )}
         </Box>
@@ -66,7 +71,7 @@ export const StopwatchDockIcon = () => {
       >
         <IconStopwatch size={24} stroke={1.5} />
 
-        {/* 실행 중일 때 펄스 효과 */}
+        {/* Pulse indicator while running */}
         {status === 'running' && (
           <Box
             style={{
@@ -82,7 +87,7 @@ export const StopwatchDockIcon = () => {
           />
         )}
 
-        {/* 경과 시간 표시 (작은 텍스트) */}
+        {/* Small elapsed time label */}
         <Text
           size="8px"
           fw={700}

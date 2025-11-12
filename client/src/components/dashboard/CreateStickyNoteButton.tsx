@@ -1,5 +1,6 @@
 import { Card, ActionIcon, Text, Stack } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 interface CreateStickyNoteButtonProps {
   onCreate: (color: string, position: number) => void;
@@ -12,6 +13,8 @@ export function CreateStickyNoteButton({
   nextPosition,
   availableColor,
 }: CreateStickyNoteButtonProps) {
+  const { t } = useTranslation('dashboard');
+
   return (
     <Card
       shadow="sm"
@@ -50,7 +53,7 @@ export function CreateStickyNoteButton({
           <IconPlus size={28} />
         </ActionIcon>
         <Text size="sm" c="dimmed">
-          새 메모
+          {t('stickyNotes.createButton')}
         </Text>
       </Stack>
     </Card>

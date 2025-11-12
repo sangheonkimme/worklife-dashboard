@@ -24,12 +24,13 @@ import {
 } from '@tabler/icons-react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
+import { useTranslation, Trans } from 'react-i18next'
 
 // 비밀번호 강도 계산 함수
 function getPasswordStrength(password: string): {
   strength: number
   color: string
-  label: string
+  labelKey: 'weak' | 'medium' | 'strong'
 } {
   let strength = 0
 
@@ -41,17 +42,17 @@ function getPasswordStrength(password: string): {
   if (/[^A-Za-z0-9]/.test(password)) strength += 15
 
   let color = 'red'
-  let label = '약함'
+  let labelKey: 'weak' | 'medium' | 'strong' = 'weak'
 
   if (strength >= 70) {
     color = 'teal'
-    label = '강함'
+    labelKey = 'strong'
   } else if (strength >= 50) {
     color = 'yellow'
-    label = '보통'
+    labelKey = 'medium'
   }
 
-  return { strength, color, label }
+  return { strength, color, labelKey }
 }
 
 // 비밀번호 요구사항 체크
@@ -84,6 +85,7 @@ interface FormValues {
 
 export const SignupPage = () => {
   const { register, isRegisterLoading, registerError, isAuthenticated } = useAuth()
+  const { t, i18n } = useTranslation('auth')
   const [popoverOpened, setPopoverOpened] = useState(false)
 
   const form = useForm<FormValues>({
@@ -97,45 +99,46 @@ export const SignupPage = () => {
 
     validate: {
       name: (value: string) => {
-        if (!value) return '이름을 입력해주세요'
-        if (value.length < 2) return '이름은 최소 2자 이상이어야 합니다'
+        if (!value) return t('signup.validation.nameRequired')
+        if (value.length < 2) return t('signup.validation.nameLength')
         return null
       },
       email: (value: string) => {
-        if (!value) return '이메일을 입력해주세요'
-        if (!/^\S+@\S+$/.test(value)) return '올바른 이메일 형식이 아닙니다'
+        if (!value) return t('signup.validation.emailRequired')
+        if (!/^\S+@\S+$/.test(value)) return t('signup.validation.emailInvalid')
         return null
       },
       password: (value: string) => {
-        if (!value) return '비밀번호를 입력해주세요'
-        if (value.length < 8) return '비밀번호는 최소 8자 이상이어야 합니다'
-        if (!/[A-Z]/.test(value)) return '대문자를 하나 이상 포함해야 합니다'
-        if (!/[a-z]/.test(value)) return '소문자를 하나 이상 포함해야 합니다'
-        if (!/[0-9]/.test(value)) return '숫자를 하나 이상 포함해야 합니다'
+        if (!value) return t('signup.validation.passwordRequired')
+        if (value.length < 8) return t('signup.validation.passwordLength')
+        if (!/[A-Z]/.test(value)) return t('signup.validation.passwordUpper')
+        if (!/[a-z]/.test(value)) return t('signup.validation.passwordLower')
+        if (!/[0-9]/.test(value)) return t('signup.validation.passwordNumber')
         return null
       },
       confirmPassword: (value: string, values: FormValues) => {
-        if (!value) return '비밀번호 확인을 입력해주세요'
-        if (value !== values.password) return '비밀번호가 일치하지 않습니다'
+        if (!value) return t('signup.validation.confirmRequired')
+        if (value !== values.password) return t('signup.validation.confirmMismatch')
         return null
       },
       agreeToTerms: (value: boolean) => {
-        if (!value) return '이용약관에 동의해주세요'
+        if (!value) return t('signup.validation.terms')
         return null
       },
     },
   })
 
   const passwordStrength = getPasswordStrength(form.values.password)
+  const passwordStrengthLabel = t(`signup.passwordStrength.${passwordStrength.labelKey}`)
 
   const checks = [
-    { meets: form.values.password.length >= 8, label: '최소 8자 이상' },
-    { meets: /[A-Z]/.test(form.values.password), label: '대문자 포함' },
-    { meets: /[a-z]/.test(form.values.password), label: '소문자 포함' },
-    { meets: /[0-9]/.test(form.values.password), label: '숫자 포함' },
+    { meets: form.values.password.length >= 8, label: t('signup.requirements.minLength') },
+    { meets: /[A-Z]/.test(form.values.password), label: t('signup.requirements.upper') },
+    { meets: /[a-z]/.test(form.values.password), label: t('signup.requirements.lower') },
+    { meets: /[0-9]/.test(form.values.password), label: t('signup.requirements.number') },
     {
       meets: /[^A-Za-z0-9]/.test(form.values.password),
-      label: '특수문자 포함 (권장)',
+      label: t('signup.requirements.symbol'),
     },
   ]
 
@@ -148,7 +151,7 @@ export const SignupPage = () => {
       })
     } catch (err) {
       // 에러는 useAuth의 registerError로 처리됨
-      console.error('회원가입 실패:', err)
+      console.error('Sign-up failed:', err)
     }
   }
 
@@ -162,12 +165,12 @@ export const SignupPage = () => {
   return (
     <Container size={460} my={40}>
       <Title ta="center" fw={900}>
-        계정 만들기
+        {t('signup.title')}
       </Title>
       <Text c="dimmed" size="sm" ta="center" mt={5}>
-        이미 계정이 있으신가요?{' '}
+        {t('signup.subtitle')}{' '}
         <Anchor size="sm" component={Link} to="/login">
-          로그인
+          {t('signup.loginLink')}
         </Anchor>
       </Text>
 
@@ -177,24 +180,25 @@ export const SignupPage = () => {
             {registerError && (
               <Alert
                 icon={<IconAlertCircle size={16} />}
-                title="오류"
+                title={t('signup.alerts.title')}
                 color="red"
                 variant="light"
               >
-                {(registerError as Error & { response?: { data?: { message?: string } } })?.response?.data?.message || '회원가입에 실패했습니다. 다시 시도해주세요.'}
+                {(registerError as Error & { response?: { data?: { message?: string } } })?.response?.data?.message ||
+                  t('signup.alerts.default')}
               </Alert>
             )}
 
             <TextInput
-              label="이름"
-              placeholder="홍길동"
+              label={t('signup.form.nameLabel')}
+              placeholder={t('signup.form.namePlaceholder')}
               required
               {...form.getInputProps('name')}
             />
 
             <TextInput
-              label="이메일"
-              placeholder="your@email.com"
+              label={t('signup.form.emailLabel')}
+              placeholder={t('login.form.emailPlaceholder')}
               required
               {...form.getInputProps('email')}
             />
@@ -211,8 +215,8 @@ export const SignupPage = () => {
                   onBlurCapture={() => setPopoverOpened(false)}
                 >
                   <PasswordInput
-                    label="비밀번호"
-                    placeholder="안전한 비밀번호를 입력하세요"
+                    label={t('signup.form.passwordLabel')}
+                    placeholder={t('signup.form.passwordPlaceholder')}
                     required
                     {...form.getInputProps('password')}
                   />
@@ -222,7 +226,9 @@ export const SignupPage = () => {
                 <Box>
                   <Group gap="xs" mb="xs">
                     <Text size="sm" fw={500}>
-                      비밀번호 강도: {passwordStrength.label}
+                      {t('signup.passwordStrengthText', {
+                        label: passwordStrengthLabel,
+                      })}
                     </Text>
                   </Group>
                   <Progress
@@ -245,8 +251,8 @@ export const SignupPage = () => {
             </Popover>
 
             <PasswordInput
-              label="비밀번호 확인"
-              placeholder="비밀번호를 다시 입력하세요"
+              label={t('signup.form.confirmPasswordLabel')}
+              placeholder={t('signup.form.confirmPasswordPlaceholder')}
               required
               {...form.getInputProps('confirmPassword')}
             />
@@ -254,14 +260,17 @@ export const SignupPage = () => {
             <Checkbox
               label={
                 <Text size="sm">
-                  <Anchor size="sm" href="#" onClick={(e) => e.preventDefault()}>
-                    이용약관
-                  </Anchor>
-                  과{' '}
-                  <Anchor size="sm" href="#" onClick={(e) => e.preventDefault()}>
-                    개인정보처리방침
-                  </Anchor>
-                  에 동의합니다
+                  <Trans
+                    i18nKey="auth:signup.form.terms"
+                    components={{
+                      terms: (
+                        <Anchor size="sm" href="#" onClick={(e) => e.preventDefault()} />
+                      ),
+                      privacy: (
+                        <Anchor size="sm" href="#" onClick={(e) => e.preventDefault()} />
+                      ),
+                    }}
+                  />
                 </Text>
               }
               required
@@ -269,7 +278,7 @@ export const SignupPage = () => {
             />
 
             <Button type="submit" fullWidth loading={isRegisterLoading}>
-              회원가입
+              {t('signup.form.submit')}
             </Button>
           </Stack>
         </form>

@@ -1,0 +1,264 @@
+{
+  "pomodoro": {
+    "title": "Pomodoro timer",
+    "sessionLabels": {
+      "focus": "Focus session",
+      "shortBreak": "Short break",
+      "longBreak": "Long break"
+    },
+    "actions": {
+      "start": "Start",
+      "pause": "Pause",
+      "resume": "Resume",
+      "stop": "Stop"
+    },
+    "badges": {
+      "today": "Today:",
+      "completed": "{{count}} sessions completed"
+    },
+    "aria": {
+      "goToDashboard": "Go to dashboard",
+      "closeWidget": "Hide widget"
+    },
+    "notifications": {
+      "title": "Pomodoro timer",
+      "focusComplete": "Focus session finished. Enjoy a break!",
+      "breakComplete": "Break finished. Start the next focus session."
+    }
+  },
+  "stopwatch": {
+    "title": "Stopwatch",
+    "status": {
+      "running": "Running",
+      "paused": "Paused",
+      "idle": "Stopped"
+    },
+    "actions": {
+      "start": "Start",
+      "pause": "Pause",
+      "resume": "Resume",
+      "stop": "Stop",
+      "recordLap": "Record lap",
+      "reset": "Reset",
+      "openHistory": "History",
+      "openSettings": "Settings"
+    },
+    "menu": {
+      "notifications": "Notifications",
+      "enableNotifications": "Enable notifications",
+      "goalLabel": "Goal time (minutes)",
+      "goalPlaceholder": "0 = no goal"
+    },
+    "labels": {
+      "statusRunning": "Running",
+      "statusPaused": "Paused",
+      "statusIdle": "Stopped",
+      "lapTimesRecent": "Lap times (last 3)",
+      "lapCount": "Laps:",
+      "average": "Average:",
+      "lapsBadge": "Laps:",
+      "averageBadge": "Average:",
+      "lapsValue": "{{count}} laps",
+      "averageValue": "{{value}}",
+      "goalMinutes": "Goal time (minutes)",
+      "lapSummary": "Laps: {{count}}",
+      "noLaps": "No lap data."
+    },
+    "buttons": {
+      "saveSession": "Save session"
+    },
+    "history": {
+      "title": "Saved sessions",
+      "empty": "No saved sessions.",
+      "total": "{{count}} sessions",
+      "deleteAll": "Delete all",
+      "deleteTitle": "Session deleted",
+      "deleteMessage": "\"{{name}}\" has been removed.",
+      "clearTitle": "History cleared",
+      "clearMessage": "All sessions have been deleted.",
+      "confirmClear": "Delete all saved sessions?",
+      "untitled": "Untitled",
+      "lapHeader": "Lap",
+      "lapTimeHeader": "Lap time",
+      "totalTimeHeader": "Total time",
+      "noLapData": "No lap data.",
+      "aria": {
+        "expand": "Expand row",
+        "collapse": "Collapse row",
+        "delete": "Delete session"
+      }
+    },
+    "saveModal": {
+      "title": "Save session",
+      "nameLabel": "Session name",
+      "namePlaceholder": "e.g. Feature work, workout, cooking",
+      "notesLabel": "Notes (optional)",
+      "notesPlaceholder": "Add a note about this session",
+      "cancel": "Cancel",
+      "submit": "Save",
+      "validation": "Please enter a session name.",
+      "successTitle": "Session saved",
+      "successMessage": "\"{{name}}\" has been saved.",
+      "errorTitle": "Save failed",
+      "errorMessage": "We couldn't save the session."
+    },
+    "notifications": {
+      "goalReachedTitle": "Stopwatch goal reached",
+      "goalReachedBody": "Goal time {{time}} reached!"
+    },
+    "widget": {
+      "aria": {
+        "goToDashboard": "Go to dashboard",
+        "closeWidget": "Hide widget"
+      },
+      "lapCount": "Laps: {{count}}"
+    },
+    "dock": {
+      "tooltipTitle": "Stopwatch",
+      "statusRunning": "Running",
+      "statusPaused": "Paused",
+      "statusIdle": "Stopped",
+      "lapCount": "Laps: {{count}}"
+    }
+  },
+  "timer": {
+    "title": "Standard timer",
+    "status": {
+      "idle": "Ready",
+      "running": "Running",
+      "paused": "Paused",
+      "finished": "Finished"
+    },
+    "badges": {
+      "endingSoon": "Ending soon",
+      "autoRepeat": "Auto repeat"
+    },
+    "tooltips": {
+      "autoRepeat": "Restart with the same duration after completion."
+    },
+    "aria": {
+      "openSettings": "Open timer settings",
+      "closeWidget": "Close timer widget"
+    },
+    "display": {
+      "total": "Total {{time}}"
+    },
+    "sections": {
+      "quickPresetsTitle": "Quick presets",
+      "quickPresetsDescription": "Pick a time with one tap",
+      "customTitle": "Custom duration"
+    },
+    "fields": {
+      "minutes": "Minutes",
+      "seconds": "Seconds"
+    },
+    "buttons": {
+      "start": "Start",
+      "pause": "Pause",
+      "resume": "Resume",
+      "reset": "Reset",
+      "restart": "Restart",
+      "apply": "Apply"
+    },
+    "messages": {
+      "finished": "Timer finished. Use the buttons above to start again.",
+      "invalidTitle": "Enter a valid duration",
+      "invalidMessage": "Set at least one second before generating a timer."
+    },
+    "modal": {
+      "title": "Timer settings",
+      "notificationsLabel": "Enable timer notifications",
+      "soundLabel": "Sound alert",
+      "soundDescription": "Play a short beep for pre-alerts and completion.",
+      "autoRepeatLabel": "Auto repeat when finished",
+      "autoRepeatDescription": "Restart with the same duration once the timer completes.",
+      "preAlertLabel": "Pre-alert",
+      "preAlertPlaceholder": "Choose a time",
+      "browserPermission": "Browser notifications may require permission. Allow the prompt on first use."
+    },
+    "preAlertOptions": {
+      "none": "Off",
+      "30s": "30 seconds before",
+      "1m": "1 minute before",
+      "5m": "5 minutes before"
+    },
+    "notifications": {
+      "startErrorTitle": "Set a duration",
+      "startErrorMessage": "Set at least one second to start the timer.",
+      "preAlertTitle": "Timer alert",
+      "preAlertMessage": "{{seconds}} seconds remaining before the timer finishes.",
+      "browserPreAlert": "The timer will finish soon.",
+      "completeTitle": "Timer finished",
+      "completeMessage": "Your timer has completed.",
+      "browserComplete": "The timer you set has ended."
+    },
+    "presets": {
+      "minutesLabel": "{{value}} min"
+    },
+    "notes": {
+      "autoRepeatBadge": "Auto repeat",
+      "endingSoonBadge": "Ending soon"
+    }
+  },
+  "imageToPdf": {
+    "title": "Image to PDF",
+    "notifications": {
+      "uploadSuccess": "{{count}} images uploaded.",
+      "clearSuccess": "All images have been removed.",
+      "emptyErrorTitle": "No images",
+      "emptyErrorMessage": "Upload images before generating a PDF.",
+      "generateSuccessTitle": "PDF created",
+      "generateSuccessMessage": "{{fileName}} has been downloaded.",
+      "generateErrorTitle": "PDF generation failed",
+      "generateErrorMessage": "Something went wrong while generating the PDF.",
+      "unexpectedErrorMessage": "An unexpected error occurred."
+    },
+    "upload": {
+      "headline": "Drag & drop images or click to upload",
+      "subtitle": "Supports PNG, JPG, JPEG, WEBP (up to 10MB each)"
+    },
+    "preview": {
+      "empty": "No images uploaded yet",
+      "title": "Uploaded images ({{count}})",
+      "clearAll": "Clear all"
+    },
+    "button": "Generate & download PDF",
+    "options": {
+      "title": "PDF settings",
+      "pageSize": "Page size",
+      "orientation": "Orientation",
+      "orientationOptions": {
+        "portrait": "Portrait",
+        "landscape": "Landscape"
+      },
+      "imageFit": "Image fit",
+      "imageFitOptions": {
+        "fit": "Fit",
+        "fill": "Fill",
+        "original": "Original"
+      },
+      "imageFitDescriptions": {
+        "fit": "Maintain aspect ratio and fit within the page",
+        "fill": "Fill the page (may crop)",
+        "original": "Keep the original size"
+      }
+    },
+    "errors": {
+      "noImages": "There are no images to convert.",
+      "embedFailed": "Failed to embed image: {{name}}",
+      "canvasContext": "Unable to access canvas context.",
+      "imageLoad": "Failed to load image.",
+      "generic": "Error occurred while generating the PDF."
+    }
+  },
+  "registry": {
+    "imageToPdf": {
+      "name": "Image to PDF",
+      "description": "Convert multiple images into a single PDF file."
+    },
+    "timer": {
+      "name": "Timer",
+      "description": "Set any duration and start a countdown."
+    }
+  }
+}

@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Lap, SavedSession, StopwatchStatus } from '@/types/stopwatch';
 import { formatTime } from '@/utils/timeFormat';
+import i18n from '@/lib/i18n';
 
 interface StopwatchState {
   // 타이머 상태
@@ -163,8 +164,10 @@ export const useStopwatchStore = create<StopwatchState>()(
         ) {
           // 브라우저 알림 표시
           if ('Notification' in window && Notification.permission === 'granted') {
-            new Notification('스톱워치 목표 시간 도달', {
-              body: `목표 시간 ${formatTime(goalTime)}에 도달했습니다!`,
+            new Notification(i18n.t('widgets:stopwatch.notifications.goalReachedTitle'), {
+              body: i18n.t('widgets:stopwatch.notifications.goalReachedBody', {
+                time: formatTime(goalTime),
+              }),
               icon: '/stopwatch-icon.png',
             });
           }

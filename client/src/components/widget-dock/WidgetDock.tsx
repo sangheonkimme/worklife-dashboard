@@ -3,11 +3,13 @@ import { useWidgetStore } from '@/store/useWidgetStore';
 import { getEnabledWidgets } from './WidgetRegistry';
 import { PomodoroDockIcon } from './PomodoroDockIcon';
 import { StopwatchDockIcon } from './StopwatchDockIcon';
+import { useTranslation } from 'react-i18next';
 
 export const WidgetDock = () => {
   const { activeWidgetId, toggleWidget, preferences } = useWidgetStore();
   const widgets = getEnabledWidgets();
   const isLeftDock = preferences.dockPosition === 'left';
+  const { t } = useTranslation('widgets');
 
   return (
     <Paper
@@ -30,10 +32,12 @@ export const WidgetDock = () => {
           const Icon = widget.icon;
           const isActive = activeWidgetId === widget.id;
 
+          const label = widget.nameKey ? t(widget.nameKey) : widget.name;
+
           return (
             <Tooltip
               key={widget.id}
-              label={widget.name}
+              label={label}
               position={isLeftDock ? 'right' : 'left'}
               withArrow
             >
@@ -52,7 +56,7 @@ export const WidgetDock = () => {
           );
         })}
 
-        {/* 포모도로 타이머 & 스톱워치 아이콘 (항상 마지막에 표시) */}
+        {/* Pomodoro timer & stopwatch icons (always shown last) */}
         <Divider my={4} />
         <PomodoroDockIcon />
         <StopwatchDockIcon />

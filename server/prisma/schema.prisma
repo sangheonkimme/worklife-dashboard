@@ -64,6 +64,12 @@ enum CategoryType {
   EXPENSE
 }
 
+enum LanguageCode {
+  ko
+  en
+  system
+}
+
 // 거래 내역 모델
 model Transaction {
   id          String   @id @default(cuid())
@@ -381,6 +387,7 @@ model UserSettings {
   userId                       String   @unique
   user                         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   locale                       String   @default("ko-KR")
+  language                     LanguageCode @default(system)
   timezone                     String   @default("Asia/Seoul")
   payday                       Int      @default(1)
   currency                     String   @default("KRW")

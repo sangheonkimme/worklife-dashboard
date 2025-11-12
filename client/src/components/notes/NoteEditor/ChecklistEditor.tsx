@@ -30,6 +30,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { useTranslation } from "react-i18next";
 import {
   useChecklistItems,
   useChecklistProgress,
@@ -155,6 +156,7 @@ export function ChecklistEditor({ noteId }: ChecklistEditorProps) {
   const [newItemContent, setNewItemContent] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editContent, setEditContent] = useState("");
+  const { t } = useTranslation('notes');
 
   const { data: items = [], isLoading } = useChecklistItems(noteId);
   const { data: progress } = useChecklistProgress(noteId);
@@ -243,7 +245,7 @@ export function ChecklistEditor({ noteId }: ChecklistEditorProps) {
 
       const newItems = arrayMove(items, oldIndex, newIndex);
 
-      // 순서 변경 API 호출
+      // Persist reordered items
       const reorderData = newItems.map((item, index) => ({
         id: item.id,
         order: index,
@@ -272,7 +274,7 @@ export function ChecklistEditor({ noteId }: ChecklistEditorProps) {
         <Paper p="md" withBorder>
           <Group justify="space-between" mb="xs">
             <Text size="sm" fw={500}>
-              진행률
+              {t('checklistEditor.progressLabel')}
             </Text>
             <Text size="sm" c="dimmed">
               {progress.completed} / {progress.total}
@@ -318,7 +320,7 @@ export function ChecklistEditor({ noteId }: ChecklistEditorProps) {
             value={newItemContent}
             onChange={(e) => setNewItemContent(e.target.value)}
             onKeyDown={(e) => handleKeyDown(e, handleAddItem)}
-            placeholder="새 항목 추가..."
+            placeholder={t('checklistEditor.addPlaceholder')}
             style={{ flex: 1 }}
             size="sm"
             rightSection={
@@ -331,7 +333,7 @@ export function ChecklistEditor({ noteId }: ChecklistEditorProps) {
             leftSection={<IconPlus size={16} />}
             size="sm"
           >
-            추가
+            {t('checklistEditor.addButton')}
           </Button>
         </Group>
       </Paper>

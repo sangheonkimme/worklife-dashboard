@@ -47,6 +47,7 @@ export interface NotificationSettingsPayload {
 
 export interface UserSettingsPayload {
   locale: string;
+  language: 'system' | 'ko' | 'en';
   timezone: string;
   finance: FinanceSettings;
   appearance: AppearanceSettings;
@@ -58,6 +59,7 @@ export interface UserSettingsPayload {
 
 const DEFAULT_USER_SETTINGS: UserSettingsPayload = {
   locale: 'ko-KR',
+  language: 'system',
   timezone: 'Asia/Seoul',
   finance: {
     payday: 1,
@@ -108,6 +110,7 @@ const jsonToNumberArray = (value: Prisma.JsonValue | null): number[] => {
 
 const mapRecordToPayload = (record: UserSettingsModel): UserSettingsPayload => ({
   locale: record.locale,
+  language: record.language,
   timezone: record.timezone,
   finance: {
     payday: record.payday,
@@ -151,6 +154,7 @@ const mapRecordToPayload = (record: UserSettingsModel): UserSettingsPayload => (
 
 const mapPayloadToDb = (payload: UserSettingsPayload) => ({
   locale: payload.locale,
+  language: payload.language,
   timezone: payload.timezone,
   payday: payload.finance.payday,
   currency: payload.finance.currency,
@@ -185,6 +189,7 @@ const mergeSettings = (
   patch: Partial<UserSettingsPayload> | undefined
 ): UserSettingsPayload => ({
   locale: patch?.locale ?? base.locale,
+  language: patch?.language ?? base.language,
   timezone: patch?.timezone ?? base.timezone,
   finance: {
     payday: patch?.finance?.payday ?? base.finance.payday,

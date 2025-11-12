@@ -20,6 +20,7 @@ import { IconTemplate, IconPlus, IconTrash, IconEdit } from '@tabler/icons-react
 import { useTemplates, useCreateTemplate, useUpdateTemplate, useDeleteTemplate } from '@/hooks/useTemplates';
 import type { NoteTemplate, CreateTemplateDto, UpdateTemplateDto } from '@/types/template';
 import type { NoteType } from '@/types/note';
+import { useTranslation } from 'react-i18next';
 
 interface TemplateModalProps {
   opened: boolean;
@@ -35,6 +36,7 @@ export function TemplateModal({ opened, onClose, onSelectTemplate }: TemplateMod
   const createTemplate = useCreateTemplate();
   const updateTemplate = useUpdateTemplate();
   const deleteTemplate = useDeleteTemplate();
+  const { t } = useTranslation('notes');
 
   const [formData, setFormData] = useState<CreateTemplateDto>({
     name: '',
@@ -100,7 +102,7 @@ export function TemplateModal({ opened, onClose, onSelectTemplate }: TemplateMod
   };
 
   const handleDelete = (id: string) => {
-    if (confirm('이 템플릿을 삭제하시겠습니까?')) {
+    if (confirm(t('templateModal.deleteConfirm'))) {
       deleteTemplate.mutate(id);
     }
   };
@@ -117,10 +119,10 @@ export function TemplateModal({ opened, onClose, onSelectTemplate }: TemplateMod
       onClose={onClose}
       title={
         mode === 'select'
-          ? '템플릿 선택'
+          ? t('templateModal.title.select')
           : mode === 'create'
-            ? '템플릿 생성'
-            : '템플릿 수정'
+            ? t('templateModal.title.create')
+            : t('templateModal.title.edit')
       }
       size="lg"
     >
@@ -132,7 +134,7 @@ export function TemplateModal({ opened, onClose, onSelectTemplate }: TemplateMod
             variant="light"
             onClick={handleCreateMode}
           >
-            새 템플릿 만들기
+            {t('templateModal.createButton')}
           </Button>
 
           <Divider />
@@ -144,7 +146,7 @@ export function TemplateModal({ opened, onClose, onSelectTemplate }: TemplateMod
             </Box>
           ) : templates.length === 0 ? (
             <Box ta="center" py="xl" c="dimmed">
-              <Text size="sm">템플릿이 없습니다</Text>
+              <Text size="sm">{t('templateModal.empty')}</Text>
             </Box>
           ) : (
             <Grid>
@@ -166,7 +168,7 @@ export function TemplateModal({ opened, onClose, onSelectTemplate }: TemplateMod
                         </Group>
                         {template.isDefault && (
                           <Badge size="xs" color="blue" variant="light">
-                            기본
+                            {t('templateModal.defaultBadge')}
                           </Badge>
                         )}
                       </Group>
@@ -213,16 +215,16 @@ export function TemplateModal({ opened, onClose, onSelectTemplate }: TemplateMod
       ) : (
         <Stack gap="md">
           <TextInput
-            label="템플릿 이름"
-            placeholder="템플릿 이름을 입력하세요"
+            label={t('templateModal.fields.name.label')}
+            placeholder={t('templateModal.fields.name.placeholder')}
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             required
           />
 
           <Textarea
-            label="설명"
-            placeholder="템플릿 설명 (선택사항)"
+            label={t('templateModal.fields.description.label')}
+            placeholder={t('templateModal.fields.description.placeholder')}
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             autosize
@@ -231,20 +233,20 @@ export function TemplateModal({ opened, onClose, onSelectTemplate }: TemplateMod
           />
 
           <Select
-            label="메모 타입"
+            label={t('templateModal.fields.type.label')}
             value={formData.type}
             onChange={(value) => setFormData({ ...formData, type: value as NoteType })}
             data={[
-              { value: 'TEXT', label: '일반 텍스트' },
-              { value: 'CHECKLIST', label: '체크리스트' },
-              { value: 'MARKDOWN', label: '마크다운' },
-              { value: 'QUICK', label: '빠른 메모' },
+              { value: 'TEXT', label: t('templateModal.types.TEXT') },
+              { value: 'CHECKLIST', label: t('templateModal.types.CHECKLIST') },
+              { value: 'MARKDOWN', label: t('templateModal.types.MARKDOWN') },
+              { value: 'QUICK', label: t('templateModal.types.QUICK') },
             ]}
           />
 
           <Textarea
-            label="내용"
-            placeholder="템플릿 내용을 입력하세요"
+            label={t('templateModal.fields.content.label')}
+            placeholder={t('templateModal.fields.content.placeholder')}
             value={formData.content}
             onChange={(e) => setFormData({ ...formData, content: e.target.value })}
             autosize
@@ -255,14 +257,14 @@ export function TemplateModal({ opened, onClose, onSelectTemplate }: TemplateMod
 
           <Group justify="flex-end" mt="md">
             <Button variant="subtle" onClick={handleCancel}>
-              취소
+              {t('actions.cancel')}
             </Button>
             <Button
               onClick={handleSave}
               disabled={!formData.name.trim() || !formData.content.trim()}
               loading={createTemplate.isPending || updateTemplate.isPending}
             >
-              {mode === 'create' ? '생성' : '수정'}
+              {t(mode === 'create' ? 'actions.create' : 'actions.update')}
             </Button>
           </Group>
         </Stack>

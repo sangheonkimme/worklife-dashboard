@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { applyLanguagePreference } from '@/lib/i18n';
 import type { UserSettings } from '@/types/userSettings';
 import { useFinanceSettingsStore } from './useFinanceSettingsStore';
 import { useTimerStore } from './useTimerStore';
@@ -19,6 +20,7 @@ interface UserSettingsState {
 }
 
 const applySettingsToStores = (settings: UserSettings) => {
+  applyLanguagePreference(settings.language);
   useFinanceSettingsStore.getState().hydrateFromUserSettings(settings.finance);
 
   useUiStore.getState().hydrateFromUserSettings(settings.appearance);
@@ -68,5 +70,8 @@ export const useUserSettingsStore = create<UserSettingsState>((set) => ({
       status: 'error',
       initialized: true,
     })),
-  reset: () => set({ settings: null, status: 'idle', error: null, initialized: false }),
+  reset: () => {
+    applyLanguagePreference('system');
+    set({ settings: null, status: 'idle', error: null, initialized: false });
+  },
 }));

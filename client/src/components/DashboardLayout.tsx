@@ -40,6 +40,7 @@ import { StopwatchWidget } from "./stopwatch/StopwatchWidget";
 import logoPc from "@/assets/logo_pc.png";
 import { useUserSettings } from "@/hooks/useUserSettings";
 import { useUiStore } from "@/store/useUiStore";
+import { useTranslation } from "react-i18next";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -64,41 +65,50 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     setMantineColorScheme(colorScheme);
   }, [colorScheme, setMantineColorScheme]);
 
-  const navItems = [
+  const settingsErrorText = () => {
+    if (!settingsError) {
+      return t('layout.alerts.settingsErrorMessage');
+    }
+    if (settingsError instanceof Error) {
+      return settingsError.message;
+    }
+    return typeof settingsError === 'string'
+      ? settingsError
+      : t('layout.alerts.settingsErrorMessage');
+  };
+
+  const { t } = useTranslation("system");
+  const baseNavItems = [
     {
+      key: "transactions",
       icon: IconWallet,
-      label: "가계부 대시보드",
       path: "/transactions",
       aliasPaths: ["/expense"],
-      description: "예산 · 거래내역 · 통계",
-      pageTitle: "가계부 대시보드",
-      pageDescription: "예산, 거래내역, 통계를 한 곳에서 확인합니다",
     },
     {
+      key: "dashboard",
       icon: IconHome,
-      label: "대시보드",
       path: "/dashboard",
-      description: "홈 대시보드",
-      pageTitle: "대시보드",
-      pageDescription: "자주쓰는 기능을 한 눈에 확인 할 수 있습니다.",
     },
     {
+      key: "salary",
       icon: IconCalculator,
-      label: "연봉계산기",
       path: "/salary",
-      description: "실수령액 계산",
-      pageTitle: "연봉 계산기",
-      pageDescription: "2025년 기준 세율로 실수령액을 계산합니다",
     },
     {
+      key: "notes",
       icon: IconNotes,
-      label: "메모",
       path: "/notes",
-      description: "메모 관리",
-      pageTitle: "메모",
-      pageDescription: "메모를 작성하고 관리합니다",
     },
-  ];
+  ] as const;
+
+  const navItems = baseNavItems.map((item) => ({
+    ...item,
+    label: t(`layout.nav.${item.key}.label`),
+    description: t(`layout.nav.${item.key}.description`),
+    pageTitle: t(`layout.nav.${item.key}.pageTitle`),
+    pageDescription: t(`layout.nav.${item.key}.pageDescription`),
+  }));
 
   const currentPage = navItems.find(
     (item) =>
@@ -124,7 +134,10 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       <AppShell.Header>
         <Group h="100%" px="md" justify="space-between" wrap="nowrap">
           <Group gap="md" wrap="nowrap" style={{ minWidth: 0, flex: 1 }}>
-            <UnstyledButton onClick={() => navigate("/dashboard")} aria-label="홈으로 이동">
+            <UnstyledButton
+              onClick={() => navigate("/dashboard")}
+              aria-label={t('layout.homeAria')}
+            >
               <img
                 src={logoPc}
                 alt="WorkLife Dashboard"
@@ -160,29 +173,29 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               </Menu.Target>
 
               <Menu.Dropdown>
-                <Menu.Label>계정</Menu.Label>
-              <Menu.Item
-                leftSection={<IconUser size={14} />}
-                onClick={() => navigate("/profile")}
-              >
-                프로필
+                <Menu.Label>{t('layout.menu.account')}</Menu.Label>
+                <Menu.Item
+                  leftSection={<IconUser size={14} />}
+                  onClick={() => navigate("/profile")}
+                >
+                {t('layout.menu.profile')}
               </Menu.Item>
                 <Menu.Item
                   leftSection={<IconSettings size={14} />}
                   onClick={() => navigate("/settings")}
                 >
-                  환경설정
+                  {t('layout.menu.settings')}
                 </Menu.Item>
 
                 <Menu.Divider />
 
-                <Menu.Label>위험 구역</Menu.Label>
+                <Menu.Label>{t('layout.menu.danger')}</Menu.Label>
                 <Menu.Item
                   color="red"
                   leftSection={<IconLogout size={14} />}
                   onClick={handleLogout}
                 >
-                  로그아웃
+                  {t('layout.menu.logout')}
                 </Menu.Item>
               </Menu.Dropdown>
             </Menu>
@@ -193,7 +206,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       <AppShell.Navbar p="md">
         <AppShell.Section>
           <Title order={5} mb={4}>
-            {currentPage?.pageTitle || "대시보드"}
+            {currentPage?.pageTitle || t('layout.nav.dashboard.pageTitle')}
           </Title>
           {currentPage?.pageDescription && (
             <Text size="xs" c="dimmed" mb="xs">
@@ -202,7 +215,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           )}
           <Divider mb="sm" />
           <Text size="xs" tt="uppercase" fw={700} c="dimmed" mb="sm">
-            메뉴
+            {t('layout.nav.heading')}
           </Text>
         </AppShell.Section>
 
@@ -232,7 +245,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         <AppShell.Section>
           <Divider my="sm" />
           <Text size="xs" c="dimmed" ta="center">
-            © 2024 워크라이프 대시보드
+            {t('layout.footer')}
           </Text>
         </AppShell.Section>
       </AppShell.Navbar>
@@ -243,20 +256,20 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             color="red"
             icon={<IconAlertTriangle size={18} />}
             mb="md"
-            title="사용자 설정 동기화 실패"
+            title={t('layout.alerts.settingsErrorTitle')}
             variant="light"
           >
             <Group justify="space-between" align="flex-start">
               <div>
                 <Text size="sm" fw={500}>
-                  {settingsError || "사용자 설정을 불러오지 못했어요."}
+                  {settingsErrorText()}
                 </Text>
                 <Text size="xs" c="dimmed">
-                  로컬에 저장된 이전 값을 임시로 사용 중입니다.
+                  {t('layout.alerts.settingsErrorHint')}
                 </Text>
               </div>
               <Button size="xs" variant="light" onClick={() => refetchSettings()}>
-                다시 시도
+                {t('layout.alerts.retry')}
               </Button>
             </Group>
           </Alert>
@@ -264,7 +277,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
         {children}
 
-        {/* Floating 메뉴 버튼 */}
+        {/* Floating menu button */}
         <Affix position={{ bottom: 20, left: 20 }}>
           <ActionIcon
             size="xl"
@@ -275,7 +288,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               toggleMobile();
               toggleDesktop();
             }}
-            title={desktopOpened ? "메뉴 닫기" : "메뉴 열기"}
+            title={desktopOpened ? t('layout.toggle.close') : t('layout.toggle.open')}
             style={{ boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)" }}
           >
             {desktopOpened ? <IconX size={24} /> : <IconMenu2 size={24} />}
@@ -283,16 +296,16 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         </Affix>
       </AppShell.Main>
 
-      {/* 위젯 독 */}
+      {/* Widget dock */}
       <WidgetDock />
 
-      {/* 위젯 사이드 패널 */}
+      {/* Widget side panel */}
       <WidgetSidePanel />
 
-      {/* 포모도로 타이머 플로팅 위젯 */}
+      {/* Pomodoro floating widget */}
       <PomodoroWidget />
 
-      {/* 스톱워치 플로팅 위젯 */}
+      {/* Stopwatch floating widget */}
       <StopwatchWidget />
     </AppShell>
   );

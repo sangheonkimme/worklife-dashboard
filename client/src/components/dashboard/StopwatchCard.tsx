@@ -25,6 +25,7 @@ import {
   IconSettings,
 } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useStopwatchStore } from '@/store/useStopwatchStore';
 import { formatTime } from '@/utils/timeFormat';
 import { SaveSessionModal } from '@/components/stopwatch/SaveSessionModal';
@@ -56,6 +57,7 @@ export function StopwatchCard() {
   const [goalTimeMinutes, setGoalTimeMinutes] = useState<number>(
     goalTime ? Math.floor(goalTime / 60000) : 60
   );
+  const { t } = useTranslation('widgets');
 
   // 컴포넌트 마운트 시 세션 복원 및 알림 권한 요청
   useEffect(() => {
@@ -116,7 +118,7 @@ export function StopwatchCard() {
               <IconStopwatch size={20} />
             </ThemeIcon>
             <Text fw={600} size="lg">
-              스톱워치
+              {t('stopwatch.title')}
             </Text>
           </Group>
           <Group gap="xs">
@@ -125,7 +127,7 @@ export function StopwatchCard() {
               variant="subtle"
               color="blue"
               onClick={() => setHistoryOpened(true)}
-              aria-label="히스토리"
+              aria-label={t('stopwatch.actions.openHistory')}
             >
               <IconHistory size={18} />
               {savedSessions.length > 0 && (
@@ -150,16 +152,20 @@ export function StopwatchCard() {
             {/* 설정 메뉴 */}
             <Menu shadow="md" width={250}>
               <Menu.Target>
-                <ActionIcon variant="subtle" color="blue" aria-label="설정">
+              <ActionIcon
+                variant="subtle"
+                color="blue"
+                aria-label={t('stopwatch.actions.openSettings')}
+              >
                   <IconSettings size={18} />
                 </ActionIcon>
               </Menu.Target>
 
               <Menu.Dropdown>
-                <Menu.Label>알림 설정</Menu.Label>
+                <Menu.Label>{t('stopwatch.menu.notifications')}</Menu.Label>
                 <Menu.Item closeMenuOnClick={false}>
                   <Switch
-                    label="알림 활성화"
+                    label={t('stopwatch.menu.enableNotifications')}
                     checked={notificationsEnabled}
                     onChange={(e) => setNotificationsEnabled(e.currentTarget.checked)}
                     size="sm"
@@ -169,7 +175,7 @@ export function StopwatchCard() {
                 <Menu.Item closeMenuOnClick={false}>
                   <Stack gap="xs">
                     <Text size="xs" fw={500}>
-                      목표 시간 (분)
+                      {t('stopwatch.menu.goalLabel')}
                     </Text>
                     <NumberInput
                       value={goalTimeMinutes}
@@ -181,7 +187,7 @@ export function StopwatchCard() {
                       min={0}
                       max={999}
                       size="xs"
-                      placeholder="0 = 목표 없음"
+                      placeholder={t('stopwatch.menu.goalPlaceholder')}
                     />
                   </Stack>
                 </Menu.Item>
@@ -203,10 +209,10 @@ export function StopwatchCard() {
                 </Text>
                 <Text size="xs" c="dimmed" mt={4}>
                   {status === 'running'
-                    ? '실행 중'
+                    ? t('stopwatch.status.running')
                     : status === 'paused'
-                    ? '일시정지'
-                    : '정지'}
+                    ? t('stopwatch.status.paused')
+                    : t('stopwatch.status.idle')}
                 </Text>
               </Stack>
             }
@@ -222,7 +228,7 @@ export function StopwatchCard() {
               onClick={startTimer}
               size="sm"
             >
-              시작
+              {t('stopwatch.actions.start')}
             </Button>
           )}
 
@@ -233,7 +239,7 @@ export function StopwatchCard() {
                 color="yellow"
                 size="lg"
                 onClick={pauseTimer}
-                aria-label="일시정지"
+                aria-label={t('stopwatch.actions.pause')}
               >
                 <IconPlayerPause size={18} />
               </ActionIcon>
@@ -242,7 +248,7 @@ export function StopwatchCard() {
                 color="blue"
                 size="lg"
                 onClick={recordLap}
-                aria-label="랩 기록"
+                aria-label={t('stopwatch.actions.recordLap')}
               >
                 <IconFlag size={18} />
               </ActionIcon>
@@ -251,7 +257,7 @@ export function StopwatchCard() {
                 color="gray"
                 size="lg"
                 onClick={resetTimer}
-                aria-label="리셋"
+                aria-label={t('stopwatch.actions.reset')}
               >
                 <IconPlayerStop size={18} />
               </ActionIcon>
@@ -266,14 +272,14 @@ export function StopwatchCard() {
                 onClick={resumeTimer}
                 size="sm"
               >
-                재개
+                {t('stopwatch.actions.resume')}
               </Button>
               <ActionIcon
                 variant="filled"
                 color="blue"
                 size="lg"
                 onClick={recordLap}
-                aria-label="랩 기록"
+                aria-label={t('stopwatch.actions.recordLap')}
               >
                 <IconFlag size={18} />
               </ActionIcon>
@@ -282,7 +288,7 @@ export function StopwatchCard() {
                 color="gray"
                 size="lg"
                 onClick={resetTimer}
-                aria-label="리셋"
+                aria-label={t('stopwatch.actions.reset')}
               >
                 <IconPlayerStop size={18} />
               </ActionIcon>
@@ -294,7 +300,7 @@ export function StopwatchCard() {
         {laps.length > 0 && (
           <Stack gap="xs" style={{ width: '100%' }}>
             <Text size="sm" fw={600} c="dimmed">
-              랩 타임 (최근 3개)
+              {t('stopwatch.labels.lapTimesRecent')}
             </Text>
             <ScrollArea h={100} type="auto">
               <Table>
@@ -335,15 +341,15 @@ export function StopwatchCard() {
         <Stack gap="xs" style={{ width: '100%' }}>
           <Group gap="xs" justify="center">
             <Text size="sm" c="dimmed">
-              랩:
+              {t('stopwatch.labels.lapCount')}
             </Text>
             <Badge color="blue" variant="light">
-              {laps.length}개
+              {t('stopwatch.labels.lapsValue', { count: laps.length })}
             </Badge>
             {laps.length > 0 && (
               <>
                 <Text size="sm" c="dimmed">
-                  평균:
+                  {t('stopwatch.labels.average')}
                 </Text>
                 <Badge color="cyan" variant="light">
                   {formatTime(avgLapTime)}
@@ -362,7 +368,7 @@ export function StopwatchCard() {
               onClick={() => setSaveModalOpened(true)}
               fullWidth
             >
-              세션 저장
+              {t('stopwatch.buttons.saveSession')}
             </Button>
           )}
         </Stack>

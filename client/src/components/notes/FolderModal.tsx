@@ -1,7 +1,8 @@
 import { Modal, TextInput, ColorInput, Select, Button, Group, Stack } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconFolder } from '@tabler/icons-react';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Folder } from '@/types/folder';
 import { useCreateFolder, useUpdateFolder, useFolders } from '@/hooks/useFolders';
 
@@ -12,21 +13,30 @@ interface FolderModalProps {
   parentId?: string;
 }
 
-const FOLDER_ICONS = [
-  { value: 'IconFolder', label: '📁 기본 폴더' },
-  { value: 'IconFolderOpen', label: '📂 열린 폴더' },
-  { value: 'IconBriefcase', label: '💼 업무' },
-  { value: 'IconBook', label: '📚 학습' },
-  { value: 'IconHeart', label: '❤️ 개인' },
-  { value: 'IconStar', label: '⭐ 중요' },
-  { value: 'IconHome', label: '🏠 집' },
-  { value: 'IconCode', label: '💻 코드' },
+const FOLDER_ICON_VALUES = [
+  { value: 'IconFolder', key: 'folderModal.iconOptions.default' },
+  { value: 'IconFolderOpen', key: 'folderModal.iconOptions.open' },
+  { value: 'IconBriefcase', key: 'folderModal.iconOptions.work' },
+  { value: 'IconBook', key: 'folderModal.iconOptions.study' },
+  { value: 'IconHeart', key: 'folderModal.iconOptions.personal' },
+  { value: 'IconStar', key: 'folderModal.iconOptions.important' },
+  { value: 'IconHome', key: 'folderModal.iconOptions.home' },
+  { value: 'IconCode', key: 'folderModal.iconOptions.code' },
 ];
 
 export function FolderModal({ opened, onClose, folder, parentId }: FolderModalProps) {
   const { data: folders } = useFolders();
   const createFolder = useCreateFolder();
   const updateFolder = useUpdateFolder();
+  const { t } = useTranslation('notes');
+  const iconOptions = useMemo(
+    () =>
+      FOLDER_ICON_VALUES.map((option) => ({
+        value: option.value,
+        label: t(option.key),
+      })),
+    [t]
+  );
 
   const form = useForm({
     initialValues: {
@@ -36,7 +46,10 @@ export function FolderModal({ opened, onClose, folder, parentId }: FolderModalPr
       parentId: parentId || '',
     },
     validate: {
-      name: (value) => (value.trim().length === 0 ? '폴더 이름을 입력하세요' : null),
+      name: (value) =>
+        value.trim().length === 0
+          ? t('folderModal.validation.nameRequired')
+          : null,
     },
   });
 
@@ -78,17 +91,17 @@ export function FolderModal({ opened, onClose, folder, parentId }: FolderModalPr
       form.reset();
       onClose();
     } catch (error) {
-      console.error('폴더 저장 실패:', error);
+      console.error('Failed to save folder:', error);
     }
   };
 
-  // 루트 폴더만 선택 가능 (최대 3단계 제한)
+  // Allow selecting only valid parent folders (max depth enforced)
   const availableFolders = folders?.filter((f) => {
-    // 현재 폴더 자신은 제외
+    // Exclude the current folder
     if (folder && f.id === folder.id) return false;
-    // 현재 폴더의 자식들도 제외 (순환 참조 방지)
+    // Exclude immediate children to prevent cycles
     if (folder && f.parentId === folder.id) return false;
-    // 부모가 없거나 1단계 폴더만 선택 가능 (2단계까지 허용)
+    // Only allow root folders or first-level folders as parents
     return !f.parentId || (f.parent && 'parentId' in f.parent && !f.parent.parentId);
   });
 
@@ -96,35 +109,35 @@ export function FolderModal({ opened, onClose, folder, parentId }: FolderModalPr
     <Modal
       opened={opened}
       onClose={onClose}
-      title={folder ? '폴더 수정' : '새 폴더'}
+      title={t(folder ? 'folderModal.title.edit' : 'folderModal.title.create')}
       size="md"
     >
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack gap="md">
           <TextInput
-            label="폴더 이름"
-            placeholder="폴더 이름을 입력하세요"
+            label={t('folderModal.fields.name.label')}
+            placeholder={t('folderModal.fields.name.placeholder')}
             required
             leftSection={<IconFolder size={16} />}
             {...form.getInputProps('name')}
           />
 
           <Select
-            label="아이콘"
-            placeholder="아이콘 선택"
-            data={FOLDER_ICONS}
+            label={t('folderModal.fields.icon.label')}
+            placeholder={t('folderModal.fields.icon.placeholder')}
+            data={iconOptions}
             {...form.getInputProps('icon')}
           />
 
           <ColorInput
-            label="색상"
-            placeholder="색상 선택"
+            label={t('folderModal.fields.color.label')}
+            placeholder={t('folderModal.fields.color.placeholder')}
             {...form.getInputProps('color')}
           />
 
           <Select
-            label="상위 폴더"
-            placeholder="상위 폴더 선택 (선택사항)"
+            label={t('folderModal.fields.parent.label')}
+            placeholder={t('folderModal.fields.parent.placeholder')}
             clearable
             data={
               availableFolders?.map((f) => ({
@@ -137,13 +150,13 @@ export function FolderModal({ opened, onClose, folder, parentId }: FolderModalPr
 
           <Group justify="flex-end" mt="md">
             <Button variant="subtle" onClick={onClose}>
-              취소
+              {t('actions.cancel')}
             </Button>
             <Button
               type="submit"
               loading={createFolder.isPending || updateFolder.isPending}
             >
-              {folder ? '수정' : '생성'}
+              {t(folder ? 'actions.update' : 'actions.create')}
             </Button>
           </Group>
         </Stack>

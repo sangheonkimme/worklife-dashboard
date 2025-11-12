@@ -4,6 +4,7 @@ import { IconPlus, IconSettings } from '@tabler/icons-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
 import { modals } from '@mantine/modals';
+import { useTranslation } from 'react-i18next';
 import TransactionForm from './TransactionForm';
 import TransactionList from './TransactionList';
 import TransactionFilter from './TransactionFilter';
@@ -22,8 +23,9 @@ export default function TransactionsTab() {
   });
 
   const queryClient = useQueryClient();
+  const { t } = useTranslation('finance');
 
-  // Affix 버튼에서 모달 열기
+  // Allow external affordances to open the modal
   useEffect(() => {
     const handleOpenModal = () => {
       setIsModalOpen(true);
@@ -35,42 +37,44 @@ export default function TransactionsTab() {
     };
   }, []);
 
-  // 거래 목록 조회
+  // Fetch transactions
   const { data, isLoading } = useQuery({
     queryKey: ['transactions', { ...filters, page }],
     queryFn: () => transactionApi.getTransactions({ ...filters, page }),
   });
 
-  // 거래 생성
+  // Create transaction
   const createMutation = useMutation({
     mutationFn: transactionApi.createTransaction,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       notifications.show({
-        title: '성공',
-        message: '거래가 등록되었습니다',
+        title: t('transactionsTab.notifications.successTitle'),
+        message: t('transactionsTab.notifications.createSuccess'),
         color: 'teal',
       });
       setIsModalOpen(false);
     },
     onError: (error: any) => {
       notifications.show({
-        title: '오류',
-        message: error.response?.data?.message || '거래 등록에 실패했습니다',
+        title: t('transactionsTab.notifications.errorTitle'),
+        message:
+          error.response?.data?.message ||
+          t('transactionsTab.notifications.createError'),
         color: 'red',
       });
     },
   });
 
-  // 거래 수정
+  // Update transaction
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateTransactionDto }) =>
       transactionApi.updateTransaction(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       notifications.show({
-        title: '성공',
-        message: '거래가 수정되었습니다',
+        title: t('transactionsTab.notifications.successTitle'),
+        message: t('transactionsTab.notifications.updateSuccess'),
         color: 'teal',
       });
       setIsModalOpen(false);
@@ -78,28 +82,32 @@ export default function TransactionsTab() {
     },
     onError: (error: any) => {
       notifications.show({
-        title: '오류',
-        message: error.response?.data?.message || '거래 수정에 실패했습니다',
+        title: t('transactionsTab.notifications.errorTitle'),
+        message:
+          error.response?.data?.message ||
+          t('transactionsTab.notifications.updateError'),
         color: 'red',
       });
     },
   });
 
-  // 거래 삭제
+  // Delete transaction
   const deleteMutation = useMutation({
     mutationFn: transactionApi.deleteTransaction,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       notifications.show({
-        title: '성공',
-        message: '거래가 삭제되었습니다',
+        title: t('transactionsTab.notifications.successTitle'),
+        message: t('transactionsTab.notifications.deleteSuccess'),
         color: 'teal',
       });
     },
     onError: (error: any) => {
       notifications.show({
-        title: '오류',
-        message: error.response?.data?.message || '거래 삭제에 실패했습니다',
+        title: t('transactionsTab.notifications.errorTitle'),
+        message:
+          error.response?.data?.message ||
+          t('transactionsTab.notifications.deleteError'),
         color: 'red',
       });
     },
@@ -124,9 +132,14 @@ export default function TransactionsTab() {
 
   const handleDelete = (id: string) => {
     modals.openConfirmModal({
-      title: '거래 삭제',
-      children: <Text size="sm">정말로 이 거래를 삭제하시겠습니까?</Text>,
-      labels: { confirm: '삭제', cancel: '취소' },
+      title: t('transactionsTab.confirmDelete.title'),
+      children: (
+        <Text size="sm">{t('transactionsTab.confirmDelete.message')}</Text>
+      ),
+      labels: {
+        confirm: t('transactionsTab.confirmDelete.confirm'),
+        cancel: t('transactionsTab.confirmDelete.cancel'),
+      },
       confirmProps: { color: 'red' },
       onConfirm: () => deleteMutation.mutate(id),
     });
@@ -139,7 +152,7 @@ export default function TransactionsTab() {
 
   const handleFiltersChange = (newFilters: TransactionFilters) => {
     setFilters(newFilters);
-    setPage(1); // 필터 변경 시 첫 페이지로
+    setPage(1); // Reset to first page when filters change
   };
 
   const handleFiltersReset = () => {
@@ -151,7 +164,7 @@ export default function TransactionsTab() {
     <Stack gap="md">
       <Group justify="space-between">
         <Text size="lg" fw={600}>
-          거래 내역
+          {t('transactionsTab.title')}
         </Text>
         <Group gap="sm">
           <Button
@@ -159,13 +172,13 @@ export default function TransactionsTab() {
             leftSection={<IconSettings size={16} />}
             onClick={() => setIsCategoryModalOpen(true)}
           >
-            카테고리 관리
+            {t('transactionsTab.buttons.manageCategories')}
           </Button>
           <Button
             leftSection={<IconPlus size={16} />}
             onClick={() => setIsModalOpen(true)}
           >
-            거래 추가
+            {t('transactionsTab.buttons.addTransaction')}
           </Button>
         </Group>
       </Group>
@@ -189,7 +202,11 @@ export default function TransactionsTab() {
       <Modal
         opened={isModalOpen}
         onClose={handleModalClose}
-        title={editingTransaction ? '거래 수정' : '거래 추가'}
+        title={
+          editingTransaction
+            ? t('transactionsTab.modal.editTitle')
+            : t('transactionsTab.modal.createTitle')
+        }
         size="md"
       >
         <TransactionForm

@@ -1,0 +1,295 @@
+{
+  "actions": {
+    "cancel": "Cancel",
+    "create": "Create",
+    "update": "Update",
+    "delete": "Delete",
+    "close": "Close",
+    "save": "Save",
+    "add": "Add",
+    "copy": "Copy",
+    "link": "Link",
+    "open": "Open",
+    "select": "Select"
+  },
+  "searchBar": {
+    "placeholder": "Search notes..."
+  },
+  "tagInput": {
+    "label": "Tags",
+    "placeholder": "Select tags",
+    "createPlaceholder": "Select or create tags"
+  },
+  "tagManager": {
+    "title": {
+      "create": "New tag",
+      "edit": "Edit tag"
+    },
+    "fields": {
+      "name": {
+        "label": "Tag name",
+        "placeholder": "Enter tag name"
+      },
+      "color": {
+        "label": "Color",
+        "placeholder": "Pick a color"
+      }
+    },
+    "validation": {
+      "nameRequired": "Please enter a tag name."
+    }
+  },
+  "tagList": {
+    "title": "Tags",
+    "all": "All tags",
+    "loading": "Loading...",
+    "empty": "No tags",
+    "menu": {
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "deleteConfirm": {
+      "title": "Delete tag",
+      "message": "Do you want to delete the tag \"{{name}}\"?",
+      "usageWarning": "{{count}} notes will lose this tag."
+    }
+  },
+  "folderTree": {
+    "title": "Folders",
+    "all": "All notes",
+    "loading": "Loading...",
+    "empty": "No folders",
+    "addChild": "Add subfolder",
+    "menu": {
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "deleteConfirm": {
+      "title": "Delete folder",
+      "message": "Do you want to delete the folder \"{{name}}\"?",
+      "noteWarning": "This folder has {{count}} notes. They will be moved to No folder.",
+      "childWarning": "Folders with subfolders cannot be deleted."
+    }
+  },
+  "folderModal": {
+    "title": {
+      "create": "New folder",
+      "edit": "Edit folder"
+    },
+    "fields": {
+      "name": {
+        "label": "Folder name",
+        "placeholder": "Enter folder name"
+      },
+      "icon": {
+        "label": "Icon",
+        "placeholder": "Select an icon"
+      },
+      "color": {
+        "label": "Color",
+        "placeholder": "Pick a color"
+      },
+      "parent": {
+        "label": "Parent folder",
+        "placeholder": "Select parent folder (optional)"
+      }
+    },
+    "iconOptions": {
+      "default": "📁 Default",
+      "open": "📂 Open",
+      "work": "💼 Work",
+      "study": "📚 Study",
+      "personal": "❤️ Personal",
+      "important": "⭐ Important",
+      "home": "🏠 Home",
+      "code": "💻 Code"
+    },
+    "validation": {
+      "nameRequired": "Please enter a folder name."
+    }
+  },
+  "searchFilters": {
+    "title": "Filters",
+    "typeLabel": "Note type",
+    "typePlaceholder": "Select type",
+    "types": {
+      "TEXT": "Text",
+      "CHECKLIST": "Checklist",
+      "MARKDOWN": "Markdown",
+      "QUICK": "Quick note"
+    },
+    "dateFromLabel": "Start date",
+    "dateFromPlaceholder": "Pick start date",
+    "dateToLabel": "End date",
+    "dateToPlaceholder": "Pick end date",
+    "statusLabel": "Status",
+    "statuses": {
+      "pinned": "📌 Pinned",
+      "favorite": "⭐ Favorite",
+      "archived": "📦 Archived"
+    }
+  },
+  "quickNote": {
+    "title": "Quick note",
+    "defaultTitle": "Quick note",
+    "openAria": "Open quick note",
+    "closeAria": "Close quick note",
+    "titlePlaceholder": "Title (optional)",
+    "contentPlaceholder": "Write your note...",
+    "saveHint": "Press Ctrl+Enter to save",
+    "characterCount": "{{count}} characters"
+  },
+  "attachments": {
+    "dropzone": {
+      "title": "Drag files here or click to upload",
+      "description": "Up to 10MB · images, audio, and documents supported"
+    },
+    "uploading": {
+      "title": "Uploading...",
+      "message": "Uploading your files"
+    },
+    "empty": "No attachments",
+    "download": "Download",
+    "confirmDelete": "Do you want to delete this file?"
+  },
+  "templateModal": {
+    "title": {
+      "select": "Choose template",
+      "create": "Create template",
+      "edit": "Edit template"
+    },
+    "createButton": "Create new template",
+    "empty": "No templates",
+    "defaultBadge": "Default",
+    "fields": {
+      "name": {
+        "label": "Template name",
+        "placeholder": "Enter template name"
+      },
+      "description": {
+        "label": "Description",
+        "placeholder": "Template description (optional)"
+      },
+      "type": {
+        "label": "Note type"
+      },
+      "content": {
+        "label": "Content",
+        "placeholder": "Enter template content"
+      }
+    },
+    "types": {
+      "TEXT": "Text",
+      "CHECKLIST": "Checklist",
+      "MARKDOWN": "Markdown",
+      "QUICK": "Quick note"
+    },
+    "deleteConfirm": "Do you want to delete this template?"
+  },
+  "checklistEditor": {
+    "progressLabel": "Progress",
+    "addPlaceholder": "Add new item...",
+    "addButton": "Add"
+  },
+  "linkTransactionModal": {
+    "title": "Link transactions",
+    "linkedTitle": "Linked transactions ({{count}})",
+    "filters": {
+      "searchPlaceholder": "Search description or category",
+      "typePlaceholder": "Transaction type"
+    },
+    "listTitle": "Transactions",
+    "empty": "No transactions available to link",
+    "descriptionFallback": "No description",
+    "close": "Close",
+    "linkButton": "Link"
+  },
+  "markdownEditor": {
+    "placeholder": "Write in markdown...",
+    "modes": {
+      "edit": "Edit",
+      "preview": "Preview",
+      "split": "Split"
+    },
+    "emptyPreview": "Preview will appear here"
+  },
+  "page": {
+    "title": "Notes",
+    "newNote": "New note",
+    "filtersApplied": "Filters applied",
+    "empty": {
+      "title": "No notes yet.",
+      "cta": "Create your first note"
+    },
+    "drawer": {
+      "menu": "Menu",
+      "filters": "Filters"
+    },
+    "confirmDelete": "Do you want to delete this note?",
+    "badges": {
+      "pinned": "Pinned",
+      "favorite": "Favorite"
+    },
+    "contentFallback": "No content",
+    "noteTypes": {
+      "TEXT": "Text",
+      "MARKDOWN": "Markdown",
+      "CHECKLIST": "Checklist"
+    },
+    "modals": {
+      "note": {
+        "title": {
+          "create": "New note",
+          "edit": "Edit note"
+        },
+        "tabs": {
+          "basic": "Basic info",
+          "settings": "Settings",
+          "attachments": "Attachments"
+        },
+        "form": {
+          "title": {
+            "label": "Title",
+            "placeholder": "Enter note title"
+          },
+          "type": {
+            "label": "Note type"
+          },
+          "content": {
+            "label": "Content",
+            "placeholder": "Enter note content"
+          },
+          "markdownLabel": "Content",
+          "checklistLabel": "Checklist",
+          "checklistItemsLabel": "Checklist items",
+          "checklistPlaceholder": "Checklist item",
+          "addChecklistItem": "Add item",
+          "tagsPlaceholder": "Select or create tags"
+        },
+        "visibility": {
+          "label": "Visibility",
+          "description": "Control who can view this note",
+          "options": {
+            "PRIVATE": "Private (only me)",
+            "PUBLIC": "Public (shareable link)",
+            "PROTECTED": "Password protected"
+          },
+          "password": {
+            "label": "Password",
+            "placeholder": "Enter a password to protect this note"
+          },
+          "publicUrl": {
+            "label": "Public URL",
+            "copy": "Copy link",
+            "success": "Link copied to clipboard!"
+          }
+        },
+        "templateButton": "Choose template",
+        "submit": {
+          "create": "Create",
+          "update": "Update"
+        }
+      }
+    }
+  }
+}

@@ -9,8 +9,10 @@ import type { Icon } from "@tabler/icons-react";
 export interface WidgetConfig {
   id: string;
   name: string;
+  nameKey?: string;
   icon: Icon;
   description: string;
+  descriptionKey?: string;
   component: React.ComponentType<WidgetProps>;
   displayMode: "modal" | "page" | "inline";
   modalSize?: "sm" | "md" | "lg" | "xl" | "full";

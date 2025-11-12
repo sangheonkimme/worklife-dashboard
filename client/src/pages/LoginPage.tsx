@@ -20,6 +20,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../hooks/useAuth";
 import { useEffect } from "react";
 import { isAxiosError } from "axios";
+import { useTranslation } from "react-i18next";
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -32,6 +33,7 @@ export const LoginPage = () => {
     googleLoginError,
     // isGoogleLoginLoading,
   } = useAuth();
+  const { t, i18n } = useTranslation("auth");
 
   const form = useForm({
     initialValues: {
@@ -42,13 +44,15 @@ export const LoginPage = () => {
 
     validate: {
       email: (value: string) => {
-        if (!value) return "이메일을 입력해주세요";
-        if (!/^\S+@\S+$/.test(value)) return "올바른 이메일 형식이 아닙니다";
+        if (!value) return t("login.validation.emailRequired");
+        if (!/^\S+@\S+$/.test(value))
+          return t("login.validation.emailInvalid");
         return null;
       },
       password: (value: string) => {
-        if (!value) return "비밀번호를 입력해주세요";
-        if (value.length < 6) return "비밀번호는 최소 6자 이상이어야 합니다";
+        if (!value) return t("login.validation.passwordRequired");
+        if (value.length < 6)
+          return t("login.validation.passwordLength");
         return null;
       },
     },
@@ -65,7 +69,7 @@ export const LoginPage = () => {
       navigate("/dashboard", { replace: true });
     } catch (err) {
       // 에러는 useAuth의 loginError로 처리됨
-      console.error("로그인 실패:", err);
+      console.error("Login failed:", err);
     }
   };
 
@@ -79,12 +83,12 @@ export const LoginPage = () => {
   return (
     <Container size={420} my={40}>
       <Title ta="center" fw={900}>
-        환영합니다!
+        {t("login.title")}
       </Title>
       <Text c="dimmed" size="sm" ta="center" mt={5}>
-        아직 계정이 없으신가요?{" "}
+        {t("login.subtitle")}{" "}
         <Anchor size="sm" component={Link} to="/signup">
-          회원가입
+          {t("login.signupLink")}
         </Anchor>
       </Text>
 
@@ -94,7 +98,7 @@ export const LoginPage = () => {
             {loginError && (
               <Alert
                 icon={<IconAlertCircle size={16} />}
-                title="오류"
+                title={t("login.alerts.title")}
                 color="red"
                 variant="light"
               >
@@ -107,7 +111,7 @@ export const LoginPage = () => {
                       loginError.code === "ERR_NETWORK" ||
                       loginError.message.includes("Network Error")
                     ) {
-                      return "서버에 연결할 수 없습니다. 네트워크 연결을 확인해주세요.";
+                      return t("login.alerts.network");
                     }
                     // 서버 응답이 있는 경우 메시지 사용
                     if (loginError.response?.data?.message) {
@@ -115,45 +119,45 @@ export const LoginPage = () => {
                     }
                   }
                   // 기본 에러 메시지
-                  return "로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.";
+                  return t("login.alerts.default");
                 })()}
               </Alert>
             )}
 
             <TextInput
-              label="이메일"
-              placeholder="your@email.com"
+              label={t("login.form.emailLabel")}
+              placeholder={t("login.form.emailPlaceholder")}
               required
               {...form.getInputProps("email")}
             />
 
             <PasswordInput
-              label="비밀번호"
-              placeholder="비밀번호를 입력하세요"
+              label={t("login.form.passwordLabel")}
+              placeholder={t("login.form.passwordPlaceholder")}
               required
               {...form.getInputProps("password")}
             />
 
             <Group justify="space-between">
               <Checkbox
-                label="로그인 상태 유지"
+                label={t("login.form.rememberMe")}
                 {...form.getInputProps("rememberMe", { type: "checkbox" })}
               />
               <Anchor size="sm" component={Link} to="/forgot-password">
-                비밀번호를 잊으셨나요?
+                {t("login.form.forgotPassword")}
               </Anchor>
             </Group>
 
             <Button type="submit" fullWidth loading={isLoginLoading}>
-              로그인
+              {t("login.form.submit")}
             </Button>
 
-            <Divider label="또는" labelPosition="center" />
+            <Divider label={t("login.form.divider")} labelPosition="center" />
 
             {googleLoginError && (
               <Alert
                 icon={<IconAlertCircle size={16} />}
-                title="오류"
+                title={t("login.alerts.title")}
                 color="red"
                 variant="light"
               >
@@ -165,7 +169,7 @@ export const LoginPage = () => {
                       googleLoginError.code === "ERR_NETWORK" ||
                       googleLoginError.message.includes("Network Error")
                     ) {
-                      return "서버에 연결할 수 없습니다. 네트워크 연결을 확인해주세요.";
+                      return t("login.alerts.network");
                     }
                     // 서버 응답이 있는 경우 메시지 사용
                     if (googleLoginError.response?.data?.message) {
@@ -173,7 +177,7 @@ export const LoginPage = () => {
                     }
                   }
                   // 기본 에러 메시지
-                  return "Google 로그인에 실패했습니다. 다시 시도해주세요.";
+                  return t("login.alerts.googleDefault");
                 })()}
               </Alert>
             )}
@@ -185,15 +189,15 @@ export const LoginPage = () => {
                     await googleLogin(credentialResponse.credential);
                   }
                 } catch (err) {
-                  console.error("Google 로그인 실패:", err);
+                  console.error("Google login failed:", err);
                 }
               }}
               onError={() => {
-                console.error("Google 로그인 실패");
+                console.error("Google login failed");
               }}
               text="signin_with"
               width="100%"
-              locale="ko"
+              locale={i18n.language}
             />
           </Stack>
         </form>

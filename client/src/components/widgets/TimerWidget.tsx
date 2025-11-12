@@ -23,6 +23,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
+import { useTranslation } from "react-i18next";
 import { useTimerStore } from "@/store/useTimerStore";
 import type { WidgetProps } from "@/types/widget";
 import { formatTimeSimple } from "@/utils/timeFormat";
@@ -34,21 +35,8 @@ const statusColor: Record<string, string> = {
   finished: "green",
 };
 
-const statusLabel: Record<string, string> = {
-  idle: "대기중",
-  running: "진행 중",
-  paused: "일시정지",
-  finished: "완료",
-};
-
-const preAlertOptions = [
-  { label: "사용 안 함", value: "none" },
-  { label: "30초 전", value: (30 * 1000).toString() },
-  { label: "1분 전", value: (60 * 1000).toString() },
-  { label: "5분 전", value: (5 * 60 * 1000).toString() },
-];
-
 export function TimerWidget({ onClose }: WidgetProps) {
+  const { t } = useTranslation("widgets");
   const status = useTimerStore((state) => state.status);
   const totalMs = useTimerStore((state) => state.totalMs);
   const remainingMs = useTimerStore((state) => state.remainingMs);
@@ -177,6 +165,19 @@ export function TimerWidget({ onClose }: WidgetProps) {
   const formattedRemaining = formatTimeSimple(Math.max(remainingMs, 0));
   const formattedTotal = totalMs > 0 ? formatTimeSimple(totalMs) : "00:00";
   const currentStatusColor = statusColor[status] ?? "gray";
+  const statusText = t(`timer.status.${status}` as const);
+  const preAlertOptions = useMemo(
+    () => [
+      { label: t("timer.preAlertOptions.none"), value: "none" },
+      { label: t("timer.preAlertOptions.30s"), value: (30 * 1000).toString() },
+      { label: t("timer.preAlertOptions.1m"), value: (60 * 1000).toString() },
+      {
+        label: t("timer.preAlertOptions.5m"),
+        value: (5 * 60 * 1000).toString(),
+      },
+    ],
+    [t]
+  );
 
   const handleApplyCustom = () => {
     const clampedMinutes = Math.max(0, Math.min(99, minutes || 0));
@@ -186,8 +187,8 @@ export function TimerWidget({ onClose }: WidgetProps) {
 
     if (totalMilliseconds <= 0) {
       notifications.show({
-        title: "유효한 시간을 입력하세요",
-        message: "1초 이상으로 설정해야 합니다.",
+        title: t("timer.messages.invalidTitle"),
+        message: t("timer.messages.invalidMessage"),
         color: "red",
       });
       return;
@@ -224,7 +225,7 @@ export function TimerWidget({ onClose }: WidgetProps) {
             color="yellow"
             onClick={pauseTimer}
           >
-            일시정지
+            {t("timer.buttons.pause")}
           </Button>
           <Button
             leftSection={<IconPlayerStop size={16} />}
@@ -232,7 +233,7 @@ export function TimerWidget({ onClose }: WidgetProps) {
             color="gray"
             onClick={resetTimer}
           >
-            리셋
+            {t("timer.buttons.reset")}
           </Button>
         </Group>
       );
@@ -246,7 +247,7 @@ export function TimerWidget({ onClose }: WidgetProps) {
             color="teal"
             onClick={handleResume}
           >
-            재개
+            {t("timer.buttons.resume")}
           </Button>
           <Button
             variant="light"
@@ -254,7 +255,7 @@ export function TimerWidget({ onClose }: WidgetProps) {
             leftSection={<IconPlayerStop size={16} />}
             onClick={resetTimer}
           >
-            리셋
+            {t("timer.buttons.reset")}
           </Button>
         </Group>
       );
@@ -269,7 +270,7 @@ export function TimerWidget({ onClose }: WidgetProps) {
           onClick={handleStart}
           disabled={totalMs <= 0}
         >
-          시작
+          {t("timer.buttons.start")}
         </Button>
         {status === "finished" && (
           <Button
@@ -278,7 +279,7 @@ export function TimerWidget({ onClose }: WidgetProps) {
             leftSection={<IconRotate size={16} />}
             onClick={resetTimer}
           >
-            다시 설정
+            {t("timer.buttons.restart")}
           </Button>
         )}
       </Group>
@@ -300,16 +301,16 @@ export function TimerWidget({ onClose }: WidgetProps) {
             일반 타이머
           </Text>
           <Group gap="xs" mt={4}>
-            <Badge color={currentStatusColor}>{statusLabel[status]}</Badge>
+            <Badge color={currentStatusColor}>{statusText}</Badge>
             {preAlertTriggered && status === "running" && (
               <Badge color="yellow" variant="light">
-                곧 종료
+                {t("timer.badges.endingSoon")}
               </Badge>
             )}
             {settings.autoRepeat && (
-              <Tooltip label="완료 시 자동으로 다시 시작">
+              <Tooltip label={t("timer.tooltips.autoRepeat")}>
                 <Badge color="teal" variant="light">
-                  자동 반복
+                  {t("timer.badges.autoRepeat")}
                 </Badge>
               </Tooltip>
             )}
@@ -318,13 +319,17 @@ export function TimerWidget({ onClose }: WidgetProps) {
         <Group gap="xs">
           <ActionIcon
             variant="subtle"
-            aria-label="설정"
+            aria-label={t("timer.aria.openSettings")}
             onClick={() => setSettingsOpened(true)}
           >
             <IconSettings size={18} />
           </ActionIcon>
           {onClose && (
-            <ActionIcon variant="subtle" aria-label="닫기" onClick={onClose}>
+            <ActionIcon
+              variant="subtle"
+              aria-label={t("timer.aria.closeWidget")}
+              onClick={onClose}
+            >
               <IconX size={18} />
             </ActionIcon>
           )}
@@ -344,7 +349,7 @@ export function TimerWidget({ onClose }: WidgetProps) {
               {formattedRemaining}
             </Text>
             <Text size="xs" c="dimmed">
-              총 {formattedTotal}
+              {t("timer.display.total", { time: formattedTotal })}
             </Text>
           </Stack>
         }
@@ -360,10 +365,10 @@ export function TimerWidget({ onClose }: WidgetProps) {
       <Stack gap="xs">
         <Group justify="space-between">
           <Text size="sm" fw={600}>
-            빠른 설정
+            {t("timer.sections.quickPresetsTitle")}
           </Text>
           <Text size="sm" c="dimmed">
-            클릭 한 번으로 시간 지정
+            {t("timer.sections.quickPresetsDescription")}
           </Text>
         </Group>
         <Group gap="xs">
@@ -377,7 +382,9 @@ export function TimerWidget({ onClose }: WidgetProps) {
                 color="teal"
                 onClick={() => setPreset(preset)}
               >
-                {Math.floor(preset / 60000)}분
+                {t("timer.presets.minutesLabel", {
+                  value: Math.floor(preset / 60000),
+                })}
               </Button>
             );
           })}
@@ -388,11 +395,11 @@ export function TimerWidget({ onClose }: WidgetProps) {
 
       <Stack gap="xs">
         <Text size="sm" fw={600}>
-          커스텀 시간
+          {t("timer.sections.customTitle")}
         </Text>
         <Group align="flex-end" gap="xs">
           <NumberInput
-            label="분"
+            label={t("timer.fields.minutes")}
             min={0}
             max={99}
             value={minutes}
@@ -401,7 +408,7 @@ export function TimerWidget({ onClose }: WidgetProps) {
             }
           />
           <NumberInput
-            label="초"
+            label={t("timer.fields.seconds")}
             min={0}
             max={59}
             value={seconds}
@@ -410,7 +417,7 @@ export function TimerWidget({ onClose }: WidgetProps) {
             }
           />
           <Button variant="light" color="blue" onClick={handleApplyCustom}>
-            적용
+            {t("timer.buttons.apply")}
           </Button>
         </Group>
       </Stack>
@@ -421,44 +428,44 @@ export function TimerWidget({ onClose }: WidgetProps) {
 
       {status === "finished" && (
         <Text size="sm" c="dimmed" ta="center">
-          타이머가 완료되었습니다. 다시 시작하려면 위 버튼을 사용하세요.
+          {t("timer.messages.finished")}
         </Text>
       )}
 
       <Modal
         opened={settingsOpened}
         onClose={() => setSettingsOpened(false)}
-        title="타이머 설정"
+        title={t("timer.modal.title")}
         size="md"
         centered
       >
         <Stack gap="md">
           <Switch
-            label="타이머 알림 받기"
+            label={t("timer.modal.notificationsLabel")}
             checked={settings.notifications}
             onChange={(event) =>
               setSettings({ notifications: event.currentTarget.checked })
             }
           />
           <Switch
-            label="소리 알림"
-            description="사전 알림/완료 시 간단한 비프음을 재생합니다."
+            label={t("timer.modal.soundLabel")}
+            description={t("timer.modal.soundDescription")}
             checked={settings.soundEnabled}
             onChange={(event) =>
               handleSoundToggle(event.currentTarget.checked)
             }
           />
           <Switch
-            label="완료 후 자동 반복"
-            description="타이머가 끝나면 동일한 시간으로 다시 시작합니다."
+            label={t("timer.modal.autoRepeatLabel")}
+            description={t("timer.modal.autoRepeatDescription")}
             checked={settings.autoRepeat}
             onChange={(event) =>
               setSettings({ autoRepeat: event.currentTarget.checked })
             }
           />
           <Select
-            label="사전 알림"
-            placeholder="시간을 선택하세요"
+            label={t("timer.modal.preAlertLabel")}
+            placeholder={t("timer.modal.preAlertPlaceholder")}
             value={
               settings.preAlertMs ? settings.preAlertMs.toString() : "none"
             }
@@ -467,8 +474,7 @@ export function TimerWidget({ onClose }: WidgetProps) {
             allowDeselect={false}
           />
           <Text size="xs" c="dimmed">
-            브라우저 알림을 위해 권한이 필요할 수 있습니다. 최초 사용 시 브라우저
-            팝업을 허용해주세요.
+            {t("timer.modal.browserPermission")}
           </Text>
         </Stack>
       </Modal>

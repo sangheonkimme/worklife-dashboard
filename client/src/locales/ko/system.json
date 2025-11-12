@@ -1,0 +1,65 @@
+{
+  "notifications": {
+    "successTitle": "성공",
+    "errorTitle": "오류",
+    "warningTitle": "안내",
+    "infoTitle": "알림"
+  },
+  "status": {
+    "loading": "로딩 중입니다...",
+    "empty": "표시할 데이터가 없습니다.",
+    "error": "문제가 발생했습니다. 다시 시도해주세요."
+  },
+  "errors": {
+    "network": "네트워크 오류입니다. 연결 상태를 확인해주세요.",
+    "unknown": "문제가 발생했습니다. 잠시 후 다시 시도해주세요."
+  },
+  "layout": {
+    "nav": {
+      "heading": "메뉴",
+      "transactions": {
+        "label": "가계부 대시보드",
+        "description": "예산 · 거래내역 · 통계",
+        "pageTitle": "가계부 대시보드",
+        "pageDescription": "예산, 거래내역, 통계를 한 곳에서 확인합니다."
+      },
+      "dashboard": {
+        "label": "대시보드",
+        "description": "홈 대시보드",
+        "pageTitle": "대시보드",
+        "pageDescription": "자주 쓰는 기능을 한 눈에 살펴보세요."
+      },
+      "salary": {
+        "label": "연봉 계산기",
+        "description": "실수령액 계산",
+        "pageTitle": "연봉 계산기",
+        "pageDescription": "2025년 세율로 예상 실수령액을 계산합니다."
+      },
+      "notes": {
+        "label": "메모",
+        "description": "메모 관리",
+        "pageTitle": "메모",
+        "pageDescription": "개인 메모를 작성하고 정리하세요."
+      }
+    },
+    "menu": {
+      "account": "계정",
+      "danger": "위험 구역",
+      "profile": "프로필",
+      "settings": "환경설정",
+      "logout": "로그아웃"
+    },
+    "footer": "© 2024 워크라이프 대시보드",
+    "alerts": {
+      "settingsErrorTitle": "사용자 설정 동기화 실패",
+      "settingsErrorMessage": "사용자 설정을 불러오지 못했어요.",
+      "settingsErrorHint": "로컬에 저장된 이전 값을 임시로 사용 중입니다.",
+      "retry": "다시 시도"
+    },
+    "toggle": {
+      "open": "메뉴 열기",
+      "close": "메뉴 닫기"
+    },
+    "homeAria": "대시보드로 이동"
+  }
+}

@@ -1,4 +1,5 @@
 import { PDFDocument } from "pdf-lib";
+import i18n from "@/lib/i18n";
 import {
   type PdfOptions,
   type PdfGenerationResult,
@@ -16,7 +17,7 @@ export async function generatePdfFromImages(
     if (images.length === 0) {
       return {
         success: false,
-        error: "변환할 이미지가 없습니다.",
+        error: i18n.t("widgets:imageToPdf.errors.noImages"),
       };
     }
 
@@ -45,7 +46,7 @@ export async function generatePdfFromImages(
           image = await embedImageViaCanvas(pdfDoc, imageFile);
         }
       } catch (error) {
-        console.error(`이미지 임베드 실패: ${imageFile.name}`, error);
+        console.error(`Failed to embed image: ${imageFile.name}`, error);
         continue; // 실패한 이미지는 건너뜀
       }
 
@@ -75,13 +76,13 @@ export async function generatePdfFromImages(
       fileName: generateFileName(),
     };
   } catch (error) {
-    console.error("PDF 생성 실패:", error);
+    console.error("Failed to generate PDF:", error);
     return {
       success: false,
       error:
         error instanceof Error
           ? error.message
-          : "PDF 생성 중 오류가 발생했습니다.",
+          : i18n.t("widgets:imageToPdf.errors.generic"),
     };
   }
 }
@@ -104,7 +105,7 @@ async function embedImageViaCanvas(
         const ctx = canvas.getContext("2d");
 
         if (!ctx) {
-          reject(new Error("Canvas context를 가져올 수 없습니다."));
+          reject(new Error("Unable to access canvas context."));
           return;
         }
 
@@ -115,7 +116,7 @@ async function embedImageViaCanvas(
         canvas.toBlob(
           async (blob) => {
             if (!blob) {
-              reject(new Error("이미지 변환 실패"));
+              reject(new Error("Failed to convert image"));
               return;
             }
 
@@ -130,7 +131,7 @@ async function embedImageViaCanvas(
         reject(error);
       }
     };
-    img.onerror = () => reject(new Error("이미지 로드 실패"));
+    img.onerror = () => reject(new Error("Failed to load image"));
     img.src = URL.createObjectURL(imageFile);
   });
 }

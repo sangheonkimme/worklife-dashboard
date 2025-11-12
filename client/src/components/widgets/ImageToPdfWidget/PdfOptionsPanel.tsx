@@ -1,4 +1,5 @@
 import { Stack, Select, SegmentedControl, Text } from "@mantine/core";
+import { useTranslation } from "react-i18next";
 import type { PdfOptions } from "@/types/widget";
 
 interface PdfOptionsPanelProps {
@@ -10,15 +11,16 @@ export const PdfOptionsPanel = ({
   options,
   onChange,
 }: PdfOptionsPanelProps) => {
+  const { t } = useTranslation("widgets");
   return (
     <Stack gap="sm">
       <Text size="sm" fw={500}>
-        PDF 설정
+        {t("imageToPdf.options.title")}
       </Text>
 
       <Stack gap="xs">
         <Text size="xs" c="dimmed">
-          페이지 크기
+          {t("imageToPdf.options.pageSize")}
         </Text>
         <Select
           value={options.pageSize}
@@ -35,7 +37,7 @@ export const PdfOptionsPanel = ({
 
       <Stack gap="xs">
         <Text size="xs" c="dimmed">
-          페이지 방향
+          {t("imageToPdf.options.orientation")}
         </Text>
         <SegmentedControl
           value={options.orientation}
@@ -46,8 +48,14 @@ export const PdfOptionsPanel = ({
             })
           }
           data={[
-            { value: "portrait", label: "세로" },
-            { value: "landscape", label: "가로" },
+            {
+              value: "portrait",
+              label: t("imageToPdf.options.orientationOptions.portrait"),
+            },
+            {
+              value: "landscape",
+              label: t("imageToPdf.options.orientationOptions.landscape"),
+            },
           ]}
           fullWidth
           size="sm"
@@ -56,7 +64,7 @@ export const PdfOptionsPanel = ({
 
       <Stack gap="xs">
         <Text size="xs" c="dimmed">
-          이미지 맞춤
+          {t("imageToPdf.options.imageFit")}
         </Text>
         <SegmentedControl
           value={options.imageFit}
@@ -64,17 +72,23 @@ export const PdfOptionsPanel = ({
             onChange({ ...options, imageFit: value as PdfOptions["imageFit"] })
           }
           data={[
-            { value: "fit", label: "맞춤" },
-            { value: "fill", label: "채우기" },
-            { value: "original", label: "원본" },
+            { value: "fit", label: t("imageToPdf.options.imageFitOptions.fit") },
+            { value: "fill", label: t("imageToPdf.options.imageFitOptions.fill") },
+            {
+              value: "original",
+              label: t("imageToPdf.options.imageFitOptions.original"),
+            },
           ]}
           fullWidth
           size="sm"
         />
         <Text size="xs" c="dimmed">
-          {options.imageFit === "fit" && "비율 유지하며 페이지에 맞춤"}
-          {options.imageFit === "fill" && "페이지를 채우도록 크기 조정"}
-          {options.imageFit === "original" && "원본 크기 유지"}
+          {options.imageFit === "fit" &&
+            t("imageToPdf.options.imageFitDescriptions.fit")}
+          {options.imageFit === "fill" &&
+            t("imageToPdf.options.imageFitDescriptions.fill")}
+          {options.imageFit === "original" &&
+            t("imageToPdf.options.imageFitDescriptions.original")}
         </Text>
       </Stack>
     </Stack>

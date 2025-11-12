@@ -1,0 +1,242 @@
+{
+  "dashboard": {
+    "title": "가계부 대시보드",
+    "subtitle": "예산, 거래내역, 통계를 한 화면에서 확인하세요.",
+    "periodSummary": "{{range}} · 월급일 {{day}}일 기준",
+    "filters": {
+      "monthLabel": "조회 월",
+      "monthPlaceholder": "월 선택",
+      "paydayLabel": "월급일",
+      "paydayPlaceholder": "선택"
+    },
+    "stats": {
+      "expenses": "이번 달 지출",
+      "income": "총 수입",
+      "net": "순이익",
+      "daily": "평균 일일 지출",
+      "helper": "{{days}}일 기준 · 월급일 {{day}}일",
+      "diffLabel": "지난 달 대비",
+      "noData": "지난 달 데이터 없음"
+    },
+    "categories": {
+      "title": "카테고리별 지출",
+      "subtitle": "{{range}} 기준 지출 {{amount}}",
+      "empty": "선택한 기간에 지출 데이터가 없습니다"
+    },
+    "recent": {
+      "title": "최근 거래 내역",
+      "badge": "최근 {{count}}건",
+      "empty": "거래 내역이 없습니다. 첫 거래를 추가해보세요!"
+    },
+    "tabs": {
+      "budgets": "예산",
+      "transactions": "거래내역",
+      "statistics": "통계"
+    }
+  },
+  "filters": {
+    "dateLabel": "기간",
+    "datePlaceholder": "기간을 선택하세요",
+    "typeLabel": "유형",
+    "typePlaceholder": "전체",
+    "typeOptions": {
+      "INCOME": "수입",
+      "EXPENSE": "지출"
+    },
+    "categoryLabel": "카테고리",
+    "categoryPlaceholder": "카테고리를 선택하세요",
+    "searchLabel": "검색",
+    "searchPlaceholder": "메모에서 검색",
+    "reset": "초기화",
+    "categoryFormat": "{{name}} ({{type}})"
+  },
+  "transactionForm": {
+    "labels": {
+      "amount": "금액",
+      "category": "카테고리",
+      "date": "날짜",
+      "memo": "메모"
+    },
+    "placeholders": {
+      "amount": "금액을 입력하세요",
+      "category": "카테고리를 선택하세요",
+      "date": "날짜를 선택하세요",
+      "memo": "메모를 입력하세요 (선택사항)"
+    },
+    "types": {
+      "INCOME": "수입",
+      "EXPENSE": "지출"
+    },
+    "validation": {
+      "amount": "금액을 입력해주세요.",
+      "category": "카테고리를 선택해주세요."
+    },
+    "actions": {
+      "cancel": "취소",
+      "submit": "저장"
+    }
+  },
+  "transactionList": {
+    "emptyTitle": "거래 내역이 없습니다",
+    "emptyDescription": "새로운 거래를 추가해보세요.",
+    "headers": {
+      "date": "날짜",
+      "type": "유형",
+      "category": "카테고리",
+      "amount": "금액",
+      "memo": "메모",
+      "actions": "액션"
+    }
+  },
+  "transactionsTab": {
+    "title": "거래 내역",
+    "buttons": {
+      "manageCategories": "카테고리 관리",
+      "addTransaction": "거래 추가"
+    },
+    "modal": {
+      "createTitle": "거래 추가",
+      "editTitle": "거래 수정"
+    },
+    "confirmDelete": {
+      "title": "거래 삭제",
+      "message": "정말로 이 거래를 삭제하시겠습니까?",
+      "confirm": "삭제",
+      "cancel": "취소"
+    },
+    "notifications": {
+      "successTitle": "성공",
+      "errorTitle": "오류",
+      "createSuccess": "거래가 등록되었습니다",
+      "createError": "거래 등록에 실패했습니다",
+      "updateSuccess": "거래가 수정되었습니다",
+      "updateError": "거래 수정에 실패했습니다",
+      "deleteSuccess": "거래가 삭제되었습니다",
+      "deleteError": "거래 삭제에 실패했습니다"
+    }
+  },
+  "categoryManager": {
+    "modalTitle": "카테고리 관리",
+    "form": {
+      "createTitle": "새 카테고리 추가",
+      "editTitle": "카테고리 수정",
+      "fields": {
+        "name": {
+          "label": "이름",
+          "placeholder": "카테고리 이름"
+        },
+        "type": {
+          "label": "유형"
+        },
+        "color": "색상"
+      },
+      "actions": {
+        "create": "추가",
+        "update": "수정"
+      }
+    },
+    "validation": {
+      "nameRequired": "카테고리 이름을 입력해주세요"
+    },
+    "lists": {
+      "income": "수입 카테고리",
+      "expense": "지출 카테고리",
+      "defaultTag": "(기본)"
+    },
+    "notifications": {
+      "successTitle": "성공",
+      "errorTitle": "오류",
+      "createSuccess": "카테고리가 추가되었습니다",
+      "createError": "카테고리 추가에 실패했습니다",
+      "updateSuccess": "카테고리가 수정되었습니다",
+      "updateError": "카테고리 수정에 실패했습니다",
+      "deleteSuccess": "카테고리가 삭제되었습니다",
+      "deleteError": "카테고리 삭제에 실패했습니다",
+      "defaultDeleteTitle": "알림",
+      "defaultDeleteMessage": "기본 카테고리는 삭제할 수 없습니다"
+    },
+    "confirmDelete": {
+      "title": "카테고리 삭제",
+      "message": "정말로 \"{{name}}\" 카테고리를 삭제하시겠습니까?",
+      "helper": "이 카테고리를 사용하는 거래가 있다면 다른 카테고리로 재할당해야 합니다.",
+      "confirm": "삭제",
+      "cancel": "취소"
+    }
+  },
+  "budgetsTab": {
+    "title": "월간 예산",
+    "monthPlaceholder": "월 선택",
+    "buttons": {
+      "add": "예산 추가"
+    },
+    "summary": {
+      "title": "전체 예산",
+      "empty": "설정된 예산이 없습니다",
+      "remainingLabel": "남은 금액",
+      "usage": "{{percentage}}% 사용"
+    },
+    "cards": {
+      "all": "전체",
+      "spent": "사용",
+      "budget": "예산",
+      "remaining": "남은 예산",
+      "usage": "{{percentage}}% 사용",
+      "exceeded": " (초과)"
+    },
+    "categoryOptions": {
+      "all": "전체 예산 (카테고리 없음)"
+    },
+    "validation": {
+      "amountRequired": "예산을 입력해주세요"
+    },
+    "modal": {
+      "title": "예산 추가",
+      "fields": {
+        "category": {
+          "label": "카테고리",
+          "placeholder": "카테고리를 선택하세요"
+        },
+        "amount": {
+          "label": "예산",
+          "placeholder": "예산을 입력하세요"
+        }
+      }
+    },
+    "confirmDelete": {
+      "title": "예산 삭제",
+      "message": "정말로 이 예산을 삭제하시겠습니까?",
+      "confirm": "삭제",
+      "cancel": "취소"
+    },
+    "notifications": {
+      "successTitle": "성공",
+      "errorTitle": "오류",
+      "createSuccess": "예산이 설정되었습니다",
+      "createError": "예산 설정에 실패했습니다",
+      "deleteSuccess": "예산이 삭제되었습니다",
+      "deleteError": "예산 삭제에 실패했습니다"
+    }
+  },
+  "statisticsTab": {
+    "title": "월간 통계",
+    "monthPicker": {
+      "label": "조회 월",
+      "placeholder": "월 선택"
+    },
+    "subtitle": "{{range}} · 월급일 {{payday}}일 기준",
+    "summary": {
+      "income": "총 수입",
+      "expense": "총 지출",
+      "net": "순수익",
+      "savingsRate": "저축률"
+    },
+    "expenseByCategory": {
+      "title": "카테고리별 지출",
+      "empty": "지출 내역이 없습니다"
+    },
+    "incomeByCategory": {
+      "title": "카테고리별 수입"
+    },
+    "transactionCount": "{{count}}건"
+  }
+}

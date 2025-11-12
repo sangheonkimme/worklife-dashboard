@@ -56,6 +56,7 @@ import { AttachmentUpload } from '@/components/notes/Attachments/AttachmentUploa
 import { TemplateModal } from '@/components/notes/NoteModals/TemplateModal';
 import { QuickNote } from '@/components/notes/QuickNote';
 import { formatDate } from '@/utils/format';
+import { useTranslation } from 'react-i18next';
 
 export default function NotesPage() {
   const {
@@ -74,6 +75,7 @@ export default function NotesPage() {
   const deleteNoteMutation = useDeleteNote();
   const togglePinnedMutation = useTogglePinned();
   const toggleFavoriteMutation = useToggleFavorite();
+  const { t } = useTranslation('notes');
 
   const [noteModalOpened, { open: openNoteModal, close: closeNoteModal }] =
     useDisclosure(false);
@@ -165,7 +167,7 @@ export default function NotesPage() {
   };
 
   const handleDelete = (id: string) => {
-    if (window.confirm('메모를 삭제하시겠습니까?')) {
+    if (window.confirm(t('page.confirmDelete'))) {
       deleteNoteMutation.mutate(id);
     }
   };
@@ -232,10 +234,10 @@ export default function NotesPage() {
                   <ActionIcon hiddenFrom="md" onClick={toggleSidebar}>
                     <IconMenu2 size={20} />
                   </ActionIcon>
-                  <Title order={2}>메모</Title>
+                  <Title order={2}>{t('page.title')}</Title>
                   {hasActiveFilters && (
                     <Badge color="blue" variant="light">
-                      필터 적용됨
+                      {t('page.filtersApplied')}
                     </Badge>
                   )}
                 </Group>
@@ -244,7 +246,7 @@ export default function NotesPage() {
                     <IconFilter size={20} />
                   </ActionIcon>
                   <Button leftSection={<IconPlus size={16} />} onClick={() => handleOpenModal()}>
-                    새 메모
+                    {t('page.newNote')}
                   </Button>
                 </Group>
               </Group>
@@ -258,12 +260,12 @@ export default function NotesPage() {
 
                 {data?.notes && data.notes.length === 0 && (
                   <Stack align="center" py="xl">
-                    <Text c="dimmed">메모가 없습니다.</Text>
+                    <Text c="dimmed">{t('page.empty.title')}</Text>
                     <Button
                       leftSection={<IconPlus size={16} />}
                       onClick={() => handleOpenModal()}
                     >
-                      첫 메모 만들기
+                      {t('page.empty.cta')}
                     </Button>
                   </Stack>
                 )}
@@ -303,22 +305,22 @@ export default function NotesPage() {
                             </Group>
 
                             <Text size="sm" c="dimmed" lineClamp={3}>
-                              {note.content || '내용 없음'}
+                              {note.content || t('page.contentFallback')}
                             </Text>
 
                             <Group gap="xs">
                               {note.isPinned && (
                                 <Badge size="xs" color="blue">
-                                  고정
+                                  {t('page.badges.pinned')}
                                 </Badge>
                               )}
                               {note.isFavorite && (
                                 <Badge size="xs" color="yellow">
-                                  즐겨찾기
+                                  {t('page.badges.favorite')}
                                 </Badge>
                               )}
                               <Badge size="xs" variant="light">
-                                {note.type}
+                                {t(`page.noteTypes.${note.type}`, { defaultValue: note.type })}
                               </Badge>
                               {note.tags?.map((tag) => (
                                 <Badge key={tag.id} size="xs" color={tag.color || 'gray'}>
@@ -359,7 +361,7 @@ export default function NotesPage() {
       <Drawer
         opened={sidebarOpened}
         onClose={closeSidebar}
-        title="메뉴"
+        title={t('page.drawer.menu')}
         padding="md"
         size="sm"
         hiddenFrom="md"
@@ -381,7 +383,7 @@ export default function NotesPage() {
       <Drawer
         opened={filtersOpened}
         onClose={toggleFilters}
-        title="필터"
+        title={t('page.drawer.filters')}
         padding="md"
         size="sm"
         position="right"
@@ -410,18 +412,18 @@ export default function NotesPage() {
       <Modal
         opened={noteModalOpened}
         onClose={closeNoteModal}
-        title={editingNote ? '메모 수정' : '새 메모'}
+        title={t(`page.modals.note.title.${editingNote ? 'edit' : 'create'}`)}
         size="xl"
       >
         <Tabs defaultValue="basic">
           <Tabs.List>
-            <Tabs.Tab value="basic">기본 정보</Tabs.Tab>
+            <Tabs.Tab value="basic">{t('page.modals.note.tabs.basic')}</Tabs.Tab>
             <Tabs.Tab value="settings" leftSection={<IconLock size={16} />}>
-              설정
+              {t('page.modals.note.tabs.settings')}
             </Tabs.Tab>
             {editingNote && (
               <Tabs.Tab value="attachments" leftSection={<IconPaperclip size={16} />}>
-                첨부파일
+                {t('page.modals.note.tabs.attachments')}
               </Tabs.Tab>
             )}
           </Tabs.List>
@@ -430,22 +432,22 @@ export default function NotesPage() {
             <Stack>
               <Group grow>
                 <TextInput
-                  label="제목"
-                  placeholder="메모 제목을 입력하세요"
+                  label={t('page.modals.note.form.title.label')}
+                  placeholder={t('page.modals.note.form.title.placeholder')}
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.currentTarget.value })}
                   required
                 />
                 <Select
-                  label="메모 타입"
+                  label={t('page.modals.note.form.type.label')}
                   value={formData.type}
                   onChange={(value) =>
                     setFormData({ ...formData, type: value as NoteType })
                   }
                   data={[
-                    { value: 'TEXT', label: '텍스트' },
-                    { value: 'MARKDOWN', label: '마크다운' },
-                    { value: 'CHECKLIST', label: '체크리스트' },
+                    { value: 'TEXT', label: t('page.noteTypes.TEXT') },
+                    { value: 'MARKDOWN', label: t('page.noteTypes.MARKDOWN') },
+                    { value: 'CHECKLIST', label: t('page.noteTypes.CHECKLIST') },
                   ]}
                   disabled={!!editingNote}
                 />
@@ -454,8 +456,8 @@ export default function NotesPage() {
               {/* 타입별 에디터 */}
               {formData.type === 'TEXT' && (
                 <Textarea
-                  label="내용"
-                  placeholder="메모 내용을 입력하세요"
+                  label={t('page.modals.note.form.content.label')}
+                  placeholder={t('page.modals.note.form.content.placeholder')}
                   value={formData.content}
                   onChange={(e) => setFormData({ ...formData, content: e.currentTarget.value })}
                   minRows={10}
@@ -466,7 +468,7 @@ export default function NotesPage() {
               {formData.type === 'MARKDOWN' && (
                 <Box>
                   <Text size="sm" fw={500} mb="xs">
-                    내용
+                    {t('page.modals.note.form.markdownLabel')}
                   </Text>
                   <MarkdownEditor
                     value={formData.content || ''}
@@ -478,7 +480,7 @@ export default function NotesPage() {
               {formData.type === 'CHECKLIST' && editingNote && (
                 <Box>
                   <Text size="sm" fw={500} mb="xs">
-                    체크리스트
+                    {t('page.modals.note.form.checklistLabel')}
                   </Text>
                   <ChecklistEditor noteId={editingNote.id} />
                 </Box>
@@ -487,7 +489,7 @@ export default function NotesPage() {
               {formData.type === 'CHECKLIST' && !editingNote && (
                 <Box>
                   <Text size="sm" fw={500} mb="xs">
-                    체크리스트 항목
+                    {t('page.modals.note.form.checklistItemsLabel')}
                   </Text>
                   <Stack gap="xs">
                     {tempChecklistItems.map((item, index) => (
@@ -500,7 +502,7 @@ export default function NotesPage() {
                               newItems[index] = e.currentTarget.value;
                               setTempChecklistItems(newItems);
                             }}
-                            placeholder="체크리스트 항목"
+                            placeholder={t('page.modals.note.form.checklistPlaceholder')}
                             style={{ flex: 1 }}
                             size="sm"
                           />
@@ -523,7 +525,7 @@ export default function NotesPage() {
                       leftSection={<IconPlus size={16} />}
                       onClick={() => setTempChecklistItems([...tempChecklistItems, ''])}
                     >
-                      항목 추가
+                      {t('page.modals.note.form.addChecklistItem')}
                     </Button>
                   </Stack>
                 </Box>
@@ -532,7 +534,7 @@ export default function NotesPage() {
               <TagInput
                 value={formData.tagIds || []}
                 onChange={(tagIds) => setFormData({ ...formData, tagIds })}
-                placeholder="태그 선택 또는 생성"
+                placeholder={t('page.modals.note.form.tagsPlaceholder')}
               />
             </Stack>
           </Tabs.Panel>
@@ -540,23 +542,23 @@ export default function NotesPage() {
           <Tabs.Panel value="settings" pt="md">
             <Stack>
               <Select
-                label="공개 설정"
-                description="메모의 공개 범위를 설정합니다"
+                label={t('page.modals.note.visibility.label')}
+                description={t('page.modals.note.visibility.description')}
                 value={formData.visibility}
                 onChange={(value) =>
                   setFormData({ ...formData, visibility: value as NoteVisibility })
                 }
                 data={[
-                  { value: 'PRIVATE', label: '비공개 (나만 보기)' },
-                  { value: 'PUBLIC', label: '공개 (링크로 공유 가능)' },
-                  { value: 'PROTECTED', label: '비밀번호 보호' },
+                  { value: 'PRIVATE', label: t('page.modals.note.visibility.options.PRIVATE') },
+                  { value: 'PUBLIC', label: t('page.modals.note.visibility.options.PUBLIC') },
+                  { value: 'PROTECTED', label: t('page.modals.note.visibility.options.PROTECTED') },
                 ]}
               />
 
               {formData.visibility === 'PROTECTED' && (
                 <PasswordInput
-                  label="비밀번호"
-                  placeholder="메모를 보호할 비밀번호를 입력하세요"
+                  label={t('page.modals.note.visibility.password.label')}
+                  placeholder={t('page.modals.note.visibility.password.placeholder')}
                   value={formData.password || ''}
                   onChange={(e) => setFormData({ ...formData, password: e.currentTarget.value })}
                   required
@@ -566,7 +568,7 @@ export default function NotesPage() {
               {formData.visibility === 'PUBLIC' && editingNote?.publishedUrl && (
                 <Paper p="md" withBorder>
                   <Text size="sm" fw={500} mb="xs">
-                    공개 URL
+                    {t('page.modals.note.visibility.publicUrl.label')}
                   </Text>
                   <Group gap="xs">
                     <Text
@@ -583,10 +585,10 @@ export default function NotesPage() {
                         navigator.clipboard.writeText(
                           `${window.location.origin}/notes/public/${editingNote.publishedUrl}`
                         );
-                        alert('링크가 복사되었습니다!');
+                        alert(t('page.modals.note.visibility.publicUrl.success'));
                       }}
                     >
-                      복사
+                      {t('page.modals.note.visibility.publicUrl.copy')}
                     </Button>
                   </Group>
                 </Paper>
@@ -608,17 +610,21 @@ export default function NotesPage() {
             onClick={openTemplateModal}
             disabled={!!editingNote}
           >
-            템플릿 선택
+            {t('page.modals.note.templateButton')}
           </Button>
           <Group>
             <Button variant="subtle" onClick={closeNoteModal}>
-              취소
+              {t('actions.cancel')}
             </Button>
             <Button
               onClick={handleSubmit}
               loading={createNoteMutation.isPending || updateNoteMutation.isPending}
             >
-              {editingNote ? '수정' : '생성'}
+              {t(
+                editingNote
+                  ? 'page.modals.note.submit.update'
+                  : 'page.modals.note.submit.create'
+              )}
             </Button>
           </Group>
         </Group>

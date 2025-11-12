@@ -15,6 +15,7 @@ import {
 import { IconTrash, IconChevronDown, IconChevronRight } from '@tabler/icons-react';
 import { useState } from 'react';
 import { notifications } from '@mantine/notifications';
+import { useTranslation } from 'react-i18next';
 import { useStopwatchStore } from '@/store/useStopwatchStore';
 import { formatTime, formatTimeNoMs } from '@/utils/timeFormat';
 import type { SavedSession } from '@/types/stopwatch';
@@ -27,22 +28,25 @@ interface HistoryPanelProps {
 export function HistoryPanel({ opened, onClose }: HistoryPanelProps) {
   const { savedSessions, deleteSavedSession, clearHistory } = useStopwatchStore();
   const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
+  const { t } = useTranslation('widgets');
 
   const handleDeleteSession = (id: string, name?: string) => {
     deleteSavedSession(id);
     notifications.show({
-      title: '세션 삭제',
-      message: `"${name || '세션'}"이 삭제되었습니다.`,
+      title: t('stopwatch.history.deleteTitle'),
+      message: t('stopwatch.history.deleteMessage', {
+        name: name || t('stopwatch.history.untitled'),
+      }),
       color: 'yellow',
     });
   };
 
   const handleClearAll = () => {
-    if (window.confirm('모든 히스토리를 삭제하시겠습니까?')) {
+    if (window.confirm(t('stopwatch.history.confirmClear'))) {
       clearHistory();
       notifications.show({
-        title: '히스토리 삭제',
-        message: '모든 세션이 삭제되었습니다.',
+        title: t('stopwatch.history.clearTitle'),
+        message: t('stopwatch.history.clearMessage'),
         color: 'red',
       });
     }
@@ -56,7 +60,7 @@ export function HistoryPanel({ opened, onClose }: HistoryPanelProps) {
     <Modal
       opened={opened}
       onClose={onClose}
-      title="저장된 세션"
+      title={t('stopwatch.history.title')}
       size="lg"
       centered
     >
@@ -64,7 +68,7 @@ export function HistoryPanel({ opened, onClose }: HistoryPanelProps) {
         {/* 헤더 */}
         <Group justify="space-between">
           <Text size="sm" c="dimmed">
-            총 {savedSessions.length}개의 세션
+            {t('stopwatch.history.total', { count: savedSessions.length })}
           </Text>
           {savedSessions.length > 0 && (
             <Button
@@ -73,7 +77,7 @@ export function HistoryPanel({ opened, onClose }: HistoryPanelProps) {
               size="xs"
               onClick={handleClearAll}
             >
-              전체 삭제
+              {t('stopwatch.history.deleteAll')}
             </Button>
           )}
         </Group>
@@ -83,7 +87,7 @@ export function HistoryPanel({ opened, onClose }: HistoryPanelProps) {
           {savedSessions.length === 0 ? (
             <Card withBorder p="xl">
               <Text size="sm" c="dimmed" ta="center">
-                저장된 세션이 없습니다.
+                {t('stopwatch.history.empty')}
               </Text>
             </Card>
           ) : (
@@ -113,7 +117,8 @@ interface SessionItemProps {
 }
 
 function SessionItem({ session, expanded, onToggleExpand, onDelete }: SessionItemProps) {
-  const createdDate = new Date(session.createdAt).toLocaleString('ko-KR', {
+  const { t, i18n } = useTranslation('widgets');
+  const createdDate = new Date(session.createdAt).toLocaleString(i18n.language, {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -131,7 +136,11 @@ function SessionItem({ session, expanded, onToggleExpand, onDelete }: SessionIte
               variant="subtle"
               size="sm"
               onClick={onToggleExpand}
-              aria-label={expanded ? '접기' : '펼치기'}
+              aria-label={
+                expanded
+                  ? t('stopwatch.history.aria.collapse')
+                  : t('stopwatch.history.aria.expand')
+              }
             >
               {expanded ? (
                 <IconChevronDown size={16} />
@@ -140,7 +149,7 @@ function SessionItem({ session, expanded, onToggleExpand, onDelete }: SessionIte
               )}
             </ActionIcon>
             <Text size="sm" fw={600} lineClamp={1}>
-              {session.name || '무제'}
+              {session.name || t('stopwatch.history.untitled')}
             </Text>
           </Group>
           <Group gap="xs" wrap="nowrap">
@@ -152,7 +161,7 @@ function SessionItem({ session, expanded, onToggleExpand, onDelete }: SessionIte
               color="red"
               size="sm"
               onClick={onDelete}
-              aria-label="삭제"
+              aria-label={t('stopwatch.history.aria.delete')}
             >
               <IconTrash size={16} />
             </ActionIcon>
@@ -170,7 +179,7 @@ function SessionItem({ session, expanded, onToggleExpand, onDelete }: SessionIte
                 •
               </Text>
               <Text size="xs" c="dimmed">
-                랩: {session.laps.length}개
+                {t('stopwatch.labels.lapSummary', { count: session.laps.length })}
               </Text>
             </>
           )}
@@ -191,9 +200,9 @@ function SessionItem({ session, expanded, onToggleExpand, onDelete }: SessionIte
               <Table>
                 <Table.Thead>
                   <Table.Tr>
-                    <Table.Th>랩</Table.Th>
-                    <Table.Th>랩 시간</Table.Th>
-                    <Table.Th>총 시간</Table.Th>
+                    <Table.Th>{t('stopwatch.history.lapHeader')}</Table.Th>
+                    <Table.Th>{t('stopwatch.history.lapTimeHeader')}</Table.Th>
+                    <Table.Th>{t('stopwatch.history.totalTimeHeader')}</Table.Th>
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
@@ -213,7 +222,7 @@ function SessionItem({ session, expanded, onToggleExpand, onDelete }: SessionIte
             </ScrollArea>
           ) : (
             <Text size="xs" c="dimmed" ta="center">
-              랩 타임이 없습니다.
+              {t('stopwatch.history.noLapData')}
             </Text>
           )}
         </Collapse>

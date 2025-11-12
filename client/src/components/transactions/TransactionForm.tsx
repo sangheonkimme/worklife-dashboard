@@ -11,6 +11,7 @@ import {
 import { DatePickerInput } from '@mantine/dates';
 import { IconCash, IconShoppingCart } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { categoryApi } from '@/services/api/transactionApi';
 import type { CategoryType, CreateTransactionDto } from '@/types/transaction';
 
@@ -27,6 +28,7 @@ export default function TransactionForm({
   onCancel,
   loading,
 }: TransactionFormProps) {
+  const { t } = useTranslation('finance');
   const form = useForm<CreateTransactionDto>({
     initialValues: {
       type: initialValues?.type || 'EXPENSE',
@@ -36,12 +38,12 @@ export default function TransactionForm({
       description: initialValues?.description || '',
     },
     validate: {
-      amount: (value) => (value > 0 ? null : '금액을 입력해주세요'),
-      categoryId: (value) => (value ? null : '카테고리를 선택해주세요'),
+      amount: (value) => (value > 0 ? null : t('transactionForm.validation.amount')),
+      categoryId: (value) => (value ? null : t('transactionForm.validation.category')),
     },
   });
 
-  // 카테고리 목록 조회
+  // Fetch categories
   const { data: categories = [] } = useQuery({
     queryKey: ['categories', form.values.type],
     queryFn: () => categoryApi.getCategories(form.values.type as CategoryType),
@@ -66,7 +68,7 @@ export default function TransactionForm({
               label: (
                 <Group gap="xs" justify="center">
                   <IconShoppingCart size={16} />
-                  <span>지출</span>
+                  <span>{t('transactionForm.types.EXPENSE')}</span>
                 </Group>
               ),
             },
@@ -75,7 +77,7 @@ export default function TransactionForm({
               label: (
                 <Group gap="xs" justify="center">
                   <IconCash size={16} />
-                  <span>수입</span>
+                  <span>{t('transactionForm.types.INCOME')}</span>
                 </Group>
               ),
             },
@@ -83,14 +85,14 @@ export default function TransactionForm({
           {...form.getInputProps('type')}
           onChange={(value) => {
             form.setFieldValue('type', value as CategoryType);
-            form.setFieldValue('categoryId', ''); // 타입 변경 시 카테고리 초기화
+            form.setFieldValue('categoryId', ''); // Reset selection when type changes
           }}
           fullWidth
         />
 
         <NumberInput
-          label="금액"
-          placeholder="금액을 입력하세요"
+          label={t('transactionForm.labels.amount')}
+          placeholder={t('transactionForm.placeholders.amount')}
           required
           min={0}
           thousandSeparator=","
@@ -98,8 +100,8 @@ export default function TransactionForm({
         />
 
         <Select
-          label="카테고리"
-          placeholder="카테고리를 선택하세요"
+          label={t('transactionForm.labels.category')}
+          placeholder={t('transactionForm.placeholders.category')}
           required
           searchable
           data={categoryOptions}
@@ -107,8 +109,8 @@ export default function TransactionForm({
         />
 
         <DatePickerInput
-          label="날짜"
-          placeholder="날짜를 선택하세요"
+          label={t('transactionForm.labels.date')}
+          placeholder={t('transactionForm.placeholders.date')}
           required
           value={form.values.date ? new Date(form.values.date) : null}
           onChange={(date) => {
@@ -117,8 +119,8 @@ export default function TransactionForm({
         />
 
         <Textarea
-          label="메모"
-          placeholder="메모를 입력하세요 (선택사항)"
+          label={t('transactionForm.labels.memo')}
+          placeholder={t('transactionForm.placeholders.memo')}
           minRows={3}
           {...form.getInputProps('description')}
         />
@@ -126,11 +128,11 @@ export default function TransactionForm({
         <Group justify="flex-end" mt="md">
           {onCancel && (
             <Button variant="light" onClick={onCancel} disabled={loading}>
-              취소
+              {t('transactionForm.actions.cancel')}
             </Button>
           )}
           <Button type="submit" loading={loading}>
-            저장
+            {t('transactionForm.actions.submit')}
           </Button>
         </Group>
       </Stack>
