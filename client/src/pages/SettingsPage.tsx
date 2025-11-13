@@ -217,25 +217,6 @@ export const SettingsPage = () => {
 
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
   const timezoneOptions = useMemo(() => getTimezoneOptions(), []);
-  const currencyOptions = useMemo(
-    () => [
-      { label: t("settings:finance.currencyOptions.KRW"), value: "KRW" },
-      { label: t("settings:finance.currencyOptions.USD"), value: "USD" },
-      { label: t("settings:finance.currencyOptions.JPY"), value: "JPY" },
-      { label: t("settings:finance.currencyOptions.EUR"), value: "EUR" },
-      { label: t("settings:finance.currencyOptions.SGD"), value: "SGD" },
-    ],
-    [t]
-  );
-  const formatLocaleOptions = useMemo(
-    () => [
-      { label: t("settings:locale.formatLocaleOptions.ko-KR"), value: "ko-KR" },
-      { label: t("settings:locale.formatLocaleOptions.en-US"), value: "en-US" },
-      { label: t("settings:locale.formatLocaleOptions.ja-JP"), value: "ja-JP" },
-      { label: t("settings:locale.formatLocaleOptions.de-DE"), value: "de-DE" },
-    ],
-    [t]
-  );
   const initialValues = useMemo(
     () => settings ?? createDefaultSettings(),
     [settings]
@@ -466,6 +447,16 @@ export const FinanceSection = ({
   locale: string;
 }) => {
   const { t } = useTranslation("settings");
+  const currencyOptions = useMemo(
+    () => [
+      { label: t("finance.currencyOptions.KRW"), value: "KRW" },
+      { label: t("finance.currencyOptions.USD"), value: "USD" },
+      { label: t("finance.currencyOptions.JPY"), value: "JPY" },
+      { label: t("finance.currencyOptions.EUR"), value: "EUR" },
+      { label: t("finance.currencyOptions.SGD"), value: "SGD" },
+    ],
+    [t]
+  );
   const weekOptions = useMemo(
     () => [
       { label: t("finance.weekdays.0"), value: "0" },
@@ -548,6 +539,15 @@ export const LocaleSection = ({
   timezoneOptions: { label: string; value: string }[];
 }) => {
   const { t } = useTranslation("settings");
+  const formatLocaleOptions = useMemo(
+    () => [
+      { label: t("locale.formatLocaleOptions.ko-KR"), value: "ko-KR" },
+      { label: t("locale.formatLocaleOptions.en-US"), value: "en-US" },
+      { label: t("locale.formatLocaleOptions.ja-JP"), value: "ja-JP" },
+      { label: t("locale.formatLocaleOptions.de-DE"), value: "de-DE" },
+    ],
+    [t]
+  );
   const dirty =
     form.isDirty("timezone") ||
     form.isDirty("locale") ||

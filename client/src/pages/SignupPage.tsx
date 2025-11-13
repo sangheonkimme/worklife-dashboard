@@ -85,7 +85,7 @@ interface FormValues {
 
 export const SignupPage = () => {
   const { register, isRegisterLoading, registerError, isAuthenticated } = useAuth()
-  const { t, i18n } = useTranslation('auth')
+  const { t } = useTranslation('auth')
   const [popoverOpened, setPopoverOpened] = useState(false)
 
   const form = useForm<FormValues>({

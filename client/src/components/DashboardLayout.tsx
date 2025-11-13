@@ -65,40 +65,38 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     setMantineColorScheme(colorScheme);
   }, [colorScheme, setMantineColorScheme]);
 
-  const settingsErrorText = () => {
-    if (!settingsError) {
-      return t('layout.alerts.settingsErrorMessage');
-    }
-    if (settingsError instanceof Error) {
-      return settingsError.message;
-    }
-    return typeof settingsError === 'string'
-      ? settingsError
-      : t('layout.alerts.settingsErrorMessage');
-  };
-
   const { t } = useTranslation("system");
+
+  const settingsErrorText = () => {
+    if (typeof settingsError === "string" && settingsError.trim().length > 0) {
+      return settingsError;
+    }
+    return t("layout.alerts.settingsErrorMessage");
+  };
   const baseNavItems = [
     {
       key: "transactions",
       icon: IconWallet,
       path: "/transactions",
-      aliasPaths: ["/expense"],
+      aliasPaths: ["/expense"] as readonly string[],
     },
     {
       key: "dashboard",
       icon: IconHome,
       path: "/dashboard",
+      aliasPaths: [] as readonly string[],
     },
     {
       key: "salary",
       icon: IconCalculator,
       path: "/salary",
+      aliasPaths: [] as readonly string[],
     },
     {
       key: "notes",
       icon: IconNotes,
       path: "/notes",
+      aliasPaths: [] as readonly string[],
     },
   ] as const;
 
