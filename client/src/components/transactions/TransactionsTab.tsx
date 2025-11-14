@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Stack, Button, Modal, Group, Text } from '@mantine/core';
-import { IconPlus, IconSettings } from '@tabler/icons-react';
+import { IconSettings } from '@tabler/icons-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
 import { modals } from '@mantine/modals';
@@ -9,18 +9,21 @@ import TransactionForm from './TransactionForm';
 import TransactionList from './TransactionList';
 import TransactionFilter from './TransactionFilter';
 import CategoryManager from './CategoryManager';
+import TransactionQuickAddBar from './TransactionQuickAddBar';
 import { transactionApi } from '@/services/api/transactionApi';
 import type { Transaction, CreateTransactionDto, UpdateTransactionDto, TransactionFilters } from '@/types/transaction';
 
 export default function TransactionsTab() {
   const [page, setPage] = useState(1);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [filters, setFilters] = useState<TransactionFilters>({
     page: 1,
     limit: 20,
   });
+  const [quickAddFocusSignal, setQuickAddFocusSignal] = useState(0);
+  const [quickAddResetSignal, setQuickAddResetSignal] = useState(0);
 
   const queryClient = useQueryClient();
   const { t } = useTranslation('finance');
@@ -28,7 +31,7 @@ export default function TransactionsTab() {
   // Allow external affordances to open the modal
   useEffect(() => {
     const handleOpenModal = () => {
-      setIsModalOpen(true);
+      setQuickAddFocusSignal((prev) => prev + 1);
     };
 
     window.addEventListener('openTransactionModal', handleOpenModal);
@@ -53,7 +56,7 @@ export default function TransactionsTab() {
         message: t('transactionsTab.notifications.createSuccess'),
         color: 'teal',
       });
-      setIsModalOpen(false);
+      setQuickAddResetSignal((prev) => prev + 1);
     },
     onError: (error: any) => {
       notifications.show({
@@ -77,7 +80,7 @@ export default function TransactionsTab() {
         message: t('transactionsTab.notifications.updateSuccess'),
         color: 'teal',
       });
-      setIsModalOpen(false);
+      setIsEditModalOpen(false);
       setEditingTransaction(null);
     },
     onError: (error: any) => {
@@ -127,7 +130,7 @@ export default function TransactionsTab() {
 
   const handleEdit = (transaction: Transaction) => {
     setEditingTransaction(transaction);
-    setIsModalOpen(true);
+    setIsEditModalOpen(true);
   };
 
   const handleDelete = (id: string) => {
@@ -146,7 +149,7 @@ export default function TransactionsTab() {
   };
 
   const handleModalClose = () => {
-    setIsModalOpen(false);
+    setIsEditModalOpen(false);
     setEditingTransaction(null);
   };
 
@@ -174,14 +177,15 @@ export default function TransactionsTab() {
           >
             {t('transactionsTab.buttons.manageCategories')}
           </Button>
-          <Button
-            leftSection={<IconPlus size={16} />}
-            onClick={() => setIsModalOpen(true)}
-          >
-            {t('transactionsTab.buttons.addTransaction')}
-          </Button>
         </Group>
       </Group>
+
+      <TransactionQuickAddBar
+        onSubmit={handleCreate}
+        loading={createMutation.isPending}
+        focusSignal={quickAddFocusSignal}
+        resetSignal={quickAddResetSignal}
+      />
 
       <TransactionFilter
         filters={filters}
@@ -200,7 +204,7 @@ export default function TransactionsTab() {
       />
 
       <Modal
-        opened={isModalOpen}
+        opened={isEditModalOpen}
         onClose={handleModalClose}
         title={
           editingTransaction
