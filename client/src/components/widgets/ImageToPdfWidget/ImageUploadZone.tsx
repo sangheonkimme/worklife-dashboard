@@ -1,4 +1,4 @@
-import { Group, Text, rem } from "@mantine/core";
+import { Stack, Text, rem } from "@mantine/core";
 import {
   Dropzone,
   IMAGE_MIME_TYPE,
@@ -21,53 +21,74 @@ export const ImageUploadZone = ({ onDrop, disabled }: ImageUploadZoneProps) => {
       maxSize={10 * 1024 ** 2} // 10MB
       accept={IMAGE_MIME_TYPE}
       disabled={disabled}
+      radius="md"
+      p="sm"
+      style={{
+        border: "1px dashed var(--mantine-color-gray-4)",
+        backgroundColor: "var(--mantine-color-gray-0)",
+        transition: "border-color 150ms ease, background-color 150ms ease",
+        cursor: "pointer",
+      }}
     >
-      <Group
-        justify="center"
-        gap="xl"
+      <Stack
+        align="center"
+        gap="sm"
         mih={220}
-        style={{ pointerEvents: "none" }}
+        justify="center"
+        style={{ pointerEvents: "none", textAlign: "center" }}
       >
-        <Dropzone.Accept>
-          <IconUpload
-            style={{
-              width: rem(52),
-              height: rem(52),
-              color: "var(--mantine-color-blue-6)",
-            }}
-            stroke={1.5}
-          />
-        </Dropzone.Accept>
-        <Dropzone.Reject>
-          <IconX
-            style={{
-              width: rem(52),
-              height: rem(52),
-              color: "var(--mantine-color-red-6)",
-            }}
-            stroke={1.5}
-          />
-        </Dropzone.Reject>
-        <Dropzone.Idle>
-          <IconPhoto
-            style={{
-              width: rem(52),
-              height: rem(52),
-              color: "var(--mantine-color-dimmed)",
-            }}
-            stroke={1.5}
-          />
-        </Dropzone.Idle>
+        <div>
+          <Dropzone.Accept>
+            <IconUpload
+              style={{
+                width: rem(48),
+                height: rem(48),
+                color: "var(--mantine-color-blue-6)",
+              }}
+              stroke={1.5}
+            />
+          </Dropzone.Accept>
+          <Dropzone.Reject>
+            <IconX
+              style={{
+                width: rem(48),
+                height: rem(48),
+                color: "var(--mantine-color-red-6)",
+              }}
+              stroke={1.5}
+            />
+          </Dropzone.Reject>
+          <Dropzone.Idle>
+            <IconPhoto
+              style={{
+                width: rem(48),
+                height: rem(48),
+                color: "var(--mantine-color-dimmed)",
+              }}
+              stroke={1.5}
+            />
+          </Dropzone.Idle>
+        </div>
 
         <div>
-          <Text size="xl" inline>
+          <Text size="xl" fw={600}>
             {t("imageToPdf.upload.headline")}
           </Text>
-          <Text size="sm" c="dimmed" inline mt={7}>
+          <Text size="sm" c="dimmed" mt={4}>
             {t("imageToPdf.upload.subtitle")}
           </Text>
         </div>
-      </Group>
+
+        <Text
+          size="xs"
+          fw={600}
+          c="var(--mantine-color-blue-6)"
+          tt="uppercase"
+          style={{ letterSpacing: 0.6 }}
+        >
+          {t("imageToPdf.upload.dropHint")}
+        </Text>
+      </Stack>
     </Dropzone>
   );
 };

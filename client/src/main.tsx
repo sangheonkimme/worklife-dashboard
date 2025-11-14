@@ -18,7 +18,9 @@ import i18n from "./lib/i18n.ts";
 import { useUserSettingsStore } from "./store/useUserSettingsStore.ts";
 
 export const AppProviders = () => {
-  const locale = useUserSettingsStore((state) => state.settings?.locale ?? "ko-KR");
+  const locale = useUserSettingsStore(
+    (state) => state.settings?.locale ?? "ko-KR"
+  );
 
   return (
     <QueryClientProvider client={queryClient}>

@@ -215,7 +215,8 @@
     },
     "upload": {
       "headline": "Drag & drop images or click to upload",
-      "subtitle": "Supports PNG, JPG, JPEG, WEBP (up to 10MB each)"
+      "subtitle": "Supports PNG, JPG, JPEG, WEBP (up to 10MB each)",
+      "dropHint": "Drop files here or click to browse"
     },
     "preview": {
       "empty": "No images uploaded yet",
