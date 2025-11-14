@@ -6,15 +6,17 @@ import {
 } from "@/components/widgets";
 
 /**
- * 등록된 모든 위젯 목록
- * 새로운 위젯을 추가하려면 이 배열에 추가하세요.
+ * Registered widgets
+ * Add new widgets by appending to this array.
  */
 export const WIDGETS: WidgetConfig[] = [
   {
     id: "image-to-pdf",
-    name: "이미지 → PDF",
+    name: "Image to PDF",
+    nameKey: "registry.imageToPdf.name",
     icon: IconFileTypePdf,
-    description: "여러 이미지를 하나의 PDF 파일로 변환합니다",
+    description: "Convert multiple images into a single PDF file.",
+    descriptionKey: "registry.imageToPdf.description",
     component: ImageToPdfWidget,
     displayMode: "modal",
     modalSize: "xl",
@@ -24,9 +26,11 @@ export const WIDGETS: WidgetConfig[] = [
   },
   {
     id: "timer",
-    name: "타이머",
+    name: "Timer",
+    nameKey: "registry.timer.name",
     icon: IconHourglassHigh,
-    description: "자유롭게 시간을 설정하고 카운트다운을 실행합니다",
+    description: "Set any duration and start a countdown.",
+    descriptionKey: "registry.timer.description",
     component: TimerWidget,
     displayMode: "modal",
     modalSize: "lg",
@@ -37,14 +41,14 @@ export const WIDGETS: WidgetConfig[] = [
 ];
 
 /**
- * ID로 위젯 찾기
+ * Find a widget by id
  */
 export const getWidgetById = (id: string): WidgetConfig | undefined => {
   return WIDGETS.find((widget) => widget.id === id);
 };
 
 /**
- * 활성화된 위젯만 반환
+ * Return only enabled widgets
  */
 export const getEnabledWidgets = (): WidgetConfig[] => {
   return WIDGETS.filter((widget) => widget.enabled).sort(

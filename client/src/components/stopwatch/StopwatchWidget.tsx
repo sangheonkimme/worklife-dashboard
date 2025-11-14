@@ -7,6 +7,7 @@ import {
   IconX,
   IconMaximize,
 } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 import { useStopwatchStore } from '@/store/useStopwatchStore';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { formatTime } from '@/utils/timeFormat';
@@ -24,6 +25,7 @@ export function StopwatchWidget() {
     recordLap,
     setWidgetVisible,
   } = useStopwatchStore();
+  const { t } = useTranslation('widgets');
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -90,7 +92,7 @@ export function StopwatchWidget() {
               }}
             />
             <Text size="sm" fw={600}>
-              스톱워치
+              {t('stopwatch.title')}
             </Text>
           </Group>
           <Group gap={4}>
@@ -99,7 +101,7 @@ export function StopwatchWidget() {
               color="gray"
               size="sm"
               onClick={handleMaximize}
-              aria-label="대시보드로 이동"
+              aria-label={t('stopwatch.widget.aria.goToDashboard')}
             >
               <IconMaximize size={16} />
             </ActionIcon>
@@ -108,7 +110,7 @@ export function StopwatchWidget() {
               color="gray"
               size="sm"
               onClick={() => setWidgetVisible(false)}
-              aria-label="위젯 닫기"
+              aria-label={t('stopwatch.widget.aria.closeWidget')}
             >
               <IconX size={16} />
             </ActionIcon>
@@ -126,7 +128,7 @@ export function StopwatchWidget() {
         {/* 랩 개수 */}
         {laps.length > 0 && (
           <Text size="xs" c="dimmed" ta="center">
-            랩: {laps.length}개
+            {t('stopwatch.widget.lapCount', { count: laps.length })}
           </Text>
         )}
 
@@ -138,7 +140,7 @@ export function StopwatchWidget() {
               color={color}
               size="lg"
               onClick={startTimer}
-              aria-label="시작"
+              aria-label={t('stopwatch.actions.start')}
             >
               <IconPlayerPlay size={18} />
             </ActionIcon>
@@ -151,7 +153,7 @@ export function StopwatchWidget() {
                 color="yellow"
                 size="lg"
                 onClick={pauseTimer}
-                aria-label="일시정지"
+                aria-label={t('stopwatch.actions.pause')}
               >
                 <IconPlayerPause size={18} />
               </ActionIcon>
@@ -160,7 +162,7 @@ export function StopwatchWidget() {
                 color="blue"
                 size="lg"
                 onClick={recordLap}
-                aria-label="랩 기록"
+                aria-label={t('stopwatch.actions.recordLap')}
               >
                 <IconFlag size={18} />
               </ActionIcon>
@@ -169,7 +171,7 @@ export function StopwatchWidget() {
                 color="gray"
                 size="lg"
                 onClick={resetTimer}
-                aria-label="리셋"
+                aria-label={t('stopwatch.actions.reset')}
               >
                 <IconPlayerStop size={18} />
               </ActionIcon>
@@ -183,7 +185,7 @@ export function StopwatchWidget() {
                 color="blue"
                 size="lg"
                 onClick={resumeTimer}
-                aria-label="재개"
+                aria-label={t('stopwatch.actions.resume')}
               >
                 <IconPlayerPlay size={18} />
               </ActionIcon>
@@ -192,7 +194,7 @@ export function StopwatchWidget() {
                 color="blue"
                 size="lg"
                 onClick={recordLap}
-                aria-label="랩 기록"
+                aria-label={t('stopwatch.actions.recordLap')}
               >
                 <IconFlag size={18} />
               </ActionIcon>
@@ -201,7 +203,7 @@ export function StopwatchWidget() {
                 color="gray"
                 size="lg"
                 onClick={resetTimer}
-                aria-label="리셋"
+                aria-label={t('stopwatch.actions.reset')}
               >
                 <IconPlayerStop size={18} />
               </ActionIcon>

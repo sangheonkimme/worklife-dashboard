@@ -20,6 +20,7 @@ import { useTransactionsForNote, useLinkTransaction, useUnlinkTransaction } from
 import { transactionApi } from '@/services/api/transactionApi';
 import { useQuery } from '@tanstack/react-query';
 import { formatCurrency, formatDate } from '@/utils/format';
+import { useTranslation } from 'react-i18next';
 
 interface LinkTransactionModalProps {
   noteId: string;
@@ -30,6 +31,7 @@ interface LinkTransactionModalProps {
 export function LinkTransactionModal({ noteId, opened, onClose }: LinkTransactionModalProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
+  const { t } = useTranslation(['notes', 'finance']);
 
   const { data: linkedTransactions = [] } = useTransactionsForNote(noteId);
   const { data: allTransactions, isLoading: transactionsLoading } = useQuery({
@@ -49,10 +51,10 @@ export function LinkTransactionModal({ noteId, opened, onClose }: LinkTransactio
     if (!allTransactions?.transactions) return [];
 
     return allTransactions.transactions.filter((transaction) => {
-      // 이미 연결된 거래 제외
+      // Skip transactions that are already linked
       if (linkedIds.has(transaction.id)) return false;
 
-      // 검색어 필터
+      // Apply search filter
       if (searchTerm) {
         const searchLower = searchTerm.toLowerCase();
         const matchesDescription = transaction.description?.toLowerCase().includes(searchLower);
@@ -60,7 +62,7 @@ export function LinkTransactionModal({ noteId, opened, onClose }: LinkTransactio
         if (!matchesDescription && !matchesCategory) return false;
       }
 
-      // 타입 필터
+      // Apply type filter
       if (typeFilter && transaction.type !== typeFilter) return false;
 
       return true;
@@ -79,24 +81,25 @@ export function LinkTransactionModal({ noteId, opened, onClose }: LinkTransactio
     return type === 'INCOME' ? 'green' : 'red';
   };
 
-  const getTypeLabel = (type: string) => {
-    return type === 'INCOME' ? '수입' : '지출';
-  };
+  const getTypeLabel = (type: string) =>
+    t(`finance:transactionForm.types.${type as 'INCOME' | 'EXPENSE'}`);
 
   return (
     <Modal
       opened={opened}
       onClose={onClose}
-      title="거래 연결"
+      title={t('notes:linkTransactionModal.title')}
       size="lg"
     >
       <Stack gap="md">
-        {/* 연결된 거래 목록 */}
+        {/* Linked transactions */}
         {linkedTransactions.length > 0 && (
           <>
             <Box>
               <Text size="sm" fw={600} mb="xs">
-                연결된 거래 ({linkedTransactions.length})
+                {t('notes:linkTransactionModal.linkedTitle', {
+                  count: linkedTransactions.length,
+                })}
               </Text>
               <Stack gap="xs">
                 {linkedTransactions.map((transaction) => (
@@ -112,7 +115,8 @@ export function LinkTransactionModal({ noteId, opened, onClose }: LinkTransactio
                           </Text>
                         </Group>
                         <Text size="xs" c="dimmed" lineClamp={1}>
-                          {transaction.description || '설명 없음'}
+                          {transaction.description ||
+                            t('notes:linkTransactionModal.descriptionFallback')}
                         </Text>
                         <Group gap="xs" mt={4}>
                           <Text size="xs" c="dimmed">
@@ -141,11 +145,11 @@ export function LinkTransactionModal({ noteId, opened, onClose }: LinkTransactio
           </>
         )}
 
-        {/* 필터 */}
+        {/* Filters */}
         <Grid>
           <Grid.Col span={{ base: 12, sm: 6 }}>
             <TextInput
-              placeholder="거래 내용 또는 카테고리 검색"
+              placeholder={t('notes:linkTransactionModal.filters.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               leftSection={<IconSearch size={16} />}
@@ -154,12 +158,12 @@ export function LinkTransactionModal({ noteId, opened, onClose }: LinkTransactio
           </Grid.Col>
           <Grid.Col span={{ base: 12, sm: 6 }}>
             <Select
-              placeholder="거래 유형"
+              placeholder={t('notes:linkTransactionModal.filters.typePlaceholder')}
               value={typeFilter}
               onChange={setTypeFilter}
               data={[
-                { value: 'INCOME', label: '수입' },
-                { value: 'EXPENSE', label: '지출' },
+                { value: 'INCOME', label: getTypeLabel('INCOME') },
+                { value: 'EXPENSE', label: getTypeLabel('EXPENSE') },
               ]}
               clearable
               size="sm"
@@ -167,10 +171,10 @@ export function LinkTransactionModal({ noteId, opened, onClose }: LinkTransactio
           </Grid.Col>
         </Grid>
 
-        {/* 거래 목록 */}
+        {/* Transaction list */}
         <Box>
           <Text size="sm" fw={600} mb="xs">
-            거래 목록
+            {t('notes:linkTransactionModal.listTitle')}
           </Text>
           {transactionsLoading ? (
             <Box ta="center" py="xl">
@@ -178,7 +182,7 @@ export function LinkTransactionModal({ noteId, opened, onClose }: LinkTransactio
             </Box>
           ) : filteredTransactions.length === 0 ? (
             <Box ta="center" py="xl" c="dimmed">
-              <Text size="sm">연결할 수 있는 거래가 없습니다</Text>
+              <Text size="sm">{t('notes:linkTransactionModal.empty')}</Text>
             </Box>
           ) : (
             <Stack gap="xs" mah={400} style={{ overflowY: 'auto' }}>
@@ -195,7 +199,8 @@ export function LinkTransactionModal({ noteId, opened, onClose }: LinkTransactio
                         </Text>
                       </Group>
                       <Text size="xs" c="dimmed" lineClamp={1}>
-                        {transaction.description || '설명 없음'}
+                        {transaction.description ||
+                          t('notes:linkTransactionModal.descriptionFallback')}
                       </Text>
                       <Group gap="xs" mt={4}>
                         <Text size="xs" c="dimmed">
@@ -213,7 +218,7 @@ export function LinkTransactionModal({ noteId, opened, onClose }: LinkTransactio
                       onClick={() => handleLink(transaction.id)}
                       loading={linkTransaction.isPending}
                     >
-                      연결
+                      {t('notes:linkTransactionModal.linkButton')}
                     </Button>
                   </Group>
                 </Card>
@@ -225,7 +230,7 @@ export function LinkTransactionModal({ noteId, opened, onClose }: LinkTransactio
         {/* Actions */}
         <Group justify="flex-end" mt="md">
           <Button variant="subtle" onClick={onClose}>
-            닫기
+            {t('notes:linkTransactionModal.close')}
           </Button>
         </Group>
       </Stack>

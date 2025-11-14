@@ -1,0 +1,73 @@
+{
+  "overview": {
+    "quickSectionTitle": "빠른 메모 & 체크리스트",
+    "featureSectionTitle": "주요 기능",
+    "demoCard": {
+      "title": "한글 폰트 테스트 (Pretendard)",
+      "badge": "다크 테마",
+      "body": "이것은 한글 텍스트입니다. Pretendard 폰트가 올바르게 적용되었는지 확인하세요.",
+      "button": "클릭 횟수: {{count}}",
+      "hint": "버튼을 클릭하여 카운터를 증가시키세요"
+    },
+    "progressCard": {
+      "title": "프로젝트 진행 상황",
+      "frontend": "프론트엔드 개발",
+      "backend": "백엔드 API",
+      "testing": "테스트 작성",
+      "overall": "전체 {{value}}%",
+      "tooltip": "{{label}} - {{value}}%"
+    },
+    "techStack": {
+      "title": "기술 스택",
+      "badges": {
+        "react": "React",
+        "typescript": "TypeScript",
+        "vite": "Vite",
+        "mantine": "Mantine UI",
+        "font": "Pretendard Font"
+      }
+    }
+  },
+  "stickyNotes": {
+    "title": "스티커 메모",
+    "loading": "로딩 중...",
+    "limitNotice": "스티커 메모는 최대 {{count}}개까지 추가할 수 있습니다.",
+    "createButton": "새 메모",
+    "placeholder": "메모를 입력하세요...",
+    "aria": {
+      "delete": "메모 삭제"
+    },
+    "notifications": {
+      "createSuccess": "스티커 메모가 생성되었습니다.",
+      "createError": "메모 생성에 실패했습니다.",
+      "updateError": "메모 수정에 실패했습니다.",
+      "deleteSuccess": "스티커 메모가 삭제되었습니다.",
+      "deleteError": "메모 삭제에 실패했습니다."
+    }
+  },
+  "checklist": {
+    "title": "오늘 체크리스트",
+    "limitReached": "최대 항목 수에 도달했습니다",
+    "countLabel": "현재 {{current}}/{{max}}개 작성",
+    "inputPlaceholder": "할 일을 입력하세요",
+    "inputPlaceholderLimit": "더 이상 항목을 추가할 수 없습니다",
+    "inputPlaceholderHint": "할 일을 입력하고 Enter",
+    "empty": "아직 할 일이 없습니다. 바로 입력해보세요!",
+    "completedToggle": "완료 {{count}}개 보기",
+    "deleteCompletedAria": "완료 항목 모두 삭제",
+    "checkboxAria": "체크리스트 완료 표시",
+    "deleteAria": "체크리스트 항목 삭제",
+    "notifications": {
+      "createErrorTitle": "추가 실패",
+      "createErrorMessage": "체크리스트 항목을 추가할 수 없습니다.",
+      "updateErrorTitle": "업데이트 실패",
+      "updateErrorMessage": "변경 사항을 저장하지 못했습니다.",
+      "toggleErrorTitle": "상태 변경 실패",
+      "toggleErrorMessage": "체크 상태를 변경할 수 없습니다.",
+      "deleteErrorTitle": "삭제 실패",
+      "deleteErrorMessage": "항목을 삭제할 수 없습니다.",
+      "clearErrorTitle": "삭제 실패",
+      "clearErrorMessage": "완료 항목을 삭제할 수 없습니다."
+    }
+  }
+}

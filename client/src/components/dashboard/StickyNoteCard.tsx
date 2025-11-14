@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Card, Textarea, ActionIcon, Box } from "@mantine/core";
 import { IconX } from "@tabler/icons-react";
+import { useTranslation } from "react-i18next";
 import type { StickyNote } from "@/types/stickyNote";
 
 interface StickyNoteCardProps {
@@ -14,6 +15,7 @@ export function StickyNoteCard({
   onUpdate,
   onDelete,
 }: StickyNoteCardProps) {
+  const { t } = useTranslation("dashboard");
   const [content, setContent] = useState(note.content);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined
@@ -80,7 +82,7 @@ export function StickyNoteCard({
           right: 8,
           zIndex: 1,
         }}
-        aria-label="메모 삭제"
+        aria-label={t("stickyNotes.aria.delete")}
       >
         <IconX size={16} />
       </ActionIcon>
@@ -90,7 +92,7 @@ export function StickyNoteCard({
         <Textarea
           value={content}
           onChange={(e) => handleContentChange(e.currentTarget.value)}
-          placeholder="메모를 입력하세요..."
+          placeholder={t("stickyNotes.placeholder")}
           styles={{
             wrapper: {
               height: "185px",

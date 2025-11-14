@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { SessionType, TimerStatus } from '@/types/pomodoro';
 import * as pomodoroApi from '@/services/api/pomodoroApi';
+import i18n from '@/lib/i18n';
 
 interface PomodoroSettings {
   focusDuration: number; // 초
@@ -179,12 +180,13 @@ export const usePomodoroStore = create<PomodoroState>()(
 
         // 알림 표시
         if (settings.notificationEnabled) {
+          const notificationTitle = i18n.t('widgets:pomodoro.notifications.title');
           const message =
             sessionType === 'FOCUS'
-              ? '집중 시간 완료! 휴식 시간입니다.'
-              : '휴식 완료! 다음 집중 시간을 시작하세요.';
+              ? i18n.t('widgets:pomodoro.notifications.focusComplete')
+              : i18n.t('widgets:pomodoro.notifications.breakComplete');
 
-          showNotification('포모도로 타이머', message);
+          showNotification(notificationTitle, message);
         }
 
         // 소리 재생

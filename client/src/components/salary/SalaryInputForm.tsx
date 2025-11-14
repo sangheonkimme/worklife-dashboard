@@ -9,6 +9,7 @@ import {
   Card,
 } from "@mantine/core";
 import { IconMinus, IconPlus, IconRefresh } from "@tabler/icons-react";
+import { useTranslation } from "react-i18next";
 import type { SalaryInput } from "@/types/salary";
 
 interface SalaryInputFormProps {
@@ -18,6 +19,7 @@ interface SalaryInputFormProps {
 }
 
 export function SalaryInputForm({ input, onChange, onReset }: SalaryInputFormProps) {
+  const { t } = useTranslation("salary");
   const handleChange = (
     field: keyof SalaryInput,
     value: string | number | boolean
@@ -37,7 +39,7 @@ export function SalaryInputForm({ input, onChange, onReset }: SalaryInputFormPro
 
   const decrementValue = (field: "dependents" | "childrenUnder20") => {
     const currentValue = input[field];
-    if (field === "dependents" && currentValue <= 1) return; // 최소 1명 (본인)
+    if (field === "dependents" && currentValue <= 1) return; // minimum 1 (self)
     if (currentValue <= 0) return;
 
     onChange({
@@ -50,13 +52,13 @@ export function SalaryInputForm({ input, onChange, onReset }: SalaryInputFormPro
     <Stack gap="md">
       <Group justify="space-between" align="center">
         <Text fw={700} size="lg">
-          급여 정보 입력
+          {t("input.title")}
         </Text>
         <ActionIcon
           variant="subtle"
           color="gray"
           onClick={onReset}
-          title="초기화"
+          title={t("input.reset")}
         >
           <IconRefresh size={20} />
         </ActionIcon>
@@ -68,15 +70,21 @@ export function SalaryInputForm({ input, onChange, onReset }: SalaryInputFormPro
           {/* 연봉/월급 선택 */}
           <div>
             <Text size="sm" fw={500} mb="xs">
-              연봉/월급 선택
+              {t("input.salaryType")}
             </Text>
             <SegmentedControl
               fullWidth
               value={input.salaryType}
               onChange={(value) => handleChange("salaryType", value)}
               data={[
-                { label: "연봉", value: "annual" },
-                { label: "월급", value: "monthly" },
+                {
+                  label: t("input.salaryTypeOptions.annual"),
+                  value: "annual",
+                },
+                {
+                  label: t("input.salaryTypeOptions.monthly"),
+                  value: "monthly",
+                },
               ]}
             />
           </div>
@@ -84,17 +92,17 @@ export function SalaryInputForm({ input, onChange, onReset }: SalaryInputFormPro
           {/* 금액 입력 */}
           <div>
             <Text size="sm" fw={500} mb="xs">
-              {input.salaryType === "annual" ? "연봉" : "월급"}
+              {t(`input.amountLabel.${input.salaryType}`)}
             </Text>
             <NumberInput
               value={input.amount}
               onChange={(value) => handleChange("amount", Number(value) || 0)}
               thousandSeparator=","
-              suffix=" 원"
+              suffix={t("input.currencySuffix")}
               min={0}
               size="lg"
               hideControls
-              placeholder="금액을 입력하세요"
+              placeholder={t("input.amountPlaceholder")}
               styles={{
                 input: {
                   textAlign: "right",
@@ -111,21 +119,27 @@ export function SalaryInputForm({ input, onChange, onReset }: SalaryInputFormPro
       <Card shadow="sm" padding="lg" radius="md" withBorder>
         <Stack gap="md">
           <Text size="sm" fw={500} c="dimmed">
-            추가 옵션
+            {t("input.optionsTitle")}
           </Text>
 
           {/* 퇴직금 */}
           <div>
             <Text size="sm" fw={500} mb="xs">
-              퇴직금
+              {t("input.retirement.label")}
             </Text>
             <SegmentedControl
               fullWidth
               value={input.retirementType}
               onChange={(value) => handleChange("retirementType", value)}
               data={[
-                { label: "별도", value: "separate" },
-                { label: "포함", value: "included" },
+                {
+                  label: t("input.retirement.separate"),
+                  value: "separate",
+                },
+                {
+                  label: t("input.retirement.included"),
+                  value: "included",
+                },
               ]}
             />
           </div>
@@ -133,7 +147,7 @@ export function SalaryInputForm({ input, onChange, onReset }: SalaryInputFormPro
           {/* 비과세액 */}
           <div>
             <Text size="sm" fw={500} mb="xs">
-              비과세액 (연간 총액)
+              {t("input.nonTaxable.label")}
             </Text>
             <NumberInput
               value={input.nonTaxableAmount}
@@ -141,10 +155,10 @@ export function SalaryInputForm({ input, onChange, onReset }: SalaryInputFormPro
                 handleChange("nonTaxableAmount", Number(value) || 0)
               }
               thousandSeparator=","
-              suffix=" 원"
+              suffix={t("input.currencySuffix")}
               min={0}
               hideControls
-              placeholder="예) 2,400,000원 (월 200,000원)"
+              placeholder={t("input.nonTaxable.placeholder")}
               styles={{
                 input: {
                   textAlign: "right",
@@ -153,7 +167,9 @@ export function SalaryInputForm({ input, onChange, onReset }: SalaryInputFormPro
             />
             {input.nonTaxableAmount > 0 && (
               <Text size="xs" c="dimmed" mt="xs">
-                월 {Math.floor(input.nonTaxableAmount / 12).toLocaleString()}원
+                {t("input.nonTaxable.monthly", {
+                  amount: Math.floor(input.nonTaxableAmount / 12).toLocaleString(),
+                })}
               </Text>
             )}
           </div>
@@ -161,7 +177,7 @@ export function SalaryInputForm({ input, onChange, onReset }: SalaryInputFormPro
           {/* 부양가족수 */}
           <div>
             <Text size="sm" fw={500} mb="xs">
-              부양가족수 (본인 포함)
+              {t("input.dependents.label")}
             </Text>
             <Group justify="center" gap="md">
               <ActionIcon
@@ -173,7 +189,7 @@ export function SalaryInputForm({ input, onChange, onReset }: SalaryInputFormPro
                 <IconMinus size={18} />
               </ActionIcon>
               <Text size="xl" fw={500} w={60} ta="center">
-                {input.dependents}명
+                {t("input.dependents.unit", { count: input.dependents })}
               </Text>
               <ActionIcon
                 size="lg"
@@ -188,7 +204,7 @@ export function SalaryInputForm({ input, onChange, onReset }: SalaryInputFormPro
           {/* 자녀수 */}
           <div>
             <Text size="sm" fw={500} mb="xs">
-              8세 이상 20세 이하 자녀수
+              {t("input.children.label")}
             </Text>
             <Group justify="center" gap="md">
               <ActionIcon
@@ -200,7 +216,7 @@ export function SalaryInputForm({ input, onChange, onReset }: SalaryInputFormPro
                 <IconMinus size={18} />
               </ActionIcon>
               <Text size="xl" fw={500} w={60} ta="center">
-                {input.childrenUnder20}명
+                {t("input.children.unit", { count: input.childrenUnder20 })}
               </Text>
               <ActionIcon
                 size="lg"
@@ -219,7 +235,7 @@ export function SalaryInputForm({ input, onChange, onReset }: SalaryInputFormPro
               onChange={(event) =>
                 handleChange("isSmallCompany", event.currentTarget.checked)
               }
-              label="중소기업 취업자 소득세 감면"
+              label={t("input.smallCompany")}
             />
           </div>
         </Stack>

@@ -18,6 +18,7 @@ import { IconPlus, IconTrash } from '@tabler/icons-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
 import { modals } from '@mantine/modals';
+import { useTranslation } from 'react-i18next';
 import { budgetApi, categoryApi } from '@/services/api/transactionApi';
 import type { CreateBudgetDto } from '@/types/transaction';
 import { formatCurrency } from '@/utils/format';
@@ -27,6 +28,7 @@ export default function BudgetsTab() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const queryClient = useQueryClient();
+  const { t } = useTranslation('finance');
 
   const monthString = new Date(
     selectedMonth.getFullYear(),
@@ -34,13 +36,13 @@ export default function BudgetsTab() {
     1
   ).toISOString();
 
-  // 예산 사용 현황 조회
+  // Fetch budget utilization overview
   const { data: budgetStatus } = useQuery({
     queryKey: ['budgetStatus', monthString],
     queryFn: () => budgetApi.getBudgetStatus(monthString),
   });
 
-  // 지출 카테고리 조회
+  // Fetch expense categories
   const { data: categories = [] } = useQuery({
     queryKey: ['categories', 'EXPENSE'],
     queryFn: () => categoryApi.getCategories('EXPENSE'),
@@ -53,18 +55,19 @@ export default function BudgetsTab() {
       month: monthString,
     },
     validate: {
-      amount: (value) => (value > 0 ? null : '예산을 입력해주세요'),
+      amount: (value) =>
+        value > 0 ? null : t('budgetsTab.validation.amountRequired'),
     },
   });
 
-  // 예산 생성
+  // Create budget
   const createMutation = useMutation({
     mutationFn: budgetApi.createBudget,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['budgetStatus'] });
       notifications.show({
-        title: '성공',
-        message: '예산이 설정되었습니다',
+        title: t('budgetsTab.notifications.successTitle'),
+        message: t('budgetsTab.notifications.createSuccess'),
         color: 'teal',
       });
       setIsModalOpen(false);
@@ -72,28 +75,32 @@ export default function BudgetsTab() {
     },
     onError: (error: any) => {
       notifications.show({
-        title: '오류',
-        message: error.response?.data?.message || '예산 설정에 실패했습니다',
+        title: t('budgetsTab.notifications.errorTitle'),
+        message:
+          error.response?.data?.message ||
+          t('budgetsTab.notifications.createError'),
         color: 'red',
       });
     },
   });
 
-  // 예산 삭제
+  // Delete budget entry
   const deleteMutation = useMutation({
     mutationFn: budgetApi.deleteBudget,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['budgetStatus'] });
       notifications.show({
-        title: '성공',
-        message: '예산이 삭제되었습니다',
+        title: t('budgetsTab.notifications.successTitle'),
+        message: t('budgetsTab.notifications.deleteSuccess'),
         color: 'teal',
       });
     },
     onError: (error: any) => {
       notifications.show({
-        title: '오류',
-        message: error.response?.data?.message || '예산 삭제에 실패했습니다',
+        title: t('budgetsTab.notifications.errorTitle'),
+        message:
+          error.response?.data?.message ||
+          t('budgetsTab.notifications.deleteError'),
         color: 'red',
       });
     },
@@ -109,16 +116,19 @@ export default function BudgetsTab() {
 
   const handleDelete = (id: string) => {
     modals.openConfirmModal({
-      title: '예산 삭제',
-      children: <Text size="sm">정말로 이 예산을 삭제하시겠습니까?</Text>,
-      labels: { confirm: '삭제', cancel: '취소' },
+      title: t('budgetsTab.confirmDelete.title'),
+      children: <Text size="sm">{t('budgetsTab.confirmDelete.message')}</Text>,
+      labels: {
+        confirm: t('budgetsTab.confirmDelete.confirm'),
+        cancel: t('budgetsTab.confirmDelete.cancel'),
+      },
       confirmProps: { color: 'red' },
       onConfirm: () => deleteMutation.mutate(id),
     });
   };
 
   const categoryOptions = [
-    { value: '', label: '전체 예산 (카테고리 없음)' },
+    { value: '', label: t('budgetsTab.categoryOptions.all') },
     ...categories.map((cat) => ({
       value: cat.id,
       label: cat.name,
@@ -129,30 +139,30 @@ export default function BudgetsTab() {
     <Stack gap="md">
       <Group justify="space-between">
         <Text size="lg" fw={600}>
-          월간 예산
+          {t('budgetsTab.title')}
         </Text>
         <Group>
           <MonthPickerInput
             value={selectedMonth}
             onChange={(value) => value && setSelectedMonth(value)}
-            placeholder="월 선택"
+            placeholder={t('budgetsTab.monthPlaceholder')}
             w={200}
           />
           <Button
             leftSection={<IconPlus size={16} />}
             onClick={() => setIsModalOpen(true)}
           >
-            예산 추가
+            {t('budgetsTab.buttons.add')}
           </Button>
         </Group>
       </Group>
 
-      {/* 전체 예산 요약 */}
+      {/* Overall budget summary */}
       <Paper p="lg" withBorder>
         <Stack gap="md">
           <Group justify="space-between">
             <Text size="lg" fw={600}>
-              전체 예산
+              {t('budgetsTab.summary.title')}
             </Text>
             {budgetStatus?.total?.budget != null && budgetStatus.total.budget > 0 && (
               <Text
@@ -185,19 +195,21 @@ export default function BudgetsTab() {
                   {formatCurrency(budgetStatus.total.budget)}
                 </Text>
                 <Text size="sm" fw={600}>
-                  {budgetStatus.total.percentage.toFixed(1)}% 사용
+                  {t('budgetsTab.summary.usage', {
+                    percentage: budgetStatus.total.percentage.toFixed(1),
+                  })}
                 </Text>
               </Group>
             </>
           ) : (
             <Text c="dimmed" ta="center" py="md">
-              설정된 예산이 없습니다
+              {t('budgetsTab.summary.empty')}
             </Text>
           )}
         </Stack>
       </Paper>
 
-      {/* 카테고리별 예산 */}
+      {/* Category budgets */}
       <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
         {budgetStatus?.budgets.map((item) => (
           <Paper key={item.budget.id} p="md" withBorder>
@@ -215,7 +227,7 @@ export default function BudgetsTab() {
                     />
                   )}
                   <Text fw={600}>
-                    {item.budget.category?.name || '전체'}
+                    {item.budget.category?.name || t('budgetsTab.cards.all')}
                   </Text>
                 </Group>
 
@@ -244,7 +256,7 @@ export default function BudgetsTab() {
               <Group justify="space-between">
                 <Stack gap={0}>
                   <Text size="xs" c="dimmed">
-                    사용
+                    {t('budgetsTab.cards.spent')}
                   </Text>
                   <Text size="sm" fw={600}>
                     {formatCurrency(item.spent)}
@@ -253,7 +265,7 @@ export default function BudgetsTab() {
 
                 <Stack gap={0} align="center">
                   <Text size="xs" c="dimmed">
-                    예산
+                    {t('budgetsTab.cards.budget')}
                   </Text>
                   <Text size="sm" fw={600}>
                     {formatCurrency(item.budget.amount)}
@@ -262,7 +274,7 @@ export default function BudgetsTab() {
 
                 <Stack gap={0} align="flex-end">
                   <Text size="xs" c="dimmed">
-                    남은 예산
+                    {t('budgetsTab.cards.remaining')}
                   </Text>
                   <Text
                     size="sm"
@@ -275,36 +287,38 @@ export default function BudgetsTab() {
               </Group>
 
               <Text size="sm" c="dimmed" ta="center">
-                {item.percentage.toFixed(1)}% 사용
-                {item.isExceeded && ' (초과)'}
+                {t('budgetsTab.cards.usage', {
+                  percentage: item.percentage.toFixed(1),
+                })}
+                {item.isExceeded && t('budgetsTab.cards.exceeded')}
               </Text>
             </Stack>
           </Paper>
         ))}
       </SimpleGrid>
 
-      {/* 예산 추가 모달 */}
+      {/* Add budget modal */}
       <Modal
         opened={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="예산 추가"
+        title={t('budgetsTab.modal.title')}
         size="md"
       >
         <form onSubmit={form.onSubmit(handleSubmit)}>
           <Stack gap="md">
             <Select
-              label="카테고리"
-              placeholder="카테고리를 선택하세요"
+              label={t('budgetsTab.modal.fields.category.label')}
+              placeholder={t('budgetsTab.modal.fields.category.placeholder')}
               data={categoryOptions}
               {...form.getInputProps('categoryId')}
             />
 
             <NumberInput
-              label="예산"
-              placeholder="예산을 입력하세요"
+              label={t('budgetsTab.modal.fields.amount.label')}
+              placeholder={t('budgetsTab.modal.fields.amount.placeholder')}
               required
               min={0}
-              thousandSeparator=","
+              thousandSeparator="," 
               {...form.getInputProps('amount')}
             />
 
@@ -314,10 +328,10 @@ export default function BudgetsTab() {
                 onClick={() => setIsModalOpen(false)}
                 disabled={createMutation.isPending}
               >
-                취소
+                {t('transactionForm.actions.cancel')}
               </Button>
               <Button type="submit" loading={createMutation.isPending}>
-                저장
+                {t('transactionForm.actions.submit')}
               </Button>
             </Group>
           </Stack>

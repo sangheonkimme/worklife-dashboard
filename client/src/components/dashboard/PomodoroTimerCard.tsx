@@ -1,4 +1,14 @@
-import { Card, Text, RingProgress, Stack, Group, Button, Badge, ActionIcon, ThemeIcon } from '@mantine/core';
+import {
+  Card,
+  Text,
+  RingProgress,
+  Stack,
+  Group,
+  Button,
+  Badge,
+  ActionIcon,
+  ThemeIcon,
+} from '@mantine/core';
 import {
   IconPlayerPlay,
   IconPlayerPause,
@@ -6,7 +16,11 @@ import {
   IconClock,
 } from '@tabler/icons-react';
 import { useEffect } from 'react';
-import { usePomodoroStore, requestNotificationPermission } from '@/store/usePomodoroStore';
+import { useTranslation } from 'react-i18next';
+import {
+  usePomodoroStore,
+  requestNotificationPermission,
+} from '@/store/usePomodoroStore';
 
 export function PomodoroTimerCard() {
   const {
@@ -21,6 +35,7 @@ export function PomodoroTimerCard() {
     stopTimer,
     restoreSession,
   } = usePomodoroStore();
+  const { t } = useTranslation('widgets');
 
   // 컴포넌트 마운트 시 설정 로드, 세션 복원, 알림 권한 요청
   useEffect(() => {
@@ -51,11 +66,11 @@ export function PomodoroTimerCard() {
   const getSessionLabel = () => {
     switch (sessionType) {
       case 'FOCUS':
-        return '집중 시간';
+        return t('pomodoro.sessionLabels.focus');
       case 'SHORT_BREAK':
-        return '짧은 휴식';
+        return t('pomodoro.sessionLabels.shortBreak');
       case 'LONG_BREAK':
-        return '긴 휴식';
+        return t('pomodoro.sessionLabels.longBreak');
     }
   };
 
@@ -88,7 +103,7 @@ export function PomodoroTimerCard() {
             <IconClock size={20} />
           </ThemeIcon>
           <Text fw={600} size="lg">
-            포모도로 타이머
+            {t('pomodoro.title')}
           </Text>
         </Group>
 
@@ -120,7 +135,7 @@ export function PomodoroTimerCard() {
               onClick={startTimer}
               size="sm"
             >
-              시작
+              {t('pomodoro.actions.start')}
             </Button>
           )}
 
@@ -131,7 +146,7 @@ export function PomodoroTimerCard() {
                 color="yellow"
                 size="lg"
                 onClick={pauseTimer}
-                aria-label="일시정지"
+                aria-label={t('pomodoro.actions.pause')}
               >
                 <IconPlayerPause size={18} />
               </ActionIcon>
@@ -140,7 +155,7 @@ export function PomodoroTimerCard() {
                 color="gray"
                 size="lg"
                 onClick={stopTimer}
-                aria-label="중지"
+                aria-label={t('pomodoro.actions.stop')}
               >
                 <IconPlayerStop size={18} />
               </ActionIcon>
@@ -155,14 +170,14 @@ export function PomodoroTimerCard() {
                 onClick={resumeTimer}
                 size="sm"
               >
-                재개
+                {t('pomodoro.actions.resume')}
               </Button>
               <ActionIcon
                 variant="filled"
                 color="gray"
                 size="lg"
                 onClick={stopTimer}
-                aria-label="중지"
+                aria-label={t('pomodoro.actions.stop')}
               >
                 <IconPlayerStop size={18} />
               </ActionIcon>
@@ -173,10 +188,10 @@ export function PomodoroTimerCard() {
         {/* 오늘 완료 개수 */}
         <Group gap="xs">
           <Text size="sm" c="dimmed">
-            오늘:
+            {t('pomodoro.badges.today')}
           </Text>
           <Badge color="red" variant="light">
-            {completedSessions}회 완료
+            {t('pomodoro.badges.completed', { count: completedSessions })}
           </Badge>
         </Group>
       </Stack>

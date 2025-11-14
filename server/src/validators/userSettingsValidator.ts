@@ -8,6 +8,7 @@ export const updateUserSettingsSchema = z.object({
   body: z
     .object({
       locale: z.string().min(2).max(10).optional(),
+      language: z.enum(['system', 'ko', 'en']).optional(),
       timezone: z.string().min(2).max(64).optional(),
       finance: z
         .object({

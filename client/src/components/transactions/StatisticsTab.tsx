@@ -10,6 +10,7 @@ import {
 } from "@mantine/core";
 import { MonthPickerInput } from "@mantine/dates";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { transactionApi } from "@/services/api/transactionApi";
 import { getCycleRange, formatCycleLabel } from "@/utils/paydayCycle";
 import { formatCurrency } from "@/utils/format";
@@ -25,6 +26,7 @@ export default function StatisticsTab({
   onMonthChange,
   payday,
 }: StatisticsTabProps) {
+  const { t } = useTranslation(["finance", "common"]);
   const { start: cycleStart, end: cycleEnd } = useMemo(
     () => getCycleRange(selectedMonth, payday),
     [selectedMonth, payday]
@@ -33,7 +35,7 @@ export default function StatisticsTab({
   const endDate = cycleEnd.toISOString();
   const cycleLabel = formatCycleLabel(cycleStart, cycleEnd);
 
-  // 통계 조회
+  // Fetch statistics
   const { data: statistics } = useQuery({
     queryKey: ["statistics", startDate, endDate, payday],
     queryFn: () => transactionApi.getStatistics(startDate, endDate, "category"),
@@ -50,27 +52,27 @@ export default function StatisticsTab({
     <Stack gap="md">
       <Group justify="space-between">
         <Text size="lg" fw={600}>
-          월간 통계
+          {t("statisticsTab.title")}
         </Text>
         <MonthPickerInput
-          label="조회 월"
+          label={t("statisticsTab.monthPicker.label")}
           value={selectedMonth}
           onChange={(value) => value && onMonthChange(value)}
-          placeholder="월 선택"
+          placeholder={t("statisticsTab.monthPicker.placeholder")}
           w={200}
           size="md"
         />
       </Group>
       <Text size="sm" c="dimmed">
-        {cycleLabel} · 월급일 {payday}일 기준
+        {t("statisticsTab.subtitle", { range: cycleLabel, payday })}
       </Text>
 
-      {/* 요약 카드 */}
+      {/* Summary cards */}
       <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="md">
         <Paper p="md" withBorder>
           <Stack gap="xs">
             <Text size="sm" c="dimmed">
-              총 수입
+              {t("statisticsTab.summary.income")}
             </Text>
             <Text size="xl" fw={700} c="teal">
               {formatCurrency(statistics?.summary.income || 0)}
@@ -81,7 +83,7 @@ export default function StatisticsTab({
         <Paper p="md" withBorder>
           <Stack gap="xs">
             <Text size="sm" c="dimmed">
-              총 지출
+              {t("statisticsTab.summary.expense")}
             </Text>
             <Text size="xl" fw={700} c="red">
               {formatCurrency(statistics?.summary.expense || 0)}
@@ -92,7 +94,7 @@ export default function StatisticsTab({
         <Paper p="md" withBorder>
           <Stack gap="xs">
             <Text size="sm" c="dimmed">
-              순수익
+              {t("statisticsTab.summary.net")}
             </Text>
             <Text
               size="xl"
@@ -111,7 +113,7 @@ export default function StatisticsTab({
         <Paper p="md" withBorder>
           <Stack gap="xs">
             <Text size="sm" c="dimmed">
-              저축률
+              {t("statisticsTab.summary.savingsRate")}
             </Text>
             <Text size="xl" fw={700} c={savingsRate > 0 ? "teal" : "gray"}>
               {savingsRate.toFixed(1)}%
@@ -120,17 +122,17 @@ export default function StatisticsTab({
         </Paper>
       </SimpleGrid>
 
-      {/* 카테고리별 지출 */}
+      {/* Expenses by category */}
       <Paper p="md" withBorder>
         <Stack gap="md">
           <Text size="lg" fw={600}>
-            카테고리별 지출
+            {t("statisticsTab.expenseByCategory.title")}
           </Text>
 
           {statistics?.byCategory.filter((item) => item.type === "EXPENSE")
             .length === 0 ? (
             <Text c="dimmed" ta="center" py="xl">
-              지출 내역이 없습니다
+              {t("statisticsTab.expenseByCategory.empty")}
             </Text>
           ) : (
             <Grid>
@@ -165,11 +167,14 @@ export default function StatisticsTab({
                                 />
                               )}
                               <Text size="sm" fw={500}>
-                                {item.category?.name || "미분류"}
+                                {item.category?.name ||
+                                  t("common:labels.unclassified")}
                               </Text>
                             </Group>
                             <Text size="xs" c="dimmed">
-                              {item.count}건
+                              {t("statisticsTab.transactionCount", {
+                                count: item.count,
+                              })}
                             </Text>
                             <Text size="lg" fw={700}>
                               {formatCurrency(item.total)}
@@ -201,14 +206,14 @@ export default function StatisticsTab({
         </Stack>
       </Paper>
 
-      {/* 카테고리별 수입 */}
+      {/* Income by category */}
       {statistics?.byCategory &&
         statistics.byCategory.filter((item) => item.type === "INCOME").length >
           0 && (
           <Paper p="md" withBorder>
             <Stack gap="md">
               <Text size="lg" fw={600}>
-                카테고리별 수입
+                {t("statisticsTab.incomeByCategory.title")}
               </Text>
 
               <Grid>
@@ -241,13 +246,16 @@ export default function StatisticsTab({
                                     }}
                                   />
                                 )}
-                                <Text size="sm" fw={500}>
-                                  {item.category?.name || "미분류"}
-                                </Text>
-                              </Group>
-                              <Text size="xs" c="dimmed">
-                                {item.count}건
+                              <Text size="sm" fw={500}>
+                                {item.category?.name ||
+                                  t("common:labels.unclassified")}
                               </Text>
+                            </Group>
+                            <Text size="xs" c="dimmed">
+                              {t("statisticsTab.transactionCount", {
+                                count: item.count,
+                              })}
+                            </Text>
                               <Text size="lg" fw={700} c="teal">
                                 {formatCurrency(item.total)}
                               </Text>

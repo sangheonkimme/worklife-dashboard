@@ -1,5 +1,6 @@
 import { Table, Badge, ActionIcon, Group, Text, Paper, Stack, Pagination, Center } from '@mantine/core';
 import { IconEdit, IconTrash } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 import type { Transaction } from '@/types/transaction';
 import { formatCurrency, formatDate } from '@/utils/format';
 
@@ -22,15 +23,17 @@ export default function TransactionList({
   onDelete,
   loading,
 }: TransactionListProps) {
+  const { t } = useTranslation('finance');
+
   if (transactions.length === 0) {
     return (
       <Paper p="xl" withBorder>
         <Stack align="center" gap="md">
           <Text c="dimmed" size="lg">
-            거래 내역이 없습니다
+            {t('transactionList.emptyTitle')}
           </Text>
           <Text c="dimmed" size="sm">
-            새로운 거래를 추가해보세요
+            {t('transactionList.emptyDescription')}
           </Text>
         </Stack>
       </Paper>
@@ -43,12 +46,12 @@ export default function TransactionList({
         <Table striped highlightOnHover>
           <Table.Thead>
             <Table.Tr>
-              <Table.Th>날짜</Table.Th>
-              <Table.Th>유형</Table.Th>
-              <Table.Th>카테고리</Table.Th>
-              <Table.Th>금액</Table.Th>
-              <Table.Th>메모</Table.Th>
-              <Table.Th>액션</Table.Th>
+              <Table.Th>{t('transactionList.headers.date')}</Table.Th>
+              <Table.Th>{t('transactionList.headers.type')}</Table.Th>
+              <Table.Th>{t('transactionList.headers.category')}</Table.Th>
+              <Table.Th>{t('transactionList.headers.amount')}</Table.Th>
+              <Table.Th>{t('transactionList.headers.memo')}</Table.Th>
+              <Table.Th>{t('transactionList.headers.actions')}</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
@@ -59,7 +62,9 @@ export default function TransactionList({
                 </Table.Td>
                 <Table.Td>
                   <Badge color={transaction.type === 'INCOME' ? 'teal' : 'red'} variant="light">
-                    {transaction.type === 'INCOME' ? '수입' : '지출'}
+                    {transaction.type === 'INCOME'
+                      ? t('transactionForm.types.INCOME')
+                      : t('transactionForm.types.EXPENSE')}
                   </Badge>
                 </Table.Td>
                 <Table.Td>

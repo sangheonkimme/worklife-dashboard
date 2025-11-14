@@ -3,6 +3,7 @@ import { Box, Textarea, Paper, SegmentedControl, Stack } from '@mantine/core';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useDebouncedValue } from '@mantine/hooks';
+import { useTranslation } from 'react-i18next';
 
 interface MarkdownEditorProps {
   value: string;
@@ -15,20 +16,22 @@ interface MarkdownEditorProps {
 export function MarkdownEditor({
   value,
   onChange,
-  placeholder = '마크다운 형식으로 작성하세요...',
+  placeholder,
   minRows = 10,
   maxRows = 30,
 }: MarkdownEditorProps) {
+  const { t } = useTranslation('notes');
+  const resolvedPlaceholder = placeholder ?? t('markdownEditor.placeholder');
   const [mode, setMode] = useState<'edit' | 'preview' | 'split'>('edit');
   const [localValue, setLocalValue] = useState(value);
   const [debouncedValue] = useDebouncedValue(localValue, 300);
 
-  // 외부 value가 변경되면 localValue도 업데이트
+  // Keep local state in sync when the parent value changes
   useEffect(() => {
     setLocalValue(value);
   }, [value]);
 
-  // debounced value가 변경되면 onChange 호출
+  // Propagate value changes after debounce
   useEffect(() => {
     if (debouncedValue !== value) {
       onChange(debouncedValue);
@@ -46,9 +49,9 @@ export function MarkdownEditor({
         value={mode}
         onChange={(value) => setMode(value as 'edit' | 'preview' | 'split')}
         data={[
-          { label: '편집', value: 'edit' },
-          { label: '미리보기', value: 'preview' },
-          { label: '분할', value: 'split' },
+          { label: t('markdownEditor.modes.edit'), value: 'edit' },
+          { label: t('markdownEditor.modes.preview'), value: 'preview' },
+          { label: t('markdownEditor.modes.split'), value: 'split' },
         ]}
         fullWidth
       />
@@ -59,7 +62,7 @@ export function MarkdownEditor({
           <Textarea
             value={localValue}
             onChange={(e) => handleChange(e.target.value)}
-            placeholder={placeholder}
+            placeholder={resolvedPlaceholder}
             minRows={minRows}
             maxRows={maxRows}
             autosize
@@ -89,7 +92,7 @@ export function MarkdownEditor({
             <Textarea
               value={localValue}
               onChange={(e) => handleChange(e.target.value)}
-              placeholder={placeholder}
+              placeholder={resolvedPlaceholder}
               minRows={minRows}
               maxRows={maxRows}
               autosize
@@ -115,10 +118,11 @@ interface MarkdownPreviewProps {
 }
 
 function MarkdownPreview({ content }: MarkdownPreviewProps) {
+  const { t } = useTranslation('notes');
   if (!content.trim()) {
     return (
       <Box c="dimmed" ta="center" py="xl">
-        미리보기가 여기에 표시됩니다
+        {t('markdownEditor.emptyPreview')}
       </Box>
     );
   }

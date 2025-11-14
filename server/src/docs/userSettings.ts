@@ -95,6 +95,10 @@
  *         locale:
  *           type: string
  *           example: ko-KR
+ *         language:
+ *           type: string
+ *           enum: [system, ko, en]
+ *           example: system
  *         timezone:
  *           type: string
  *           example: Asia/Seoul

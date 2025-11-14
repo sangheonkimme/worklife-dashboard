@@ -13,6 +13,7 @@ import { useTags, useDeleteTag } from '@/hooks/useTags';
 import type { Tag } from '@/types/tag';
 import { TagManager } from './TagManager';
 import { modals } from '@mantine/modals';
+import { useTranslation } from 'react-i18next';
 
 interface TagListProps {
   selectedTagId?: string;
@@ -24,6 +25,7 @@ export function TagList({ selectedTagId, onSelectTag }: TagListProps) {
   const deleteTag = useDeleteTag();
   const [managerOpened, setManagerOpened] = useState(false);
   const [editingTag, setEditingTag] = useState<Tag | null>(null);
+  const { t } = useTranslation('notes');
 
   const handleEdit = (tag: Tag) => {
     setEditingTag(tag);
@@ -32,18 +34,20 @@ export function TagList({ selectedTagId, onSelectTag }: TagListProps) {
 
   const handleDelete = (tag: Tag) => {
     modals.openConfirmModal({
-      title: '태그 삭제',
+      title: t('tagList.deleteConfirm.title'),
       children: (
         <Text size="sm">
-          {tag.name} 태그를 삭제하시겠습니까?
+          {t('tagList.deleteConfirm.message', { name: tag.name })}
           {tag._count && tag._count.noteTags > 0 && (
             <Text c="orange" mt="xs">
-              {tag._count.noteTags}개의 메모에서 이 태그가 제거됩니다.
+              {t('tagList.deleteConfirm.usageWarning', {
+                count: tag._count.noteTags,
+              })}
             </Text>
           )}
         </Text>
       ),
-      labels: { confirm: '삭제', cancel: '취소' },
+      labels: { confirm: t('actions.delete'), cancel: t('actions.cancel') },
       confirmProps: { color: 'red' },
       onConfirm: () => deleteTag.mutate(tag.id),
     });
@@ -55,7 +59,7 @@ export function TagList({ selectedTagId, onSelectTag }: TagListProps) {
   };
 
   if (isLoading) {
-    return <Text size="sm">로딩 중...</Text>;
+    return <Text size="sm">{t('tagList.loading')}</Text>;
   }
 
   return (
@@ -63,7 +67,7 @@ export function TagList({ selectedTagId, onSelectTag }: TagListProps) {
       <Stack gap="xs">
         <Group justify="space-between" mb="xs">
           <Text size="sm" fw={600} c="dimmed">
-            태그
+            {t('tagList.title')}
           </Text>
           <ActionIcon
             size="sm"
@@ -89,7 +93,7 @@ export function TagList({ selectedTagId, onSelectTag }: TagListProps) {
         >
           <Group gap="xs">
             <IconTag size={16} />
-            <Text size="sm">모든 태그</Text>
+            <Text size="sm">{t('tagList.all')}</Text>
           </Group>
         </UnstyledButton>
 
@@ -142,7 +146,7 @@ export function TagList({ selectedTagId, onSelectTag }: TagListProps) {
                         handleEdit(tag);
                       }}
                     >
-                      수정
+                      {t('tagList.menu.edit')}
                     </Menu.Item>
                     <Menu.Item
                       leftSection={<IconTrash size={14} />}
@@ -152,7 +156,7 @@ export function TagList({ selectedTagId, onSelectTag }: TagListProps) {
                         handleDelete(tag);
                       }}
                     >
-                      삭제
+                      {t('tagList.menu.delete')}
                     </Menu.Item>
                   </Menu.Dropdown>
                 </Menu>
@@ -163,7 +167,7 @@ export function TagList({ selectedTagId, onSelectTag }: TagListProps) {
 
         {tags && tags.length === 0 && (
           <Text size="sm" c="dimmed" ta="center" py="xl">
-            태그가 없습니다
+            {t('tagList.empty')}
           </Text>
         )}
       </Stack>

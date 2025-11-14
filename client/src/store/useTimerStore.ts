@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { notifications } from "@mantine/notifications";
+import i18n from "@/lib/i18n";
 import type { TimerSettings, TimerStatus } from "@/types/timer";
 
 interface TimerState {
@@ -72,8 +73,8 @@ export const useTimerStore = create<TimerState>()(
         const target = remainingMs > 0 ? remainingMs : totalMs;
         if (target <= 0) {
           notifications.show({
-            title: "시간을 설정해주세요",
-            message: "1초 이상의 시간을 설정해야 타이머를 시작할 수 있습니다.",
+            title: i18n.t("widgets:timer.notifications.startErrorTitle"),
+            message: i18n.t("widgets:timer.notifications.startErrorMessage"),
             color: "yellow",
           });
           return;
@@ -200,14 +201,17 @@ export const useTimerStore = create<TimerState>()(
           nextRemaining <= settings.preAlertMs &&
           nextRemaining > 0
         ) {
+          const secondsLeft = Math.floor((settings.preAlertMs ?? 0) / 1000);
           notifications.show({
-            title: "타이머 알림",
-            message: `${Math.floor(settings.preAlertMs / 1000)}초 후에 타이머가 종료됩니다.`,
+            title: i18n.t("widgets:timer.notifications.preAlertTitle"),
+            message: i18n.t("widgets:timer.notifications.preAlertMessage", {
+              seconds: secondsLeft,
+            }),
             color: "yellow",
           });
           showBrowserNotification(
-            "타이머 알림",
-            "곧 타이머가 종료됩니다. 준비하세요!"
+            i18n.t("widgets:timer.notifications.preAlertTitle"),
+            i18n.t("widgets:timer.notifications.browserPreAlert")
           );
           set({ preAlertTriggered: true });
         }
@@ -222,13 +226,13 @@ export const useTimerStore = create<TimerState>()(
 
           if (settings.notifications) {
             notifications.show({
-              title: "타이머 완료",
-              message: "설정한 시간이 모두 경과했습니다.",
+              title: i18n.t("widgets:timer.notifications.completeTitle"),
+              message: i18n.t("widgets:timer.notifications.completeMessage"),
               color: "green",
             });
             showBrowserNotification(
-              "타이머 완료",
-              "설정한 타이머가 종료되었습니다."
+              i18n.t("widgets:timer.notifications.completeTitle"),
+              i18n.t("widgets:timer.notifications.browserComplete")
             );
           }
 

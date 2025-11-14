@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { notifications } from "@mantine/notifications";
+import { useTranslation } from "react-i18next";
 import { authApi } from "../services/api/authApi";
 import { useAuthStore } from "../store/useAuthStore";
 import type { LoginCredentials, RegisterData } from "../types";
@@ -10,6 +11,7 @@ export const useAuth = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { user, setUser, clearUser } = useAuthStore();
+  const { t } = useTranslation("auth");
 
   // 현재 사용자 정보 조회
   const { data: currentUser, isLoading, error } = useQuery({
@@ -30,10 +32,10 @@ export const useAuth = () => {
       const isNetworkError = !window.navigator.onLine || error.message.includes("Network Error");
 
       notifications.show({
-        title: "인증 오류",
+        title: t("notifications.errorTitle"),
         message: isNetworkError
-          ? "네트워크 연결을 확인해주세요. 인터넷에 연결되어 있는지 확인하세요."
-          : "사용자 정보를 불러오는데 실패했습니다. 다시 로그인해주세요.",
+          ? t("notifications.networkError")
+          : t("notifications.fetchError"),
         color: "red",
         autoClose: 5000,
       });

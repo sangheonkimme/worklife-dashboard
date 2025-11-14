@@ -1,0 +1,242 @@
+{
+  "dashboard": {
+    "title": "Household dashboard",
+    "subtitle": "Track budgets, transactions, and insights in one place.",
+    "periodSummary": "{{range}} · Payday {{day}}",
+    "filters": {
+      "monthLabel": "Month",
+      "monthPlaceholder": "Select month",
+      "paydayLabel": "Payday",
+      "paydayPlaceholder": "Select"
+    },
+    "stats": {
+      "expenses": "Expenses this month",
+      "income": "Total income",
+      "net": "Net income",
+      "daily": "Average daily spend",
+      "helper": "{{days}} days · payday {{day}}",
+      "diffLabel": "vs. last month",
+      "noData": "No data from last month"
+    },
+    "categories": {
+      "title": "Spending by category",
+      "subtitle": "{{range}} · total {{amount}}",
+      "empty": "No spending data for the selected period."
+    },
+    "recent": {
+      "title": "Recent transactions",
+      "badge": "Latest {{count}}",
+      "empty": "No transactions yet. Add your first one!"
+    },
+    "tabs": {
+      "budgets": "Budgets",
+      "transactions": "Transactions",
+      "statistics": "Statistics"
+    }
+  },
+  "filters": {
+    "dateLabel": "Period",
+    "datePlaceholder": "Select period",
+    "typeLabel": "Type",
+    "typePlaceholder": "All",
+    "typeOptions": {
+      "INCOME": "Income",
+      "EXPENSE": "Expense"
+    },
+    "categoryLabel": "Category",
+    "categoryPlaceholder": "Select categories",
+    "searchLabel": "Search",
+    "searchPlaceholder": "Search memo",
+    "reset": "Reset",
+    "categoryFormat": "{{name}} ({{type}})"
+  },
+  "transactionForm": {
+    "labels": {
+      "amount": "Amount",
+      "category": "Category",
+      "date": "Date",
+      "memo": "Memo"
+    },
+    "placeholders": {
+      "amount": "Enter amount",
+      "category": "Select a category",
+      "date": "Select a date",
+      "memo": "Add a note (optional)"
+    },
+    "types": {
+      "INCOME": "Income",
+      "EXPENSE": "Expense"
+    },
+    "validation": {
+      "amount": "Please enter an amount.",
+      "category": "Please select a category."
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "submit": "Save"
+    }
+  },
+  "transactionList": {
+    "emptyTitle": "No transactions yet",
+    "emptyDescription": "Add your first transaction to get started.",
+    "headers": {
+      "date": "Date",
+      "type": "Type",
+      "category": "Category",
+      "amount": "Amount",
+      "memo": "Memo",
+      "actions": "Actions"
+    }
+  },
+  "transactionsTab": {
+    "title": "Transactions",
+    "buttons": {
+      "manageCategories": "Manage categories",
+      "addTransaction": "Add transaction"
+    },
+    "modal": {
+      "createTitle": "Add transaction",
+      "editTitle": "Edit transaction"
+    },
+    "confirmDelete": {
+      "title": "Delete transaction",
+      "message": "Are you sure you want to delete this transaction?",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    },
+    "notifications": {
+      "successTitle": "Success",
+      "errorTitle": "Error",
+      "createSuccess": "Transaction has been added.",
+      "createError": "Failed to add the transaction.",
+      "updateSuccess": "Transaction has been updated.",
+      "updateError": "Failed to update the transaction.",
+      "deleteSuccess": "Transaction has been deleted.",
+      "deleteError": "Failed to delete the transaction."
+    }
+  },
+  "categoryManager": {
+    "modalTitle": "Manage categories",
+    "form": {
+      "createTitle": "Add new category",
+      "editTitle": "Edit category",
+      "fields": {
+        "name": {
+          "label": "Name",
+          "placeholder": "Category name"
+        },
+        "type": {
+          "label": "Type"
+        },
+        "color": "Color"
+      },
+      "actions": {
+        "create": "Add",
+        "update": "Update"
+      }
+    },
+    "validation": {
+      "nameRequired": "Please enter a category name."
+    },
+    "lists": {
+      "income": "Income categories",
+      "expense": "Expense categories",
+      "defaultTag": "(Default)"
+    },
+    "notifications": {
+      "successTitle": "Success",
+      "errorTitle": "Error",
+      "createSuccess": "Category has been added.",
+      "createError": "Failed to add the category.",
+      "updateSuccess": "Category has been updated.",
+      "updateError": "Failed to update the category.",
+      "deleteSuccess": "Category has been deleted.",
+      "deleteError": "Failed to delete the category.",
+      "defaultDeleteTitle": "Notice",
+      "defaultDeleteMessage": "Default categories cannot be deleted."
+    },
+    "confirmDelete": {
+      "title": "Delete category",
+      "message": "Are you sure you want to delete \"{{name}}\"?",
+      "helper": "If transactions use this category, you'll need to reassign them.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    }
+  },
+  "budgetsTab": {
+    "title": "Monthly budgets",
+    "monthPlaceholder": "Select month",
+    "buttons": {
+      "add": "Add budget"
+    },
+    "summary": {
+      "title": "Total budget",
+      "empty": "No budgets configured",
+      "remainingLabel": "Remaining",
+      "usage": "{{percentage}}% used"
+    },
+    "cards": {
+      "all": "All",
+      "spent": "Spent",
+      "budget": "Budget",
+      "remaining": "Remaining budget",
+      "usage": "{{percentage}}% used",
+      "exceeded": " (Exceeded)"
+    },
+    "categoryOptions": {
+      "all": "Overall budget (no category)"
+    },
+    "validation": {
+      "amountRequired": "Please enter a budget amount."
+    },
+    "modal": {
+      "title": "Add budget",
+      "fields": {
+        "category": {
+          "label": "Category",
+          "placeholder": "Select a category"
+        },
+        "amount": {
+          "label": "Budget",
+          "placeholder": "Enter an amount"
+        }
+      }
+    },
+    "confirmDelete": {
+      "title": "Delete budget",
+      "message": "Are you sure you want to delete this budget?",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    },
+    "notifications": {
+      "successTitle": "Success",
+      "errorTitle": "Error",
+      "createSuccess": "Budget has been created.",
+      "createError": "Failed to create the budget.",
+      "deleteSuccess": "Budget has been deleted.",
+      "deleteError": "Failed to delete the budget."
+    }
+  },
+  "statisticsTab": {
+    "title": "Monthly statistics",
+    "monthPicker": {
+      "label": "Month",
+      "placeholder": "Select month"
+    },
+    "subtitle": "{{range}} · Payday {{payday}}",
+    "summary": {
+      "income": "Total income",
+      "expense": "Total expense",
+      "net": "Net income",
+      "savingsRate": "Savings rate"
+    },
+    "expenseByCategory": {
+      "title": "Expense by category",
+      "empty": "No expenses found for this period."
+    },
+    "incomeByCategory": {
+      "title": "Income by category"
+    },
+    "transactionCount": "{{count}} transactions"
+  }
+}

@@ -5,6 +5,7 @@ import {
   type FileWithPath,
 } from "@mantine/dropzone";
 import { IconUpload, IconPhoto, IconX } from "@tabler/icons-react";
+import { useTranslation } from "react-i18next";
 
 interface ImageUploadZoneProps {
   onDrop: (files: FileWithPath[]) => void;
@@ -12,6 +13,7 @@ interface ImageUploadZoneProps {
 }
 
 export const ImageUploadZone = ({ onDrop, disabled }: ImageUploadZoneProps) => {
+  const { t } = useTranslation("widgets");
   return (
     <Dropzone
       onDrop={onDrop}
@@ -59,10 +61,10 @@ export const ImageUploadZone = ({ onDrop, disabled }: ImageUploadZoneProps) => {
 
         <div>
           <Text size="xl" inline>
-            이미지를 드래그하거나 클릭하여 업로드
+            {t("imageToPdf.upload.headline")}
           </Text>
           <Text size="sm" c="dimmed" inline mt={7}>
-            PNG, JPG, JPEG, WEBP 파일 지원 (최대 10MB)
+            {t("imageToPdf.upload.subtitle")}
           </Text>
         </div>
       </Group>

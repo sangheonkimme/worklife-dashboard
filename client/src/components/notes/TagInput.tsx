@@ -1,4 +1,5 @@
 import { MultiSelect } from '@mantine/core';
+import { useTranslation } from 'react-i18next';
 import { useTags } from '@/hooks/useTags';
 
 interface TagInputProps {
@@ -9,6 +10,7 @@ interface TagInputProps {
 
 export function TagInput({ value, onChange, placeholder }: TagInputProps) {
   const { data: tags } = useTags();
+  const { t } = useTranslation('notes');
 
   const tagOptions =
     tags?.map((tag) => ({
@@ -21,10 +23,10 @@ export function TagInput({ value, onChange, placeholder }: TagInputProps) {
       value={value}
       onChange={onChange}
       data={tagOptions}
-      placeholder={placeholder || '태그 선택'}
+      placeholder={placeholder || t('tagInput.placeholder')}
       searchable
       maxDropdownHeight={200}
-      label="태그"
+      label={t('tagInput.label')}
     />
   );
 }

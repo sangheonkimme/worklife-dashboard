@@ -11,6 +11,7 @@ import {
   Transition,
 } from '@mantine/core';
 import { IconPlus, IconX, IconCheck } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 import { useCreateNote } from '@/hooks/useNotes';
 
 export function QuickNote() {
@@ -19,13 +20,14 @@ export function QuickNote() {
   const [title, setTitle] = useState('');
 
   const createNote = useCreateNote();
+  const { t } = useTranslation('notes');
 
   const handleSave = () => {
     if (!content.trim()) return;
 
     createNote.mutate(
       {
-        title: title.trim() || '빠른 메모',
+        title: title.trim() || t('quickNote.defaultTitle'),
         content: content.trim(),
         type: 'TEXT',
       },
@@ -69,7 +71,7 @@ export function QuickNote() {
               color="blue"
               onClick={() => setOpened(true)}
               style={styles}
-              aria-label="빠른 메모 열기"
+              aria-label={t('quickNote.openAria')}
             >
               <IconPlus size={24} />
             </ActionIcon>
@@ -92,14 +94,14 @@ export function QuickNote() {
                 {/* Header */}
                 <Group justify="space-between">
                   <Text fw={600} size="sm">
-                    빠른 메모
+                    {t('quickNote.title')}
                   </Text>
                   <ActionIcon
                     variant="subtle"
                     color="gray"
                     size="sm"
                     onClick={handleCancel}
-                    aria-label="닫기"
+                    aria-label={t('quickNote.closeAria')}
                   >
                     <IconX size={16} />
                   </ActionIcon>
@@ -107,7 +109,7 @@ export function QuickNote() {
 
                 {/* Title Input */}
                 <Textarea
-                  placeholder="제목 (선택사항)"
+                  placeholder={t('quickNote.titlePlaceholder')}
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   onKeyDown={handleKeyDown}
@@ -119,7 +121,7 @@ export function QuickNote() {
 
                 {/* Content Input */}
                 <Textarea
-                  placeholder="메모 내용을 입력하세요..."
+                  placeholder={t('quickNote.contentPlaceholder')}
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   onKeyDown={handleKeyDown}
@@ -133,7 +135,7 @@ export function QuickNote() {
                 {/* Actions */}
                 <Group justify="space-between">
                   <Text size="xs" c="dimmed">
-                    Ctrl+Enter로 저장
+                    {t('quickNote.saveHint')}
                   </Text>
                   <Group gap="xs">
                     <Button
@@ -142,7 +144,7 @@ export function QuickNote() {
                       size="xs"
                       onClick={handleCancel}
                     >
-                      취소
+                      {t('actions.cancel')}
                     </Button>
                     <Button
                       variant="filled"
@@ -152,7 +154,7 @@ export function QuickNote() {
                       loading={createNote.isPending}
                       leftSection={<IconCheck size={14} />}
                     >
-                      저장
+                      {t('actions.save')}
                     </Button>
                   </Group>
                 </Group>
@@ -160,7 +162,7 @@ export function QuickNote() {
                 {/* Character Count */}
                 {content && (
                   <Text size="xs" c="dimmed" ta="right">
-                    {content.length} 자
+                    {t('quickNote.characterCount', { count: content.length })}
                   </Text>
                 )}
               </Stack>

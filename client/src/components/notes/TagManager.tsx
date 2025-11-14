@@ -2,6 +2,7 @@ import { Modal, TextInput, ColorInput, Button, Group, Stack } from '@mantine/cor
 import { useForm } from '@mantine/form';
 import { IconTag } from '@tabler/icons-react';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Tag } from '@/types/tag';
 import { useCreateTag, useUpdateTag } from '@/hooks/useTags';
 
@@ -14,6 +15,7 @@ interface TagManagerProps {
 export function TagManager({ opened, onClose, tag }: TagManagerProps) {
   const createTag = useCreateTag();
   const updateTag = useUpdateTag();
+  const { t } = useTranslation('notes');
 
   const form = useForm({
     initialValues: {
@@ -21,7 +23,10 @@ export function TagManager({ opened, onClose, tag }: TagManagerProps) {
       color: '#228be6',
     },
     validate: {
-      name: (value) => (value.trim().length === 0 ? '태그 이름을 입력하세요' : null),
+      name: (value) =>
+        value.trim().length === 0
+          ? t('tagManager.validation.nameRequired')
+          : null,
     },
   });
 
@@ -55,34 +60,39 @@ export function TagManager({ opened, onClose, tag }: TagManagerProps) {
       form.reset();
       onClose();
     } catch (error) {
-      console.error('태그 저장 실패:', error);
+      console.error('Failed to save tag:', error);
     }
   };
 
   return (
-    <Modal opened={opened} onClose={onClose} title={tag ? '태그 수정' : '새 태그'} size="md">
+    <Modal
+      opened={opened}
+      onClose={onClose}
+      title={t(tag ? 'tagManager.title.edit' : 'tagManager.title.create')}
+      size="md"
+    >
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack gap="md">
           <TextInput
-            label="태그 이름"
-            placeholder="태그 이름을 입력하세요"
+            label={t('tagManager.fields.name.label')}
+            placeholder={t('tagManager.fields.name.placeholder')}
             required
             leftSection={<IconTag size={16} />}
             {...form.getInputProps('name')}
           />
 
           <ColorInput
-            label="색상"
-            placeholder="색상 선택"
+            label={t('tagManager.fields.color.label')}
+            placeholder={t('tagManager.fields.color.placeholder')}
             {...form.getInputProps('color')}
           />
 
           <Group justify="flex-end" mt="md">
             <Button variant="subtle" onClick={onClose}>
-              취소
+              {t('actions.cancel')}
             </Button>
             <Button type="submit" loading={createTag.isPending || updateTag.isPending}>
-              {tag ? '수정' : '생성'}
+              {t(tag ? 'actions.update' : 'actions.create')}
             </Button>
           </Group>
         </Stack>

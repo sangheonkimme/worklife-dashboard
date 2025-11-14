@@ -50,6 +50,7 @@ import {
   formatCycleLabel,
 } from "@/utils/paydayCycle";
 import { formatCurrency, formatDate } from "@/utils/format";
+import { useTranslation } from "react-i18next";
 
 const chartColors = [
   "#FF6B6B",
@@ -67,6 +68,7 @@ const calculateDiffPercent = (current: number, previous?: number | null) => {
 };
 
 export default function TransactionsPage() {
+  const { t } = useTranslation(["finance", "common"]);
   const [activeTab, setActiveTab] = useState<string | null>("transactions");
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
   const [scroll] = useWindowScroll();
@@ -153,7 +155,8 @@ export default function TransactionsPage() {
     statistics?.byCategory.filter((item) => item.type === "EXPENSE") ?? [];
 
   const pieData = expenseCategories.map((item, index) => ({
-    name: item.category?.name || "미분류",
+    name:
+      item.category?.name || t("common:labels.unclassified"),
     value: item.total,
     color: item.category?.color || chartColors[index % chartColors.length],
   }));
@@ -162,7 +165,7 @@ export default function TransactionsPage() {
 
   const statsCards = [
     {
-      title: "이번 달 지출",
+      title: t("dashboard.stats.expenses"),
       value: summary?.expense ?? 0,
       icon: IconTrendingDown,
       color: "red",
@@ -172,7 +175,7 @@ export default function TransactionsPage() {
       ),
     },
     {
-      title: "총 수입",
+      title: t("dashboard.stats.income"),
       value: summary?.income ?? 0,
       icon: IconTrendingUp,
       color: "teal",
@@ -182,7 +185,7 @@ export default function TransactionsPage() {
       ),
     },
     {
-      title: "순이익",
+      title: t("dashboard.stats.net"),
       value: summary?.net ?? 0,
       icon: IconWallet,
       color: (summary?.net ?? 0) >= 0 ? "teal" : "red",
@@ -192,12 +195,15 @@ export default function TransactionsPage() {
       ),
     },
     {
-      title: "평균 일일 지출",
+      title: t("dashboard.stats.daily"),
       value: averageDailyExpense,
       icon: IconCalendarStats,
       color: "orange",
       diff: calculateDiffPercent(averageDailyExpense, prevAverageDailyExpense),
-      helper: `${cycleDays}일 기준 · 월급일 ${payday}일`,
+      helper: t("dashboard.stats.helper", {
+        days: cycleDays,
+        day: payday,
+      }),
     },
   ];
 
@@ -206,26 +212,29 @@ export default function TransactionsPage() {
       <Stack gap="xl">
         <Group justify="space-between" align="flex-start">
           <div>
-            <Title order={2}>가계부 대시보드</Title>
+            <Title order={2}>{t("dashboard.title")}</Title>
             <Text c="dimmed" size="sm">
-              예산, 거래내역, 통계를 한 화면에서 확인하세요.
+              {t("dashboard.subtitle")}
             </Text>
             <Text c="dimmed" size="sm">
-              {cycleLabel} · 월급일 {payday}일 기준
+              {t("dashboard.periodSummary", {
+                range: cycleLabel,
+                day: payday,
+              })}
             </Text>
           </div>
           <Group gap="sm">
             <MonthPickerInput
-              label="조회 월"
+              label={t("dashboard.filters.monthLabel")}
               value={selectedMonth}
               onChange={(value) => value && setSelectedMonth(value)}
-              placeholder="월 선택"
+              placeholder={t("dashboard.filters.monthPlaceholder")}
               w={200}
               size="md"
             />
             <Select
-              label="월급일"
-              placeholder="선택"
+              label={t("dashboard.filters.paydayLabel")}
+              placeholder={t("dashboard.filters.paydayPlaceholder")}
               value={payday.toString()}
               data={paydayOptions}
               onChange={(value) => value && setPayday(Number(value))}
@@ -279,11 +288,11 @@ export default function TransactionsPage() {
                           {diffValue!.toFixed(1)}%
                           <Text span c="dimmed" fw={400} size="sm">
                             {" "}
-                            지난 달 대비
+                            {t("dashboard.stats.diffLabel")}
                           </Text>
                         </>
                       ) : (
-                        "지난 달 데이터 없음"
+                        t("dashboard.stats.noData")
                       )}
                     </Text>
                   </Card>
@@ -296,10 +305,13 @@ export default function TransactionsPage() {
             <Group justify="space-between" mb="md">
               <div>
                 <Text size="lg" fw={600}>
-                  카테고리별 지출
+                  {t("dashboard.categories.title")}
                 </Text>
                 <Text size="sm" c="dimmed">
-                  {cycleLabel} 기준 지출 {formatCurrency(summary?.expense ?? 0)}
+                  {t("dashboard.categories.subtitle", {
+                    range: cycleLabel,
+                    amount: formatCurrency(summary?.expense ?? 0),
+                  })}
                 </Text>
               </div>
             </Group>
@@ -308,7 +320,7 @@ export default function TransactionsPage() {
               <Skeleton height={320} radius="md" />
             ) : pieData.length === 0 ? (
               <Text c="dimmed" ta="center" py="xl">
-                선택한 기간에 지출 데이터가 없습니다
+                {t("dashboard.categories.empty")}
               </Text>
             ) : (
               <ResponsiveContainer width="100%" height={320}>
@@ -338,10 +350,12 @@ export default function TransactionsPage() {
           <Card withBorder radius="md" padding="lg">
             <Group justify="space-between" mb="md">
               <Text size="lg" fw={600}>
-                최근 거래 내역
+                {t("dashboard.recent.title")}
               </Text>
               <Badge color="gray" variant="light">
-                최근 {Math.min(recentTransactions.length, 8)}건
+                {t("dashboard.recent.badge", {
+                  count: Math.min(recentTransactions.length, 8),
+                })}
               </Badge>
             </Group>
 
@@ -353,7 +367,7 @@ export default function TransactionsPage() {
               </Stack>
             ) : recentTransactions.length === 0 ? (
               <Text c="dimmed" ta="center" py="xl">
-                거래 내역이 없습니다. 첫 거래를 추가해보세요!
+                {t("dashboard.recent.empty")}
               </Text>
             ) : (
               <ScrollArea h={320} type="never">
@@ -361,7 +375,9 @@ export default function TransactionsPage() {
                   {recentTransactions.map((transaction) => {
                     const isIncome = transaction.type === "INCOME";
                     const categoryColor = transaction.category?.color || "gray";
-                    const categoryName = transaction.category?.name || "미분류";
+                    const categoryName =
+                      transaction.category?.name ||
+                      t("common:labels.unclassified");
                     const dateLabel = formatDate(transaction.date);
                     const amountLabel = `${
                       isIncome ? "+" : "-"
@@ -416,19 +432,19 @@ export default function TransactionsPage() {
           <Tabs value={activeTab} onChange={setActiveTab}>
             <Tabs.List>
               <Tabs.Tab value="budgets" leftSection={<IconWallet size={16} />}>
-                예산
+                {t("dashboard.tabs.budgets")}
               </Tabs.Tab>
               <Tabs.Tab
                 value="transactions"
                 leftSection={<IconReceipt size={16} />}
               >
-                거래내역
+                {t("dashboard.tabs.transactions")}
               </Tabs.Tab>
               <Tabs.Tab
                 value="statistics"
                 leftSection={<IconChartBar size={16} />}
               >
-                통계
+                {t("dashboard.tabs.statistics")}
               </Tabs.Tab>
             </Tabs.List>
 

@@ -2,6 +2,7 @@ import { Paper, Group, Button, TextInput, MultiSelect, Select } from '@mantine/c
 import { DatePickerInput } from '@mantine/dates';
 import { IconSearch, IconFilterOff } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { categoryApi } from '@/services/api/transactionApi';
 import type { TransactionFilters, CategoryType } from '@/types/transaction';
 
@@ -12,7 +13,8 @@ interface TransactionFilterProps {
 }
 
 export default function TransactionFilter({ filters, onFiltersChange, onReset }: TransactionFilterProps) {
-  // 카테고리 목록 조회
+  const { t } = useTranslation('finance');
+  // Fetch category options
   const { data: categories = [] } = useQuery({
     queryKey: ['categories'],
     queryFn: () => categoryApi.getCategories(undefined, true),
@@ -20,7 +22,10 @@ export default function TransactionFilter({ filters, onFiltersChange, onReset }:
 
   const categoryOptions = categories.map((cat) => ({
     value: cat.id,
-    label: `${cat.name} (${cat.type === 'INCOME' ? '수입' : '지출'})`,
+    label: t('filters.categoryFormat', {
+      name: cat.name,
+      type: t(`filters.typeOptions.${cat.type}`),
+    }),
   }));
 
   const handleDateRangeChange = (dates: [Date | null, Date | null]) => {
@@ -37,8 +42,8 @@ export default function TransactionFilter({ filters, onFiltersChange, onReset }:
       <Group gap="md" align="flex-end">
         <DatePickerInput
           type="range"
-          label="기간"
-          placeholder="기간을 선택하세요"
+          label={t('filters.dateLabel')}
+          placeholder={t('filters.datePlaceholder')}
           value={[
             filters.startDate ? new Date(filters.startDate) : null,
             filters.endDate ? new Date(filters.endDate) : null,
@@ -48,12 +53,12 @@ export default function TransactionFilter({ filters, onFiltersChange, onReset }:
         />
 
         <Select
-          label="유형"
-          placeholder="전체"
+          label={t('filters.typeLabel')}
+          placeholder={t('filters.typePlaceholder')}
           clearable
           data={[
-            { value: 'INCOME', label: '수입' },
-            { value: 'EXPENSE', label: '지출' },
+            { value: 'INCOME', label: t('filters.typeOptions.INCOME') },
+            { value: 'EXPENSE', label: t('filters.typeOptions.EXPENSE') },
           ]}
           value={filters.type}
           onChange={(value) =>
@@ -66,8 +71,8 @@ export default function TransactionFilter({ filters, onFiltersChange, onReset }:
         />
 
         <MultiSelect
-          label="카테고리"
-          placeholder="카테고리 선택"
+          label={t('filters.categoryLabel')}
+          placeholder={t('filters.categoryPlaceholder')}
           data={categoryOptions}
           value={filters.categoryId ? [filters.categoryId] : []}
           onChange={(values) =>
@@ -81,8 +86,8 @@ export default function TransactionFilter({ filters, onFiltersChange, onReset }:
         />
 
         <TextInput
-          label="검색"
-          placeholder="메모에서 검색"
+          label={t('filters.searchLabel')}
+          placeholder={t('filters.searchPlaceholder')}
           leftSection={<IconSearch size={16} />}
           value={filters.search || ''}
           onChange={(e) =>
@@ -99,7 +104,7 @@ export default function TransactionFilter({ filters, onFiltersChange, onReset }:
           leftSection={<IconFilterOff size={16} />}
           onClick={onReset}
         >
-          초기화
+          {t('filters.reset')}
         </Button>
       </Group>
     </Paper>

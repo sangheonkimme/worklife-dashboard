@@ -6,6 +6,7 @@ import {
   IconX,
   IconMaximize,
 } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 import { usePomodoroStore } from '@/store/usePomodoroStore';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -22,6 +23,7 @@ export function PomodoroWidget() {
     stopTimer,
     setWidgetVisible,
   } = usePomodoroStore();
+  const { t } = useTranslation('widgets');
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -64,11 +66,11 @@ export function PomodoroWidget() {
   const getSessionLabel = () => {
     switch (sessionType) {
       case 'FOCUS':
-        return '집중';
+        return t('pomodoro.sessionLabels.focus');
       case 'SHORT_BREAK':
-        return '짧은 휴식';
+        return t('pomodoro.sessionLabels.shortBreak');
       case 'LONG_BREAK':
-        return '긴 휴식';
+        return t('pomodoro.sessionLabels.longBreak');
     }
   };
 
@@ -117,7 +119,7 @@ export function PomodoroWidget() {
               color="gray"
               size="sm"
               onClick={handleMaximize}
-              aria-label="대시보드로 이동"
+              aria-label={t('pomodoro.aria.goToDashboard')}
             >
               <IconMaximize size={16} />
             </ActionIcon>
@@ -126,7 +128,7 @@ export function PomodoroWidget() {
               color="gray"
               size="sm"
               onClick={() => setWidgetVisible(false)}
-              aria-label="위젯 닫기"
+              aria-label={t('pomodoro.aria.closeWidget')}
             >
               <IconX size={16} />
             </ActionIcon>
@@ -149,7 +151,7 @@ export function PomodoroWidget() {
               color={color}
               size="lg"
               onClick={startTimer}
-              aria-label="시작"
+              aria-label={t('pomodoro.actions.start')}
             >
               <IconPlayerPlay size={18} />
             </ActionIcon>
@@ -162,7 +164,7 @@ export function PomodoroWidget() {
                 color="yellow"
                 size="lg"
                 onClick={pauseTimer}
-                aria-label="일시정지"
+                aria-label={t('pomodoro.actions.pause')}
               >
                 <IconPlayerPause size={18} />
               </ActionIcon>
@@ -171,7 +173,7 @@ export function PomodoroWidget() {
                 color="gray"
                 size="lg"
                 onClick={stopTimer}
-                aria-label="중지"
+                aria-label={t('pomodoro.actions.stop')}
               >
                 <IconPlayerStop size={18} />
               </ActionIcon>
@@ -185,7 +187,7 @@ export function PomodoroWidget() {
                 color={color}
                 size="lg"
                 onClick={resumeTimer}
-                aria-label="재개"
+                aria-label={t('pomodoro.actions.resume')}
               >
                 <IconPlayerPlay size={18} />
               </ActionIcon>
@@ -194,7 +196,7 @@ export function PomodoroWidget() {
                 color="gray"
                 size="lg"
                 onClick={stopTimer}
-                aria-label="중지"
+                aria-label={t('pomodoro.actions.stop')}
               >
                 <IconPlayerStop size={18} />
               </ActionIcon>

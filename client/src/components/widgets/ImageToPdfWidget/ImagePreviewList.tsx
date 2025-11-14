@@ -1,5 +1,6 @@
 import { SimpleGrid, Text, Stack, Button, Group } from "@mantine/core";
 import { IconTrash } from "@tabler/icons-react";
+import { useTranslation } from "react-i18next";
 import type { ImageFile } from "@/types/widget";
 import { ImagePreviewItem } from "./ImagePreviewItem";
 
@@ -14,11 +15,12 @@ export const ImagePreviewList = ({
   onRemove,
   onClearAll,
 }: ImagePreviewListProps) => {
+  const { t } = useTranslation("widgets");
   if (images.length === 0) {
     return (
       <Stack align="center" justify="center" mih={200} gap="md">
         <Text size="sm" c="dimmed">
-          업로드된 이미지가 없습니다
+          {t("imageToPdf.preview.empty")}
         </Text>
       </Stack>
     );
@@ -28,7 +30,7 @@ export const ImagePreviewList = ({
     <Stack gap="md">
       <Group justify="space-between">
         <Text size="sm" fw={500}>
-          업로드된 이미지 ({images.length}개)
+          {t("imageToPdf.preview.title", { count: images.length })}
         </Text>
         <Button
           variant="subtle"
@@ -37,7 +39,7 @@ export const ImagePreviewList = ({
           leftSection={<IconTrash size={14} />}
           onClick={onClearAll}
         >
-          전체 삭제
+          {t("imageToPdf.preview.clearAll")}
         </Button>
       </Group>
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Button,
   Text,
@@ -11,6 +11,7 @@ import {
   RingProgress,
   Grid,
 } from "@mantine/core";
+import { useTranslation } from "react-i18next";
 import { SalaryCalculatorCard } from "@/components/salary/SalaryCalculatorCard";
 import { StickyNotes } from "@/components/dashboard/StickyNotes";
 import { PomodoroTimerCard } from "@/components/dashboard/PomodoroTimerCard";
@@ -19,43 +20,43 @@ import { DashboardChecklist } from "@/components/dashboard/DashboardChecklist";
 
 export const DashboardPage = () => {
   const [count, setCount] = useState(0);
+  const { t } = useTranslation("dashboard");
 
-  /* const stats = [
-    {
-      title: "총 사용자",
-      value: "13,456",
-      diff: 34,
-      icon: IconUsers,
-      color: "blue",
-    },
-    {
-      title: "주문",
-      value: "4,145",
-      diff: 13,
-      icon: IconShoppingCart,
-      color: "teal",
-    },
-    {
-      title: "매출",
-      value: "₩1,234,567",
-      diff: -13,
-      icon: IconCoin,
-      color: "yellow",
-    },
-    {
-      title: "활성 세션",
-      value: "745",
-      diff: 18,
-      icon: IconReceipt,
-      color: "grape",
-    },
-  ]; */
+  const progressSections = useMemo(
+    () => [
+      {
+        value: 75,
+        color: "blue",
+        tooltip: t("overview.progressCard.tooltip", {
+          label: t("overview.progressCard.frontend"),
+          value: 75,
+        }),
+      },
+        {
+        value: 60,
+        color: "teal",
+        tooltip: t("overview.progressCard.tooltip", {
+          label: t("overview.progressCard.backend"),
+          value: 60,
+        }),
+      },
+      {
+        value: 40,
+        color: "yellow",
+        tooltip: t("overview.progressCard.tooltip", {
+          label: t("overview.progressCard.testing"),
+          value: 40,
+        }),
+      },
+    ],
+    [t]
+  );
 
   return (
     <Stack gap="lg">
       <Stack gap="sm">
         <Text fw={600} size="lg">
-          빠른 메모 & 체크리스트
+          {t("overview.quickSectionTitle")}
         </Text>
         <Grid gutter="lg" align="stretch">
           <Grid.Col span={{ base: 12, lg: 9 }}>
@@ -126,7 +127,7 @@ export const DashboardPage = () => {
       {/* 주요 기능 카드 */}
       <div>
         <Text fw={600} size="lg" mb="md">
-          주요 기능
+          {t("overview.featureSectionTitle")}
         </Text>
         <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
           <SalaryCalculatorCard />
@@ -140,16 +141,15 @@ export const DashboardPage = () => {
           <Stack gap="md">
             <Group justify="space-between">
               <Text size="lg" fw={500}>
-                한글 폰트 테스트 (Pretendard)
+                {t("overview.demoCard.title")}
               </Text>
               <Badge color="blue" variant="light">
-                다크 테마
+                {t("overview.demoCard.badge")}
               </Badge>
             </Group>
 
             <Text c="dimmed">
-              이것은 한글 텍스트입니다. Pretendard 폰트가 올바르게 적용되었는지
-              확인하세요.
+              {t("overview.demoCard.body")}
             </Text>
 
             <Button
@@ -157,22 +157,22 @@ export const DashboardPage = () => {
               fullWidth
               variant="filled"
             >
-              클릭 횟수: {count}
+              {t("overview.demoCard.button", { count })}
             </Button>
 
             <Text size="sm" c="dimmed" ta="center">
-              버튼을 클릭하여 카운터를 증가시키세요
+              {t("overview.demoCard.hint")}
             </Text>
           </Stack>
         </Card>
 
         <Card shadow="sm" padding="lg" radius="md" withBorder>
           <Stack gap="md">
-            <Text fw={500}>프로젝트 진행 상황</Text>
+            <Text fw={500}>{t("overview.progressCard.title")}</Text>
 
             <div>
               <Group justify="space-between" mb={5}>
-                <Text size="sm">프론트엔드 개발</Text>
+                <Text size="sm">{t("overview.progressCard.frontend")}</Text>
                 <Text size="sm" c="dimmed">
                   75%
                 </Text>
@@ -182,7 +182,7 @@ export const DashboardPage = () => {
 
             <div>
               <Group justify="space-between" mb={5}>
-                <Text size="sm">백엔드 API</Text>
+                <Text size="sm">{t("overview.progressCard.backend")}</Text>
                 <Text size="sm" c="dimmed">
                   60%
                 </Text>
@@ -192,7 +192,7 @@ export const DashboardPage = () => {
 
             <div>
               <Group justify="space-between" mb={5}>
-                <Text size="sm">테스트 작성</Text>
+                <Text size="sm">{t("overview.progressCard.testing")}</Text>
                 <Text size="sm" c="dimmed">
                   40%
                 </Text>
@@ -204,14 +204,10 @@ export const DashboardPage = () => {
               <RingProgress
                 size={120}
                 thickness={12}
-                sections={[
-                  { value: 75, color: "blue", tooltip: "프론트엔드 - 75%" },
-                  { value: 60, color: "teal", tooltip: "백엔드 - 60%" },
-                  { value: 40, color: "yellow", tooltip: "테스트 - 40%" },
-                ]}
+                sections={progressSections}
                 label={
                   <Text ta="center" size="sm" fw={700}>
-                    전체 58%
+                    {t("overview.progressCard.overall", { value: 58 })}
                   </Text>
                 }
               />
@@ -222,13 +218,21 @@ export const DashboardPage = () => {
 
       <Card shadow="sm" padding="lg" radius="md" withBorder>
         <Stack gap="xs">
-          <Text fw={500}>기술 스택</Text>
+          <Text fw={500}>{t("overview.techStack.title")}</Text>
           <Group gap="xs">
-            <Badge color="cyan">React</Badge>
-            <Badge color="violet">TypeScript</Badge>
-            <Badge color="blue">Vite</Badge>
-            <Badge color="indigo">Mantine UI</Badge>
-            <Badge color="pink">Pretendard Font</Badge>
+            <Badge color="cyan">
+              {t("overview.techStack.badges.react")}
+            </Badge>
+            <Badge color="violet">
+              {t("overview.techStack.badges.typescript")}
+            </Badge>
+            <Badge color="blue">{t("overview.techStack.badges.vite")}</Badge>
+            <Badge color="indigo">
+              {t("overview.techStack.badges.mantine")}
+            </Badge>
+            <Badge color="pink">
+              {t("overview.techStack.badges.font")}
+            </Badge>
           </Group>
         </Stack>
       </Card>

@@ -1,0 +1,8 @@
+{
+  "name": "worklife-dashboard",
+  "private": true,
+  "scripts": {
+    "i18n:extract": "node scripts/i18n/extract.mjs",
+    "i18n:lint": "node scripts/i18n/lint.mjs"
+  }
+}

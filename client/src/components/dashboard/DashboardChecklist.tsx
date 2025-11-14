@@ -24,6 +24,7 @@ import {
   IconPlus,
   IconTrash,
 } from "@tabler/icons-react";
+import { useTranslation } from "react-i18next";
 import { dashboardChecklistApi } from "@/services/api/dashboardChecklistApi";
 import type {
   DashboardChecklistItem,
@@ -43,6 +44,7 @@ function ChecklistItemRow({
   onUpdate,
   onDelete,
 }: ChecklistItemRowProps) {
+  const { t } = useTranslation("dashboard");
   const [value, setValue] = useState(item.content);
 
   useEffect(() => {
@@ -74,7 +76,7 @@ function ChecklistItemRow({
       }}
     >
       <Checkbox
-        aria-label="체크리스트 완료 표시"
+        aria-label={t("checklist.checkboxAria")}
         checked={item.isCompleted}
         onChange={(event) => onToggle(item.id, event.currentTarget.checked)}
         radius="sm"
@@ -98,13 +100,13 @@ function ChecklistItemRow({
             color: item.isCompleted ? "var(--mantine-color-dimmed)" : "inherit",
           },
         }}
-        placeholder="할 일을 입력하세요"
+        placeholder={t("checklist.inputPlaceholder")}
         readOnly={item.isCompleted}
       />
       <ActionIcon
         variant="subtle"
         color="red"
-        aria-label="체크리스트 항목 삭제"
+        aria-label={t("checklist.deleteAria")}
         onClick={() => onDelete(item.id)}
       >
         <IconTrash size={16} />
@@ -117,6 +119,7 @@ const CARD_MIN_HEIGHT = 360;
 
 export function DashboardChecklist() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation(["dashboard", "system"]);
   const [inputValue, setInputValue] = useState("");
   const [showCompleted, setShowCompleted] = useState(false);
   const queryKey = ["dashboardChecklist"] as const;
@@ -181,10 +184,10 @@ export function DashboardChecklist() {
         queryClient.setQueryData(queryKey, context.previousData);
       }
       notifications.show({
-        title: "추가 실패",
+        title: t("dashboard:checklist.notifications.createErrorTitle"),
         message:
           error.response?.data?.message ||
-          "체크리스트 항목을 추가할 수 없습니다",
+          t("dashboard:checklist.notifications.createErrorMessage"),
         color: "red",
       });
     },
@@ -224,8 +227,8 @@ export function DashboardChecklist() {
         queryClient.setQueryData(queryKey, context.previousData);
       }
       notifications.show({
-        title: "업데이트 실패",
-        message: "변경 사항을 저장하지 못했습니다",
+        title: t("dashboard:checklist.notifications.updateErrorTitle"),
+        message: t("dashboard:checklist.notifications.updateErrorMessage"),
         color: "red",
       });
     },
@@ -286,8 +289,8 @@ export function DashboardChecklist() {
         queryClient.setQueryData(queryKey, context.previousData);
       }
       notifications.show({
-        title: "상태 변경 실패",
-        message: "체크 상태를 변경할 수 없습니다",
+        title: t("dashboard:checklist.notifications.toggleErrorTitle"),
+        message: t("dashboard:checklist.notifications.toggleErrorMessage"),
         color: "red",
       });
     },
@@ -319,8 +322,8 @@ export function DashboardChecklist() {
         queryClient.setQueryData(queryKey, context.previousData);
       }
       notifications.show({
-        title: "삭제 실패",
-        message: "항목을 삭제할 수 없습니다",
+        title: t("dashboard:checklist.notifications.deleteErrorTitle"),
+        message: t("dashboard:checklist.notifications.deleteErrorMessage"),
         color: "red",
       });
     },
@@ -354,8 +357,8 @@ export function DashboardChecklist() {
         queryClient.setQueryData(queryKey, context.previousData);
       }
       notifications.show({
-        title: "삭제 실패",
-        message: "완료 항목을 삭제할 수 없습니다",
+        title: t("dashboard:checklist.notifications.clearErrorTitle"),
+        message: t("dashboard:checklist.notifications.clearErrorMessage"),
         color: "red",
       });
     },
@@ -402,11 +405,14 @@ export function DashboardChecklist() {
       <Stack gap="sm" style={{ flex: 1 }}>
         <Group justify="space-between">
           <div>
-            <Text fw={600}>오늘 체크리스트</Text>
+            <Text fw={600}>{t("dashboard:checklist.title")}</Text>
             <Text size="sm" c="dimmed">
               {isLimitReached
-                ? "최대 항목 수에 도달했습니다"
-                : `현재 ${totalCount}/${maxItems}개 작성`}
+                ? t("dashboard:checklist.limitReached")
+                : t("dashboard:checklist.countLabel", {
+                    current: totalCount,
+                    max: maxItems,
+                  })}
             </Text>
           </div>
 
@@ -420,8 +426,8 @@ export function DashboardChecklist() {
           onChange={(event) => setInputValue(event.currentTarget.value)}
           placeholder={
             isLimitReached
-              ? "더 이상 항목을 추가할 수 없습니다"
-              : "할 일을 입력하고 Enter"
+              ? t("dashboard:checklist.inputPlaceholderLimit")
+              : t("dashboard:checklist.inputPlaceholderHint")
           }
           rightSection={
             <ActionIcon
@@ -450,7 +456,7 @@ export function DashboardChecklist() {
             {isLoading && (
               <Box py="sm">
                 <Text size="sm" c="dimmed">
-                  로딩 중...
+                  {t("system:status.loading")}
                 </Text>
               </Box>
             )}
@@ -458,7 +464,7 @@ export function DashboardChecklist() {
             {!isLoading && data && data.activeItems.length === 0 && (
               <Paper withBorder radius="md" p="md" bg="gray.0">
                 <Text size="sm" c="dimmed">
-                  아직 할 일이 없습니다. 바로 입력해보세요!
+                  {t("dashboard:checklist.empty")}
                 </Text>
               </Paper>
             )}
@@ -488,7 +494,11 @@ export function DashboardChecklist() {
                       color: "var(--mantine-color-dimmed)",
                     }}
                   >
-                    <Text size="sm">완료 {data.completedItems.length}개 보기</Text>
+                    <Text size="sm">
+                      {t("dashboard:checklist.completedToggle", {
+                        count: data.completedItems.length,
+                      })}
+                    </Text>
                     {showCompleted ? (
                       <IconChevronUp size={16} />
                     ) : (
@@ -499,7 +509,9 @@ export function DashboardChecklist() {
                     size="sm"
                     variant="light"
                     color="red"
-                    aria-label="완료 항목 모두 삭제"
+                    aria-label={t(
+                      "dashboard:checklist.deleteCompletedAria"
+                    )}
                     onClick={() =>
                       clearCompletedMutation.mutate(
                         data.completedItems.map((item) => item.id)

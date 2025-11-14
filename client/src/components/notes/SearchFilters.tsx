@@ -1,6 +1,7 @@
 import { Stack, Select, Group, Button, Badge, Text } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
 import { IconFilter, IconX, IconCalendar } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 import type { NoteType } from '@/types/note';
 
 interface SearchFiltersProps {
@@ -19,13 +20,6 @@ interface SearchFiltersProps {
   onReset: () => void;
 }
 
-const NOTE_TYPE_OPTIONS = [
-  { value: 'TEXT', label: '텍스트' },
-  { value: 'CHECKLIST', label: '체크리스트' },
-  { value: 'MARKDOWN', label: '마크다운' },
-  { value: 'QUICK', label: '빠른 메모' },
-];
-
 export function SearchFilters({
   type,
   dateFrom,
@@ -41,6 +35,13 @@ export function SearchFilters({
   onArchivedChange,
   onReset,
 }: SearchFiltersProps) {
+  const { t } = useTranslation(['notes', 'common']);
+  const noteTypeOptions = [
+    { value: 'TEXT', label: t('notes:searchFilters.types.TEXT') },
+    { value: 'CHECKLIST', label: t('notes:searchFilters.types.CHECKLIST') },
+    { value: 'MARKDOWN', label: t('notes:searchFilters.types.MARKDOWN') },
+    { value: 'QUICK', label: t('notes:searchFilters.types.QUICK') },
+  ];
   const hasActiveFilters =
     type !== undefined ||
     dateFrom !== undefined ||
@@ -55,7 +56,7 @@ export function SearchFilters({
         <Group gap="xs">
           <IconFilter size={16} />
           <Text size="sm" fw={600}>
-            필터
+            {t('notes:searchFilters.title')}
           </Text>
         </Group>
         {hasActiveFilters && (
@@ -65,23 +66,23 @@ export function SearchFilters({
             leftSection={<IconX size={14} />}
             onClick={onReset}
           >
-            초기화
+            {t('common:actions.reset')}
           </Button>
         )}
       </Group>
 
       <Select
-        label="메모 타입"
-        placeholder="타입 선택"
+        label={t('notes:searchFilters.typeLabel')}
+        placeholder={t('notes:searchFilters.typePlaceholder')}
         clearable
-        data={NOTE_TYPE_OPTIONS}
+        data={noteTypeOptions}
         value={type}
         onChange={(value) => onTypeChange(value as NoteType | undefined)}
       />
 
       <DatePickerInput
-        label="시작 날짜"
-        placeholder="시작 날짜 선택"
+        label={t('notes:searchFilters.dateFromLabel')}
+        placeholder={t('notes:searchFilters.dateFromPlaceholder')}
         clearable
         leftSection={<IconCalendar size={16} />}
         value={dateFrom}
@@ -89,8 +90,8 @@ export function SearchFilters({
       />
 
       <DatePickerInput
-        label="종료 날짜"
-        placeholder="종료 날짜 선택"
+        label={t('notes:searchFilters.dateToLabel')}
+        placeholder={t('notes:searchFilters.dateToPlaceholder')}
         clearable
         leftSection={<IconCalendar size={16} />}
         value={dateTo}
@@ -100,7 +101,7 @@ export function SearchFilters({
 
       <Stack gap="xs">
         <Text size="sm" fw={500}>
-          상태
+          {t('notes:searchFilters.statusLabel')}
         </Text>
         <Group gap="xs">
           <Badge
@@ -108,21 +109,21 @@ export function SearchFilters({
             style={{ cursor: 'pointer' }}
             onClick={() => onPinnedChange(isPinned ? undefined : true)}
           >
-            📌 고정됨
+            {t('notes:searchFilters.statuses.pinned')}
           </Badge>
           <Badge
             variant={isFavorite ? 'filled' : 'light'}
             style={{ cursor: 'pointer' }}
             onClick={() => onFavoriteChange(isFavorite ? undefined : true)}
           >
-            ⭐ 즐겨찾기
+            {t('notes:searchFilters.statuses.favorite')}
           </Badge>
           <Badge
             variant={isArchived ? 'filled' : 'light'}
             style={{ cursor: 'pointer' }}
             onClick={() => onArchivedChange(isArchived ? undefined : true)}
           >
-            📦 보관됨
+            {t('notes:searchFilters.statuses.archived')}
           </Badge>
         </Group>
       </Stack>

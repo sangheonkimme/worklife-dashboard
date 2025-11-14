@@ -1,0 +1,29 @@
+{
+  "actions": {
+    "retry": "Try again",
+    "saveChanges": "Save changes",
+    "reset": "Reset"
+  },
+  "labels": {
+    "unclassified": "Uncategorized"
+  },
+  "status": {
+    "unsaved": "You have unsaved changes",
+    "unsavedHint": "Make sure to save before leaving this page.",
+    "allSaved": "All changes saved",
+    "allSavedHint": "Update your preferences whenever you need."
+  },
+  "notifications": {
+    "validation": {
+      "title": "Check your input",
+      "message": "Some fields have invalid values. Please review the helper messages."
+    },
+    "saveSuccess": {
+      "title": "Saved",
+      "message": "Your settings have been updated."
+    }
+  },
+  "errors": {
+    "settingsFetchTitle": "Failed to load settings"
+  }
+}
