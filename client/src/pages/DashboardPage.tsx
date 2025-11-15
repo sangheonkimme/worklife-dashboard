@@ -32,7 +32,7 @@ export const DashboardPage = () => {
           value: 75,
         }),
       },
-        {
+      {
         value: 60,
         color: "teal",
         tooltip: t("overview.progressCard.tooltip", {
@@ -136,7 +136,8 @@ export const DashboardPage = () => {
         </SimpleGrid>
       </div>
 
-      <SimpleGrid cols={{ base: 1, lg: 2 }}>
+      {/* 사용하지 않음 - 2025.11.16 */}
+      {/* <SimpleGrid cols={{ base: 1, lg: 2 }}>
         <Card shadow="sm" padding="lg" radius="md" withBorder>
           <Stack gap="md">
             <Group justify="space-between">
@@ -235,7 +236,7 @@ export const DashboardPage = () => {
             </Badge>
           </Group>
         </Stack>
-      </Card>
+      </Card> */}
     </Stack>
   );
 };
