@@ -126,6 +126,7 @@
       "description": "Manage presets and default notification options.",
       "fields": {
         "presetLabel": "New preset (minutes)",
+        "presetPlaceholder": "e.g. 25",
         "addButton": "Add",
         "autoRepeat": {
           "label": "Auto repeat",

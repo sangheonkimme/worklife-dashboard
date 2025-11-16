@@ -120,15 +120,22 @@ export const TimerSection = ({ form }: TimerSectionProps) => {
                 </Badge>
               ))}
             </Group>
-            <Group grow>
+            <Group gap="sm" align="flex-end" wrap="nowrap">
               <NumberInput
                 label={t("timersSection.timerCard.fields.presetLabel")}
                 min={1}
                 max={24 * 60}
                 value={newPresetMinutes}
                 onChange={(value) => setNewPresetMinutes(value === "" ? "" : Number(value))}
+                placeholder={t("timersSection.timerCard.fields.presetPlaceholder")}
+                style={{ flex: 1 }}
               />
-              <Button mt="xl" variant="light" onClick={addPreset}>
+              <Button
+                variant="light"
+                color="teal"
+                onClick={addPreset}
+                styles={{ root: { height: 40 } }}
+              >
                 {t("timersSection.timerCard.fields.addButton")}
               </Button>
             </Group>

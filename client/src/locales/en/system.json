@@ -40,6 +40,12 @@
         "description": "Note manager",
         "pageTitle": "Notes",
         "pageDescription": "Create and organize personal notes."
+      },
+      "settings": {
+        "label": "Settings",
+        "description": "Preferences",
+        "pageTitle": "Settings",
+        "pageDescription": "Adjust notification, theme, and widget preferences."
       }
     },
     "menu": {

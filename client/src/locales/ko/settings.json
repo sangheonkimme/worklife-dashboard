@@ -126,6 +126,7 @@
       "description": "프리셋과 알림 기본 옵션을 관리합니다.",
       "fields": {
         "presetLabel": "새 프리셋 (분)",
+        "presetPlaceholder": "예: 25",
         "addButton": "추가",
         "autoRepeat": {
           "label": "자동 반복",

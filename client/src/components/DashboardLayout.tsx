@@ -96,6 +96,12 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       path: "/notes",
       aliasPaths: [] as readonly string[],
     },
+    {
+      key: "settings",
+      icon: IconSettings,
+      path: "/settings",
+      aliasPaths: [] as readonly string[],
+    },
   ] as const;
 
   const navItems = baseNavItems.map((item) => ({

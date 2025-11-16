@@ -23,8 +23,9 @@ interface TimerState {
   restoreTimer: () => void;
 }
 
+const MIN_TIMER_DURATION_MS = 30 * 1000; // 30초 기본 최소 지속 시간
 const DEFAULT_PRESETS = [5, 10, 15, 30].map((min) => min * 60 * 1000);
-const DEFAULT_TOTAL = DEFAULT_PRESETS[1]; // 10분
+const DEFAULT_TOTAL = MIN_TIMER_DURATION_MS;
 
 let timerInterval: number | null = null;
 
@@ -70,7 +71,8 @@ export const useTimerStore = create<TimerState>()(
 
       startTimer: () => {
         const { totalMs, remainingMs, status } = get();
-        const target = remainingMs > 0 ? remainingMs : totalMs;
+        const fallbackDuration = totalMs > 0 ? totalMs : MIN_TIMER_DURATION_MS;
+        const target = remainingMs > 0 ? remainingMs : fallbackDuration;
         if (target <= 0) {
           notifications.show({
             title: i18n.t("widgets:timer.notifications.startErrorTitle"),
@@ -119,9 +121,10 @@ export const useTimerStore = create<TimerState>()(
 
       setPreset: (milliseconds) => {
         clearIntervalRef();
+        const safePreset = milliseconds > 0 ? milliseconds : MIN_TIMER_DURATION_MS;
         set({
-          totalMs: milliseconds,
-          remainingMs: milliseconds,
+          totalMs: safePreset,
+          remainingMs: safePreset,
           status: "idle",
           lastUpdatedAt: null,
           preAlertTriggered: false,
@@ -129,7 +132,7 @@ export const useTimerStore = create<TimerState>()(
       },
 
       setCustomDuration: (milliseconds) => {
-        const safeMs = Math.max(0, milliseconds);
+        const safeMs = milliseconds > 0 ? milliseconds : MIN_TIMER_DURATION_MS;
         clearIntervalRef();
         set({
           totalMs: safeMs,
@@ -160,12 +163,16 @@ export const useTimerStore = create<TimerState>()(
                 : state.settings.presets,
           };
 
-          if (state.status === "idle" && mergedSettings.presets.length > 0) {
+          if (state.status === "idle") {
             const firstPreset = mergedSettings.presets[0];
+            const safePresetValue =
+              firstPreset && firstPreset > 0
+                ? firstPreset
+                : MIN_TIMER_DURATION_MS;
             return {
               settings: mergedSettings,
-              totalMs: firstPreset,
-              remainingMs: firstPreset,
+              totalMs: safePresetValue,
+              remainingMs: safePresetValue,
               lastUpdatedAt: null,
               preAlertTriggered: false,
               status: "idle" as TimerStatus,
