@@ -12,6 +12,7 @@ import CategoryManager from './CategoryManager';
 import TransactionQuickAddBar from './TransactionQuickAddBar';
 import { transactionApi } from '@/services/api/transactionApi';
 import type { Transaction, CreateTransactionDto, UpdateTransactionDto, TransactionFilters } from '@/types/transaction';
+import { getApiErrorMessage } from '@/utils/error';
 
 export default function TransactionsTab() {
   const [page, setPage] = useState(1);
@@ -58,12 +59,13 @@ export default function TransactionsTab() {
       });
       setQuickAddResetSignal((prev) => prev + 1);
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: t('transactionsTab.notifications.errorTitle'),
-        message:
-          error.response?.data?.message ||
-          t('transactionsTab.notifications.createError'),
+        message: getApiErrorMessage(
+          error,
+          t('transactionsTab.notifications.createError')
+        ),
         color: 'red',
       });
     },
@@ -83,12 +85,13 @@ export default function TransactionsTab() {
       setIsEditModalOpen(false);
       setEditingTransaction(null);
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: t('transactionsTab.notifications.errorTitle'),
-        message:
-          error.response?.data?.message ||
-          t('transactionsTab.notifications.updateError'),
+        message: getApiErrorMessage(
+          error,
+          t('transactionsTab.notifications.updateError')
+        ),
         color: 'red',
       });
     },
@@ -105,12 +108,13 @@ export default function TransactionsTab() {
         color: 'teal',
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: t('transactionsTab.notifications.errorTitle'),
-        message:
-          error.response?.data?.message ||
-          t('transactionsTab.notifications.deleteError'),
+        message: getApiErrorMessage(
+          error,
+          t('transactionsTab.notifications.deleteError')
+        ),
         color: 'red',
       });
     },

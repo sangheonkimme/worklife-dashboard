@@ -1,4 +1,4 @@
-import { PDFDocument } from "pdf-lib";
+import { PDFDocument, type PDFImage } from "pdf-lib";
 import i18n from "@/lib/i18n";
 import {
   type PdfOptions,
@@ -33,7 +33,7 @@ export async function generatePdfFromImages(
       const imageBytes = await imageFile.arrayBuffer();
 
       // 이미지 타입에 따라 임베드
-      let image;
+      let image: PDFImage;
       const mimeType = imageFile.type.toLowerCase();
 
       try {
@@ -93,7 +93,7 @@ export async function generatePdfFromImages(
 async function embedImageViaCanvas(
   pdfDoc: PDFDocument,
   imageFile: File
-): Promise<any> {
+): Promise<PDFImage> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = async () => {

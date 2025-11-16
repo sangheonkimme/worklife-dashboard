@@ -42,6 +42,7 @@ export function SaveSessionModal({ opened, onClose }: SaveSessionModalProps) {
       form.reset();
       onClose();
     } catch (error) {
+      console.error('Failed to save stopwatch session', error);
       notifications.show({
         title: t('stopwatch.saveModal.errorTitle'),
         message: t('stopwatch.saveModal.errorMessage'),

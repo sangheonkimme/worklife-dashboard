@@ -252,10 +252,76 @@
       "generic": "Error occurred while generating the PDF."
     }
   },
+  "imageCrop": {
+    "title": "Image cropper",
+    "subtitle": "Import, crop, and export images without leaving the dashboard.",
+    "dropzone": {
+      "title": "Drop an image or click to upload",
+      "replaceTitle": "Drop or click to replace the current image",
+      "subtitle": "PNG, JPEG, or WebP up to 20 MB. Paste with ⌘/Ctrl + V."
+    },
+    "aspect": {
+      "free": "Freeform",
+      "custom": "Custom"
+    },
+    "sections": {
+      "inputArea": "Source image",
+      "inputDescription": "Upload, drop, or paste an image before editing the crop.",
+      "aspect": "Aspect ratio",
+      "zoom": "Zoom",
+      "format": "Output format",
+      "quality": "Quality",
+      "transparent": "Keep transparent background",
+      "transparentHint": "JPEG does not support transparency."
+    },
+    "fields": {
+      "aspectWidth": "Width",
+      "aspectHeight": "Height"
+    },
+    "actions": {
+      "download": "Download crop",
+      "copy": "Copy to clipboard",
+      "clearImage": "Remove current image"
+    },
+    "empty": {
+      "title": "Drop or paste an image to get started",
+      "description": "Use drag-and-drop, the upload area above, or paste directly from the clipboard."
+    },
+    "history": {
+      "title": "Recent exports",
+      "empty": "Exports will appear here after you save or copy a crop.",
+      "download": "Download",
+      "copy": "Copy",
+      "remove": "Remove",
+      "clear": "Clear history"
+    },
+    "notifications": {
+      "unsupportedTitle": "Unsupported file",
+      "unsupportedMessage": "Please upload a PNG, JPEG, or WebP image.",
+      "sizeTitle": "File too large",
+      "sizeMessage": "Select an image smaller than 20 MB.",
+      "loadedTitle": "Image ready",
+      "loadedMessage": "Loaded {{width}}×{{height}} px.",
+      "loadFailedTitle": "Unable to load image",
+      "loadFailedMessage": "We could not read that image file.",
+      "noImageTitle": "Add an image",
+      "noImageMessage": "Import an image before exporting.",
+      "exportSuccessTitle": "Crop exported",
+      "exportSuccessMessage": "Your cropped image is ready.",
+      "copiedTitle": "Copied",
+      "copiedMessage": "Image copied to clipboard.",
+      "exportFailedTitle": "Export failed",
+      "exportFailedMessage": "We couldn’t export that crop. Try again."
+    }
+  },
   "registry": {
     "imageToPdf": {
       "name": "Image to PDF",
       "description": "Convert multiple images into a single PDF file."
+    },
+    "imageCrop": {
+      "name": "Image cropper",
+      "description": "Crop, resize, and export images in seconds."
     },
     "timer": {
       "name": "Timer",

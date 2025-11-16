@@ -7,6 +7,7 @@ import { StickyNoteCard } from "./StickyNoteCard";
 import { CreateStickyNoteButton } from "./CreateStickyNoteButton";
 import { STICKY_NOTE_COLOR_ARRAY } from "@/types/stickyNote";
 import type { StickyNote } from "@/types/stickyNote";
+import { getApiErrorMessage } from "@/utils/error";
 
 const MAX_NOTES = 3;
 const POSITIONS = [0, 1, 2];
@@ -33,12 +34,13 @@ export function StickyNotes() {
         color: "green",
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: t("system:notifications.errorTitle"),
-        message:
-          error.response?.data?.message ||
-          t("dashboard:stickyNotes.notifications.createError"),
+        message: getApiErrorMessage(
+          error,
+          t("dashboard:stickyNotes.notifications.createError")
+        ),
         color: "red",
       });
     },

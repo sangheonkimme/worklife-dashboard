@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { noteTransactionApi } from '@/services/api/noteTransactionApi';
 import { notifications } from '@mantine/notifications';
+import { getApiErrorMessage } from '@/utils/error';
 
 export const useTransactionsForNote = (noteId: string) => {
   return useQuery({
@@ -33,10 +34,10 @@ export const useLinkTransaction = () => {
         color: 'green',
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: '오류',
-        message: error.response?.data?.message || '거래 연결에 실패했습니다',
+        message: getApiErrorMessage(error, '거래 연결에 실패했습니다'),
         color: 'red',
       });
     },
@@ -58,10 +59,10 @@ export const useUnlinkTransaction = () => {
         color: 'green',
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: '오류',
-        message: error.response?.data?.message || '거래 연결 해제에 실패했습니다',
+        message: getApiErrorMessage(error, '거래 연결 해제에 실패했습니다'),
         color: 'red',
       });
     },

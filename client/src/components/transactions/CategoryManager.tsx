@@ -20,6 +20,7 @@ import { modals } from "@mantine/modals";
 import { useTranslation } from "react-i18next";
 import { categoryApi } from "@/services/api/transactionApi";
 import type { Category, CategoryType } from "@/types/transaction";
+import { getApiErrorMessage } from "@/utils/error";
 
 interface CategoryManagerProps {
   opened: boolean;
@@ -70,12 +71,13 @@ export default function CategoryManager({
       });
       form.reset();
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: t("categoryManager.notifications.errorTitle"),
-        message:
-          error.response?.data?.message ||
-          t("categoryManager.notifications.createError"),
+        message: getApiErrorMessage(
+          error,
+          t("categoryManager.notifications.createError")
+        ),
         color: "red",
       });
     },
@@ -100,12 +102,13 @@ export default function CategoryManager({
       setEditingCategory(null);
       form.reset();
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: t("categoryManager.notifications.errorTitle"),
-        message:
-          error.response?.data?.message ||
-          t("categoryManager.notifications.updateError"),
+        message: getApiErrorMessage(
+          error,
+          t("categoryManager.notifications.updateError")
+        ),
         color: "red",
       });
     },
@@ -122,12 +125,13 @@ export default function CategoryManager({
         color: "teal",
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: t("categoryManager.notifications.errorTitle"),
-        message:
-          error.response?.data?.message ||
-          t("categoryManager.notifications.deleteError"),
+        message: getApiErrorMessage(
+          error,
+          t("categoryManager.notifications.deleteError")
+        ),
         color: "red",
       });
     },

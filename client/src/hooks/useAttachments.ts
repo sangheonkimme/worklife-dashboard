@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { attachmentApi } from '@/services/api/attachmentApi';
 import { notifications } from '@mantine/notifications';
+import { getApiErrorMessage } from '@/utils/error';
 
 export const useAttachments = (noteId: string) => {
   return useQuery({
@@ -24,10 +25,10 @@ export const useUploadFile = () => {
         color: 'green',
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: '오류',
-        message: error.response?.data?.message || '파일 업로드에 실패했습니다',
+        message: getApiErrorMessage(error, '파일 업로드에 실패했습니다'),
         color: 'red',
       });
     },
@@ -48,10 +49,10 @@ export const useUploadMultipleFiles = () => {
         color: 'green',
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: '오류',
-        message: error.response?.data?.message || '파일 업로드에 실패했습니다',
+        message: getApiErrorMessage(error, '파일 업로드에 실패했습니다'),
         color: 'red',
       });
     },
@@ -72,10 +73,10 @@ export const useDeleteAttachment = () => {
         color: 'green',
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: '오류',
-        message: error.response?.data?.message || '첨부파일 삭제에 실패했습니다',
+        message: getApiErrorMessage(error, '첨부파일 삭제에 실패했습니다'),
         color: 'red',
       });
     },

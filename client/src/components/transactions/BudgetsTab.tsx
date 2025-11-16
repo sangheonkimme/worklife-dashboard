@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next';
 import { budgetApi, categoryApi } from '@/services/api/transactionApi';
 import type { CreateBudgetDto } from '@/types/transaction';
 import { formatCurrency } from '@/utils/format';
+import { getApiErrorMessage } from '@/utils/error';
 
 export default function BudgetsTab() {
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
@@ -73,12 +74,13 @@ export default function BudgetsTab() {
       setIsModalOpen(false);
       form.reset();
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: t('budgetsTab.notifications.errorTitle'),
-        message:
-          error.response?.data?.message ||
-          t('budgetsTab.notifications.createError'),
+        message: getApiErrorMessage(
+          error,
+          t('budgetsTab.notifications.createError')
+        ),
         color: 'red',
       });
     },
@@ -95,12 +97,13 @@ export default function BudgetsTab() {
         color: 'teal',
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: t('budgetsTab.notifications.errorTitle'),
-        message:
-          error.response?.data?.message ||
-          t('budgetsTab.notifications.deleteError'),
+        message: getApiErrorMessage(
+          error,
+          t('budgetsTab.notifications.deleteError')
+        ),
         color: 'red',
       });
     },

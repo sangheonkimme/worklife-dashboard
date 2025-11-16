@@ -6,6 +6,7 @@ import type {
   ReorderChecklistItemDto,
 } from '@/types/checklist';
 import { notifications } from '@mantine/notifications';
+import { getApiErrorMessage } from '@/utils/error';
 
 export const useChecklistItems = (noteId: string) => {
   return useQuery({
@@ -38,10 +39,10 @@ export const useCreateChecklistItem = () => {
         color: 'green',
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: '오류',
-        message: error.response?.data?.message || '체크리스트 항목 추가에 실패했습니다',
+        message: getApiErrorMessage(error, '체크리스트 항목 추가에 실패했습니다'),
         color: 'red',
       });
     },
@@ -58,10 +59,10 @@ export const useUpdateChecklistItem = () => {
       queryClient.invalidateQueries({ queryKey: ['checklist', data.noteId] });
       queryClient.invalidateQueries({ queryKey: ['checklist', data.noteId, 'progress'] });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: '오류',
-        message: error.response?.data?.message || '체크리스트 항목 수정에 실패했습니다',
+        message: getApiErrorMessage(error, '체크리스트 항목 수정에 실패했습니다'),
         color: 'red',
       });
     },
@@ -78,10 +79,10 @@ export const useToggleChecklistItem = () => {
       queryClient.invalidateQueries({ queryKey: ['checklist', data.noteId] });
       queryClient.invalidateQueries({ queryKey: ['checklist', data.noteId, 'progress'] });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: '오류',
-        message: error.response?.data?.message || '체크리스트 항목 토글에 실패했습니다',
+        message: getApiErrorMessage(error, '체크리스트 항목 토글에 실패했습니다'),
         color: 'red',
       });
     },
@@ -103,10 +104,10 @@ export const useDeleteChecklistItem = () => {
         color: 'green',
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: '오류',
-        message: error.response?.data?.message || '체크리스트 항목 삭제에 실패했습니다',
+        message: getApiErrorMessage(error, '체크리스트 항목 삭제에 실패했습니다'),
         color: 'red',
       });
     },
@@ -122,10 +123,10 @@ export const useReorderChecklistItems = () => {
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['checklist', variables.noteId] });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: '오류',
-        message: error.response?.data?.message || '체크리스트 순서 변경에 실패했습니다',
+        message: getApiErrorMessage(error, '체크리스트 순서 변경에 실패했습니다'),
         color: 'red',
       });
     },

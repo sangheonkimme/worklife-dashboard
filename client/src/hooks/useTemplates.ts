@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { templateApi } from '@/services/api/templateApi';
 import type { CreateTemplateDto, UpdateTemplateDto } from '@/types/template';
 import { notifications } from '@mantine/notifications';
+import { getApiErrorMessage } from '@/utils/error';
 
 export const useTemplates = () => {
   return useQuery({
@@ -31,10 +32,10 @@ export const useCreateTemplate = () => {
         color: 'green',
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: '오류',
-        message: error.response?.data?.message || '템플릿 생성에 실패했습니다',
+        message: getApiErrorMessage(error, '템플릿 생성에 실패했습니다'),
         color: 'red',
       });
     },
@@ -55,10 +56,10 @@ export const useUpdateTemplate = () => {
         color: 'green',
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: '오류',
-        message: error.response?.data?.message || '템플릿 수정에 실패했습니다',
+        message: getApiErrorMessage(error, '템플릿 수정에 실패했습니다'),
         color: 'red',
       });
     },
@@ -78,10 +79,10 @@ export const useDeleteTemplate = () => {
         color: 'green',
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: '오류',
-        message: error.response?.data?.message || '템플릿 삭제에 실패했습니다',
+        message: getApiErrorMessage(error, '템플릿 삭제에 실패했습니다'),
         color: 'red',
       });
     },

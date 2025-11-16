@@ -27,6 +27,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../hooks/useAuth";
 import { authApi } from "../services/api/authApi";
 import { formatDate } from "@/utils/format";
+import { getApiErrorMessage } from "@/utils/error";
+import type { User } from "@/types";
 import { useTranslation } from "react-i18next";
 
 interface ProfileFormValues {
@@ -85,7 +87,7 @@ export const ProfilePage = () => {
 
   const updateProfileMutation = useMutation({
     mutationFn: async (values: ProfileFormValues) => {
-      const updateData: any = {};
+      const updateData: Partial<User> = {};
 
       // Update name if it changed
       if (values.name !== user?.name) {
@@ -118,11 +120,10 @@ export const ProfilePage = () => {
       });
       setIsChangingPassword(false);
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: t('notifications.errorTitle'),
-        message:
-          error.response?.data?.message || t('notifications.errorMessage'),
+        message: getApiErrorMessage(error, t('notifications.errorMessage')),
         color: "red",
         icon: <IconAlertCircle size={18} />,
       });

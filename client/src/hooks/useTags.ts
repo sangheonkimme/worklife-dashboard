@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { tagApi } from '@/services/api/tagApi';
 import type { CreateTagDto, UpdateTagDto } from '@/types/tag';
 import { notifications } from '@mantine/notifications';
+import { getApiErrorMessage } from '@/utils/error';
 
 export const useTags = (includeCount: boolean = false) => {
   return useQuery({
@@ -31,10 +32,10 @@ export const useCreateTag = () => {
         color: 'green',
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: '오류',
-        message: error.response?.data?.message || '태그 생성에 실패했습니다',
+        message: getApiErrorMessage(error, '태그 생성에 실패했습니다'),
         color: 'red',
       });
     },
@@ -55,10 +56,10 @@ export const useUpdateTag = () => {
         color: 'green',
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: '오류',
-        message: error.response?.data?.message || '태그 수정에 실패했습니다',
+        message: getApiErrorMessage(error, '태그 수정에 실패했습니다'),
         color: 'red',
       });
     },
@@ -79,10 +80,10 @@ export const useDeleteTag = () => {
         color: 'green',
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: '오류',
-        message: error.response?.data?.message || '태그 삭제에 실패했습니다',
+        message: getApiErrorMessage(error, '태그 삭제에 실패했습니다'),
         color: 'red',
       });
     },

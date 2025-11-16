@@ -137,7 +137,7 @@ export default function NotesPage() {
     }
 
     // 체크리스트 타입이고 새로운 메모인 경우, 임시 항목들을 content에 저장
-    let submitData = { ...formData };
+    const submitData = { ...formData };
     if (formData.type === 'CHECKLIST' && !editingNote && tempChecklistItems.length > 0) {
       const validItems = tempChecklistItems.filter((item) => item.trim() !== '');
       submitData.content = JSON.stringify(validItems);

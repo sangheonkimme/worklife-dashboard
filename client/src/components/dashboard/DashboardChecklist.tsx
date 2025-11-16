@@ -30,6 +30,7 @@ import type {
   DashboardChecklistItem,
   DashboardChecklistResponse,
 } from "@/types/dashboardChecklist";
+import { getApiErrorMessage } from "@/utils/error";
 
 interface ChecklistItemRowProps {
   item: DashboardChecklistItem;
@@ -179,15 +180,16 @@ export function DashboardChecklist() {
         );
       }
     },
-    onError: (error: any, _content, context) => {
+    onError: (error: unknown, _content, context) => {
       if (context?.previousData) {
         queryClient.setQueryData(queryKey, context.previousData);
       }
       notifications.show({
         title: t("dashboard:checklist.notifications.createErrorTitle"),
-        message:
-          error.response?.data?.message ||
-          t("dashboard:checklist.notifications.createErrorMessage"),
+        message: getApiErrorMessage(
+          error,
+          t("dashboard:checklist.notifications.createErrorMessage")
+        ),
         color: "red",
       });
     },

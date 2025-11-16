@@ -21,6 +21,7 @@ import { StickyNotes } from "@/components/dashboard/StickyNotes";
 import { PomodoroTimerCard } from "@/components/dashboard/PomodoroTimerCard";
 import { StopwatchCard } from "@/components/dashboard/StopwatchCard";
 import { ImageToPdfCard } from "@/components/dashboard/ImageToPdfCard";
+import { ImageCropCard } from "@/components/dashboard/ImageCropCard";
 import { TimerCard } from "@/components/dashboard/TimerCard";
 import { DashboardChecklist } from "@/components/dashboard/DashboardChecklist";
 
@@ -34,6 +35,9 @@ const DEFAULT_MAX_HEIGHT = 360;
 const LARGE_WIDGET_HEIGHT = 760;
 
 const DASHBOARD_WIDGETS: WidgetConfig[] = [
+  { id: "image-crop", Component: ImageCropCard },
+  { id: "image-to-pdf", Component: ImageToPdfCard },
+  { id: "timer", Component: TimerCard, maxHeight: LARGE_WIDGET_HEIGHT },
   {
     id: "salary-calculator",
     Component: SalaryCalculatorCard,
@@ -45,8 +49,6 @@ const DASHBOARD_WIDGETS: WidgetConfig[] = [
     maxHeight: DEFAULT_MAX_HEIGHT,
   },
   { id: "stopwatch", Component: StopwatchCard, maxHeight: DEFAULT_MAX_HEIGHT },
-  { id: "image-to-pdf", Component: ImageToPdfCard },
-  { id: "timer", Component: TimerCard, maxHeight: LARGE_WIDGET_HEIGHT },
 ];
 
 const WIDGET_META = DASHBOARD_WIDGETS.reduce<Record<string, WidgetConfig>>(
@@ -68,6 +70,7 @@ const SortableWidget = ({
     attributes,
     listeners,
     setNodeRef,
+    setActivatorNodeRef,
     transform,
     transition,
     isDragging,
@@ -76,12 +79,61 @@ const SortableWidget = ({
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    cursor: isDragging ? "grabbing" : "grab",
+    cursor: isDragging ? "grabbing" : "default",
     zIndex: isDragging ? 1 : undefined,
+    position: "relative" as const,
+  };
+
+  const handleStyles = {
+    position: "absolute" as const,
+    zIndex: 2,
+    cursor: isDragging ? "grabbing" : "grab",
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+    <div ref={setNodeRef} style={style}>
+      <div
+        ref={setActivatorNodeRef}
+        {...attributes}
+        {...listeners}
+        style={{
+          ...handleStyles,
+          top: -6,
+          left: -4,
+          right: -4,
+          height: 16,
+        }}
+      />
+      <div
+        {...listeners}
+        style={{
+          ...handleStyles,
+          bottom: -6,
+          left: -4,
+          right: -4,
+          height: 16,
+        }}
+      />
+      <div
+        {...listeners}
+        style={{
+          ...handleStyles,
+          top: -4,
+          bottom: -4,
+          left: -6,
+          width: 16,
+        }}
+      />
+      <div
+        {...listeners}
+        style={{
+          ...handleStyles,
+          top: -4,
+          bottom: -4,
+          right: -6,
+          width: 16,
+        }}
+      />
       {children}
     </div>
   );

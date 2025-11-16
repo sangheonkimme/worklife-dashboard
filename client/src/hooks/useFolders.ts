@@ -6,6 +6,7 @@ import type {
   MoveFolderDto,
 } from "@/types/folder";
 import { notifications } from "@mantine/notifications";
+import { getApiErrorMessage } from "@/utils/error";
 
 export const useFolders = (includeChildren: boolean = true) => {
   return useQuery({
@@ -35,10 +36,10 @@ export const useCreateFolder = () => {
         color: "green",
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: "오류",
-        message: error.response?.data?.message || "폴더 생성에 실패했습니다",
+        message: getApiErrorMessage(error, "폴더 생성에 실패했습니다"),
         color: "red",
       });
     },
@@ -59,10 +60,10 @@ export const useUpdateFolder = () => {
         color: "green",
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: "오류",
-        message: error.response?.data?.message || "폴더 수정에 실패했습니다",
+        message: getApiErrorMessage(error, "폴더 수정에 실패했습니다"),
         color: "red",
       });
     },
@@ -83,10 +84,10 @@ export const useMoveFolder = () => {
         color: "green",
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: "오류",
-        message: error.response?.data?.message || "폴더 이동에 실패했습니다",
+        message: getApiErrorMessage(error, "폴더 이동에 실패했습니다"),
         color: "red",
       });
     },
@@ -107,10 +108,10 @@ export const useDeleteFolder = () => {
         color: "green",
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: "오류",
-        message: error.response?.data?.message || "폴더 삭제에 실패했습니다",
+        message: getApiErrorMessage(error, "폴더 삭제에 실패했습니다"),
         color: "red",
       });
     },

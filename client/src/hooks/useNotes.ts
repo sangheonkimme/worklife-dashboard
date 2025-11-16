@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { noteApi } from '@/services/api/noteApi';
 import type { CreateNoteDto, UpdateNoteDto, NoteFilters } from '@/types/note';
 import { notifications } from '@mantine/notifications';
+import { getApiErrorMessage } from '@/utils/error';
 
 // Query keys
 export const noteKeys = {
@@ -52,10 +53,10 @@ export function useCreateNote() {
         color: 'green',
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: '오류',
-        message: error.response?.data?.message || '메모 생성에 실패했습니다.',
+        message: getApiErrorMessage(error, '메모 생성에 실패했습니다.'),
         color: 'red',
       });
     },
@@ -77,10 +78,10 @@ export function useUpdateNote() {
         color: 'green',
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: '오류',
-        message: error.response?.data?.message || '메모 수정에 실패했습니다.',
+        message: getApiErrorMessage(error, '메모 수정에 실패했습니다.'),
         color: 'red',
       });
     },
@@ -101,10 +102,10 @@ export function useDeleteNote() {
         color: 'green',
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: '오류',
-        message: error.response?.data?.message || '메모 삭제에 실패했습니다.',
+        message: getApiErrorMessage(error, '메모 삭제에 실패했습니다.'),
         color: 'red',
       });
     },
@@ -126,10 +127,10 @@ export function useRestoreNote() {
         color: 'green',
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: '오류',
-        message: error.response?.data?.message || '메모 복구에 실패했습니다.',
+        message: getApiErrorMessage(error, '메모 복구에 실패했습니다.'),
         color: 'red',
       });
     },
@@ -150,10 +151,10 @@ export function usePermanentDeleteNote() {
         color: 'green',
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: '오류',
-        message: error.response?.data?.message || '메모 영구 삭제에 실패했습니다.',
+        message: getApiErrorMessage(error, '메모 영구 삭제에 실패했습니다.'),
         color: 'red',
       });
     },
@@ -169,10 +170,10 @@ export function useTogglePinned() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: noteKeys.lists() });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: '오류',
-        message: error.response?.data?.message || '메모 고정에 실패했습니다.',
+        message: getApiErrorMessage(error, '메모 고정에 실패했습니다.'),
         color: 'red',
       });
     },
@@ -189,10 +190,10 @@ export function useToggleFavorite() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: noteKeys.lists() });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: '오류',
-        message: error.response?.data?.message || '즐겨찾기 설정에 실패했습니다.',
+        message: getApiErrorMessage(error, '즐겨찾기 설정에 실패했습니다.'),
         color: 'red',
       });
     },
@@ -209,10 +210,10 @@ export function useToggleArchived() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: noteKeys.lists() });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: '오류',
-        message: error.response?.data?.message || '보관함 설정에 실패했습니다.',
+        message: getApiErrorMessage(error, '보관함 설정에 실패했습니다.'),
         color: 'red',
       });
     },
