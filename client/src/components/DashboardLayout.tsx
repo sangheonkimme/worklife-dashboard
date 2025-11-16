@@ -33,8 +33,6 @@ import {
   IconAlertTriangle,
 } from "@tabler/icons-react";
 import { useAuth } from "../hooks/useAuth";
-import { WidgetDock } from "./widget-dock/WidgetDock";
-import { WidgetSidePanel } from "./widget-dock/WidgetSidePanel";
 import { PomodoroWidget } from "./pomodoro/PomodoroWidget";
 import { StopwatchWidget } from "./stopwatch/StopwatchWidget";
 import logoPc from "@/assets/logo_pc.png";
@@ -293,12 +291,6 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           </ActionIcon>
         </Affix>
       </AppShell.Main>
-
-      {/* Widget dock */}
-      <WidgetDock />
-
-      {/* Widget side panel */}
-      <WidgetSidePanel />
 
       {/* Pomodoro floating widget */}
       <PomodoroWidget />

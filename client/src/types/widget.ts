@@ -23,6 +23,7 @@ export interface WidgetConfig {
 
 export interface WidgetProps {
   onClose?: () => void;
+  showHeader?: boolean;
 }
 
 // ========================================

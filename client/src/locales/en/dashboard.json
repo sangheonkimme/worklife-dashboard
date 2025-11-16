@@ -1,33 +1,4 @@
 {
-  "overview": {
-    "quickSectionTitle": "Quick notes & checklist",
-    "featureSectionTitle": "Featured tools",
-    "demoCard": {
-      "title": "Korean font preview (Pretendard)",
-      "badge": "Dark theme",
-      "body": "Sample Korean copy to verify the Pretendard typeface is applied correctly.",
-      "button": "Clicks: {{count}}",
-      "hint": "Click the button to increase the counter."
-    },
-    "progressCard": {
-      "title": "Project progress",
-      "frontend": "Frontend development",
-      "backend": "Backend API",
-      "testing": "Testing",
-      "overall": "Overall {{value}}%",
-      "tooltip": "{{label}} - {{value}}%"
-    },
-    "techStack": {
-      "title": "Tech stack",
-      "badges": {
-        "react": "React",
-        "typescript": "TypeScript",
-        "vite": "Vite",
-        "mantine": "Mantine UI",
-        "font": "Pretendard font"
-      }
-    }
-  },
   "stickyNotes": {
     "title": "Sticky notes",
     "loading": "Loading...",

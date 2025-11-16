@@ -35,7 +35,7 @@ const statusColor: Record<string, string> = {
   finished: "green",
 };
 
-export function TimerWidget({ onClose }: WidgetProps) {
+export function TimerWidget({ onClose, showHeader = true }: WidgetProps) {
   const { t } = useTranslation("widgets");
   const status = useTimerStore((state) => state.status);
   const totalMs = useTimerStore((state) => state.totalMs);
@@ -293,30 +293,55 @@ export function TimerWidget({ onClose }: WidgetProps) {
     }
   };
 
+  const renderStatusBadges = () => (
+    <Group gap="xs" mt={showHeader ? 4 : 0}>
+      <Badge color={currentStatusColor}>{statusText}</Badge>
+      {preAlertTriggered && status === "running" && (
+        <Badge color="yellow" variant="light">
+          {t("timer.badges.endingSoon")}
+        </Badge>
+      )}
+      {settings.autoRepeat && (
+        <Tooltip label={t("timer.tooltips.autoRepeat")}>
+          <Badge color="teal" variant="light">
+            {t("timer.badges.autoRepeat")}
+          </Badge>
+        </Tooltip>
+      )}
+    </Group>
+  );
+
   return (
     <Stack gap="md">
-      <Group justify="space-between" align="flex-start">
-        <div>
-          <Text size="lg" fw={600}>
-            일반 타이머
-          </Text>
-          <Group gap="xs" mt={4}>
-            <Badge color={currentStatusColor}>{statusText}</Badge>
-            {preAlertTriggered && status === "running" && (
-              <Badge color="yellow" variant="light">
-                {t("timer.badges.endingSoon")}
-              </Badge>
-            )}
-            {settings.autoRepeat && (
-              <Tooltip label={t("timer.tooltips.autoRepeat")}>
-                <Badge color="teal" variant="light">
-                  {t("timer.badges.autoRepeat")}
-                </Badge>
-              </Tooltip>
+      {showHeader ? (
+        <Group justify="space-between" align="flex-start">
+          <div>
+            <Text size="lg" fw={600}>
+              {t("timer.title")}
+            </Text>
+            {renderStatusBadges()}
+          </div>
+          <Group gap="xs">
+            <ActionIcon
+              variant="subtle"
+              aria-label={t("timer.aria.openSettings")}
+              onClick={() => setSettingsOpened(true)}
+            >
+              <IconSettings size={18} />
+            </ActionIcon>
+            {onClose && (
+              <ActionIcon
+                variant="subtle"
+                aria-label={t("timer.aria.closeWidget")}
+                onClick={onClose}
+              >
+                <IconX size={18} />
+              </ActionIcon>
             )}
           </Group>
-        </div>
-        <Group gap="xs">
+        </Group>
+      ) : (
+        <Group justify="flex-end">
           <ActionIcon
             variant="subtle"
             aria-label={t("timer.aria.openSettings")}
@@ -324,17 +349,10 @@ export function TimerWidget({ onClose }: WidgetProps) {
           >
             <IconSettings size={18} />
           </ActionIcon>
-          {onClose && (
-            <ActionIcon
-              variant="subtle"
-              aria-label={t("timer.aria.closeWidget")}
-              onClick={onClose}
-            >
-              <IconX size={18} />
-            </ActionIcon>
-          )}
         </Group>
-      </Group>
+      )}
+
+      {!showHeader && renderStatusBadges()}
 
       <RingProgress
         size={220}
