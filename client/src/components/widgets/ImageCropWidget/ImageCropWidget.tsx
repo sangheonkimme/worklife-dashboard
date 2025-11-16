@@ -18,6 +18,7 @@ import {
   Tooltip,
   rem,
 } from "@mantine/core";
+import { useElementSize } from "@mantine/hooks";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import Cropper, { type Area } from "react-easy-crop";
 import "react-easy-crop/react-easy-crop.css";
@@ -48,8 +49,29 @@ type ImageSource = {
   name: string;
 };
 
+type FreeformCropSizePx = {
+  width: number;
+  height: number;
+};
+
 const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
 const ZOOM_BOUNDS = { min: 1, max: 3 };
+const FREEFORM_MIN_SIZE_PX = 80;
+const FREEFORM_MIN_SIZE_RATIO = 0.2;
+
+const clampNumber = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), max);
+
+const getFreeformMinDimensionPx = (dimension: number) => {
+  if (dimension <= 0) {
+    return 0;
+  }
+
+  return Math.min(
+    dimension,
+    Math.max(FREEFORM_MIN_SIZE_PX, dimension * FREEFORM_MIN_SIZE_RATIO)
+  );
+};
 
 const formatLabels: Record<string, { label: string; extension: string }> = {
   png: { label: "PNG", extension: "png" },
@@ -78,6 +100,14 @@ export function ImageCropWidget({ showHeader = true }: WidgetProps) {
   const [zoom, setZoom] = useState(1.1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const {
+    ref: cropContainerRef,
+    width: cropContainerWidth,
+    height: cropContainerHeight,
+  } = useElementSize();
+  const [freeformCropSizePx, setFreeformCropSizePx] =
+    useState<FreeformCropSizePx | null>(null);
+  const hasCropBounds = cropContainerWidth > 0 && cropContainerHeight > 0;
 
   const settings = useImageCropStore((state) => state.settings);
   const setSettings = useImageCropStore((state) => state.setSettings);
@@ -111,6 +141,108 @@ export function ImageCropWidget({ showHeader = true }: WidgetProps) {
     }
   }, [settings]);
 
+  const defaultFreeformCropSizePx = useMemo<FreeformCropSizePx | null>(() => {
+    if (!source) {
+      return null;
+    }
+
+    const minWidth = getFreeformMinDimensionPx(source.width);
+    const minHeight = getFreeformMinDimensionPx(source.height);
+
+    return {
+      width: clampNumber(source.width * 0.8, minWidth, source.width),
+      height: clampNumber(source.height * 0.8, minHeight, source.height),
+    };
+  }, [source]);
+
+  const effectiveFreeformCropSizePx =
+    useMemo<FreeformCropSizePx | null>(() => {
+      if (
+        settings.aspectPresetId !== "free" ||
+        !source ||
+        !defaultFreeformCropSizePx
+      ) {
+        return null;
+      }
+
+      const minWidth = getFreeformMinDimensionPx(source.width);
+      const minHeight = getFreeformMinDimensionPx(source.height);
+
+      return {
+        width: clampNumber(
+          freeformCropSizePx?.width ?? defaultFreeformCropSizePx.width,
+          minWidth,
+          source.width
+        ),
+        height: clampNumber(
+          freeformCropSizePx?.height ?? defaultFreeformCropSizePx.height,
+          minHeight,
+          source.height
+        ),
+      };
+    }, [
+      defaultFreeformCropSizePx,
+      freeformCropSizePx,
+      settings.aspectPresetId,
+      source,
+    ]);
+
+  const freeformWidthBounds = useMemo(() => {
+    if (!source) {
+      return null;
+    }
+
+    return {
+      min: getFreeformMinDimensionPx(source.width),
+      max: source.width,
+    };
+  }, [source]);
+
+  const freeformHeightBounds = useMemo(() => {
+    if (!source) {
+      return null;
+    }
+
+    return {
+      min: getFreeformMinDimensionPx(source.height),
+      max: source.height,
+    };
+  }, [source]);
+
+  const cropperCropSize = useMemo(() => {
+    if (
+      settings.aspectPresetId !== "free" ||
+      !effectiveFreeformCropSizePx ||
+      !source ||
+      !hasCropBounds
+    ) {
+      return undefined;
+    }
+
+    const widthRatio = effectiveFreeformCropSizePx.width / source.width;
+    const heightRatio = effectiveFreeformCropSizePx.height / source.height;
+
+    return {
+      width: clampNumber(
+        widthRatio * cropContainerWidth,
+        1,
+        cropContainerWidth
+      ),
+      height: clampNumber(
+        heightRatio * cropContainerHeight,
+        1,
+        cropContainerHeight
+      ),
+    };
+  }, [
+    cropContainerHeight,
+    cropContainerWidth,
+    effectiveFreeformCropSizePx,
+    hasCropBounds,
+    settings.aspectPresetId,
+    source,
+  ]);
+
   const handleFileLoad = useCallback(
     async (file: File) => {
       if (!file.type.startsWith("image/")) {
@@ -140,6 +272,7 @@ export function ImageCropWidget({ showHeader = true }: WidgetProps) {
           height,
           name: file.name,
         });
+        setFreeformCropSizePx(null);
         setCrop({ x: 0, y: 0 });
         setZoom(1);
         setCroppedAreaPixels(null);
@@ -187,6 +320,26 @@ export function ImageCropWidget({ showHeader = true }: WidgetProps) {
     window.addEventListener("paste", handlePaste);
     return () => window.removeEventListener("paste", handlePaste);
   }, [handleFileLoad]);
+
+  useEffect(() => {
+    if (!source || !defaultFreeformCropSizePx) {
+      return;
+    }
+
+    setFreeformCropSizePx((prev) => {
+      if (!prev) {
+        return defaultFreeformCropSizePx;
+      }
+
+      const minWidth = getFreeformMinDimensionPx(source.width);
+      const minHeight = getFreeformMinDimensionPx(source.height);
+
+      return {
+        width: clampNumber(prev.width, minWidth, source.width),
+        height: clampNumber(prev.height, minHeight, source.height),
+      };
+    });
+  }, [defaultFreeformCropSizePx, source]);
 
   const handleExport = useCallback(
     async (mode: "download" | "clipboard") => {
@@ -262,6 +415,92 @@ export function ImageCropWidget({ showHeader = true }: WidgetProps) {
     ]
   );
 
+  const handleFreeformWidthChange = useCallback(
+    (value: number) => {
+      if (
+        settings.aspectPresetId !== "free" ||
+        !source ||
+        !defaultFreeformCropSizePx
+      ) {
+        return;
+      }
+
+      const minWidth = getFreeformMinDimensionPx(source.width);
+      const minHeight = getFreeformMinDimensionPx(source.height);
+      const fallback = defaultFreeformCropSizePx.width;
+      const nextWidth = clampNumber(
+        Number.isFinite(value) ? value : fallback,
+        minWidth,
+        source.width
+      );
+
+      setFreeformCropSizePx((prev) => ({
+        width: nextWidth,
+        height: clampNumber(
+          prev?.height ?? defaultFreeformCropSizePx.height,
+          minHeight,
+          source.height
+        ),
+      }));
+    },
+    [defaultFreeformCropSizePx, settings.aspectPresetId, source]
+  );
+
+  const handleFreeformHeightChange = useCallback(
+    (value: number) => {
+      if (
+        settings.aspectPresetId !== "free" ||
+        !source ||
+        !defaultFreeformCropSizePx
+      ) {
+        return;
+      }
+
+      const minWidth = getFreeformMinDimensionPx(source.width);
+      const minHeight = getFreeformMinDimensionPx(source.height);
+      const fallback = defaultFreeformCropSizePx.height;
+      const nextHeight = clampNumber(
+        Number.isFinite(value) ? value : fallback,
+        minHeight,
+        source.height
+      );
+
+      setFreeformCropSizePx((prev) => ({
+        width: clampNumber(
+          prev?.width ?? defaultFreeformCropSizePx.width,
+          minWidth,
+          source.width
+        ),
+        height: nextHeight,
+      }));
+    },
+    [defaultFreeformCropSizePx, settings.aspectPresetId, source]
+  );
+
+  const handleFreeformWidthInput = useCallback(
+    (value: string | number) => {
+      const nextValue =
+        typeof value === "number" ? value : Number(value.replace(/,/g, ""));
+      if (Number.isNaN(nextValue)) {
+        return;
+      }
+      handleFreeformWidthChange(nextValue);
+    },
+    [handleFreeformWidthChange]
+  );
+
+  const handleFreeformHeightInput = useCallback(
+    (value: string | number) => {
+      const nextValue =
+        typeof value === "number" ? value : Number(value.replace(/,/g, ""));
+      if (Number.isNaN(nextValue)) {
+        return;
+      }
+      handleFreeformHeightChange(nextValue);
+    },
+    [handleFreeformHeightChange]
+  );
+
   const renderHeader = () => (
     <Group justify="space-between">
       <Group gap="xs">
@@ -281,6 +520,7 @@ export function ImageCropWidget({ showHeader = true }: WidgetProps) {
           variant="subtle"
           onClick={() => {
             setSource(null);
+            setFreeformCropSizePx(null);
             setCrop({ x: 0, y: 0 });
             setZoom(1);
             setCroppedAreaPixels(null);
@@ -315,6 +555,7 @@ export function ImageCropWidget({ showHeader = true }: WidgetProps) {
           <Card withBorder padding="sm">
             <Box
               pos="relative"
+              ref={cropContainerRef}
               style={{
                 width: "100%",
                 height: 360,
@@ -325,6 +566,7 @@ export function ImageCropWidget({ showHeader = true }: WidgetProps) {
                 crop={crop}
                 zoom={zoom}
                 aspect={aspectRatio}
+                cropSize={cropperCropSize}
                 onCropChange={setCrop}
                 onZoomChange={setZoom}
                 onCropComplete={(_, pixels) => setCroppedAreaPixels(pixels)}
@@ -355,6 +597,79 @@ export function ImageCropWidget({ showHeader = true }: WidgetProps) {
                 data={aspectOptions}
                 fullWidth
               />
+              {settings.aspectPresetId === "free" &&
+                effectiveFreeformCropSizePx && (
+                  <Stack gap="xs">
+                    <Group justify="space-between" gap={4}>
+                      <Text fw={600} size="sm">
+                        {t("imageCrop.sections.freeformArea")}
+                      </Text>
+                      <Text size="xs" c="dimmed">
+                        {Math.round(effectiveFreeformCropSizePx.width)} ×
+                        {" "}
+                        {Math.round(effectiveFreeformCropSizePx.height)}px
+                      </Text>
+                    </Group>
+                    <Stack gap={6}>
+                      <Group justify="space-between" align="flex-end">
+                        <Text size="sm" c="dimmed">
+                          {t("imageCrop.fields.cropWidth")}
+                        </Text>
+                        <NumberInput
+                          value={
+                            effectiveFreeformCropSizePx
+                              ? Math.round(effectiveFreeformCropSizePx.width)
+                              : undefined
+                          }
+                          onChange={handleFreeformWidthInput}
+                          min={freeformWidthBounds?.min}
+                          max={freeformWidthBounds?.max}
+                          step={1}
+                          hideControls
+                          maw={120}
+                          disabled={!source}
+                        />
+                      </Group>
+                      <Slider
+                        min={freeformWidthBounds?.min ?? 0}
+                        max={freeformWidthBounds?.max ?? 0}
+                        value={effectiveFreeformCropSizePx.width}
+                        onChange={handleFreeformWidthChange}
+                        step={1}
+                        disabled={!source}
+                      />
+                    </Stack>
+                    <Stack gap={6}>
+                      <Group justify="space-between" align="flex-end">
+                        <Text size="sm" c="dimmed">
+                          {t("imageCrop.fields.cropHeight")}
+                        </Text>
+                        <NumberInput
+                          value={
+                            effectiveFreeformCropSizePx
+                              ? Math.round(effectiveFreeformCropSizePx.height)
+                              : undefined
+                          }
+                          onChange={handleFreeformHeightInput}
+                          min={freeformHeightBounds?.min}
+                          max={freeformHeightBounds?.max}
+                          step={1}
+                          hideControls
+                          maw={120}
+                          disabled={!source}
+                        />
+                      </Group>
+                      <Slider
+                        min={freeformHeightBounds?.min ?? 0}
+                        max={freeformHeightBounds?.max ?? 0}
+                        value={effectiveFreeformCropSizePx.height}
+                        onChange={handleFreeformHeightChange}
+                        step={1}
+                        disabled={!source}
+                      />
+                    </Stack>
+                  </Stack>
+                )}
               {settings.aspectPresetId === "custom" && (
                 <Group gap="sm">
                   <NumberInput

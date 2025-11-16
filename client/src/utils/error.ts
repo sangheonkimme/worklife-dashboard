@@ -1,8 +1,10 @@
 import { isAxiosError } from "axios";
 
-type ErrorPayload = {
-  message?: string;
-};
+type ErrorPayload =
+  | {
+      message?: string;
+    }
+  | string;
 
 /**
  * Extracts a human-readable error message from various error objects.

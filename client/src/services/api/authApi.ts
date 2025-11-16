@@ -4,6 +4,7 @@ import type {
   RegisterData,
   AuthResponse,
   User,
+  UpdateProfilePayload,
 } from '../../types';
 
 // 백엔드 API 응답 형식
@@ -44,7 +45,7 @@ export const authApi = {
   },
 
   // 프로필 수정
-  updateProfile: async (data: Partial<User>): Promise<User> => {
+  updateProfile: async (data: UpdateProfilePayload): Promise<User> => {
     const response = await api.put<ApiResponse<User>>('/api/auth/profile', data);
     return response.data.data;
   },

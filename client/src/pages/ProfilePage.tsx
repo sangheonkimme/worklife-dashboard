@@ -28,7 +28,7 @@ import { useAuth } from "../hooks/useAuth";
 import { authApi } from "../services/api/authApi";
 import { formatDate } from "@/utils/format";
 import { getApiErrorMessage } from "@/utils/error";
-import type { User } from "@/types";
+import type { UpdateProfilePayload } from "@/types";
 import { useTranslation } from "react-i18next";
 
 interface ProfileFormValues {
@@ -87,7 +87,7 @@ export const ProfilePage = () => {
 
   const updateProfileMutation = useMutation({
     mutationFn: async (values: ProfileFormValues) => {
-      const updateData: Partial<User> = {};
+      const updateData: UpdateProfilePayload = {};
 
       // Update name if it changed
       if (values.name !== user?.name) {

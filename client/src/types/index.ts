@@ -7,6 +7,11 @@ export interface User {
   updatedAt: string;
 }
 
+export interface UpdateProfilePayload extends Partial<User> {
+  currentPassword?: string;
+  newPassword?: string;
+}
+
 // 인증 관련 타입
 export interface LoginCredentials {
   email: string;

@@ -268,6 +268,7 @@
       "inputArea": "이미지 입력",
       "inputDescription": "자르기 전에 이미지를 업로드·드롭·붙여넣기 해주세요.",
       "aspect": "비율 프리셋",
+      "freeformArea": "자르기 영역 크기",
       "zoom": "확대/축소",
       "format": "출력 형식",
       "quality": "품질",
@@ -276,7 +277,9 @@
     },
     "fields": {
       "aspectWidth": "가로",
-      "aspectHeight": "세로"
+      "aspectHeight": "세로",
+      "cropWidth": "가로(px)",
+      "cropHeight": "세로(px)"
     },
     "actions": {
       "download": "자르기 다운로드",
