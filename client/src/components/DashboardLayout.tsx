@@ -26,6 +26,7 @@ import {
   IconBell,
   IconWallet,
   IconCalculator,
+  IconCurrencyWon,
   IconMenu2,
   IconX,
   IconNotes,
@@ -35,6 +36,7 @@ import {
 import { useAuth } from "../hooks/useAuth";
 import { PomodoroWidget } from "./pomodoro/PomodoroWidget";
 import { StopwatchWidget } from "./stopwatch/StopwatchWidget";
+import { WidgetModal } from "./widget-dock";
 import logoPc from "@/assets/logo_pc.png";
 import { useUserSettings } from "@/hooks/useUserSettings";
 import { useUiStore } from "@/store/useUiStore";
@@ -88,6 +90,12 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       key: "salary",
       icon: IconCalculator,
       path: "/salary",
+      aliasPaths: [] as readonly string[],
+    },
+    {
+      key: "financeTools",
+      icon: IconCurrencyWon,
+      path: "/finance-tools",
       aliasPaths: [] as readonly string[],
     },
     {
@@ -303,6 +311,9 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
       {/* Stopwatch floating widget */}
       <StopwatchWidget />
+
+      {/* Widget dock modal container */}
+      <WidgetModal />
     </AppShell>
   );
 };

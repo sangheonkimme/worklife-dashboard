@@ -317,6 +317,71 @@
       "exportFailedMessage": "자른 이미지를 내보내지 못했습니다. 다시 시도해주세요."
     }
   },
+  "loanCalculator": {
+    "title": "대출 이자 계산기",
+    "subtitle": "다양한 상환 방식을 한 화면에서 비교해 보세요.",
+    "badge": "금융 도구",
+    "sections": {
+      "inputs": "대출 조건",
+      "results": "상환 요약",
+      "schedule": "월별 상환 일정"
+    },
+    "fields": {
+      "amount": "대출 금액",
+      "rate": "연이자율",
+      "years": "기간(년)",
+      "months": "기간(개월)",
+      "grace": "거치기간(개월)",
+      "graceHint": "거치기간 동안에는 이자만 납부"
+    },
+    "repaymentTypes": {
+      "amortized": "원리금균등",
+      "equalPrincipal": "원금균등",
+      "interestOnly": "만기일시(이자만)"
+    },
+    "units": {
+      "currency": "원",
+      "percent": "%"
+    },
+    "results": {
+      "monthlyPayment": "월 납입금",
+      "fixedPayment": "거치 종료 후 고정 납입액",
+      "firstPayment": "예상 첫 납입금",
+      "totalInterest": "총 이자",
+      "totalInterestDesc": "전체 기간 동안 납부할 이자 합계",
+      "totalPayment": "총 상환액",
+      "totalPaymentDesc": "원금 + 이자",
+      "averagePayment": "월 평균 납입금",
+      "averagePaymentDesc": "총 상환액 ÷ 전체 개월 수"
+    },
+    "summary": {
+      "rate": "연이율 {{rate}}",
+      "period": "총 {{months}}개월",
+      "grace": "거치 {{months}}개월"
+    },
+    "notes": {
+      "disclaimer": "실제 금융기관 조건과 차이가 있을 수 있으며 참고용으로만 사용해주세요."
+    },
+    "messages": {
+      "invalidTitle": "기간을 확인하세요",
+      "invalidPeriod": "최소 1개월 이상의 상환 기간을 입력해야 합니다.",
+      "unavailableTitle": "계산할 수 없습니다",
+      "unavailableBody": "입력값을 조정한 뒤 다시 계산해주세요."
+    },
+    "schedule": {
+      "caption": "모든 금액은 반올림한 값이며 마지막 회차는 소폭 차이가 날 수 있습니다.",
+      "month": "회차",
+      "payment": "납입금",
+      "principal": "원금",
+      "interest": "이자",
+      "balance": "잔액",
+      "moreHint": "나머지 {{remaining}}개월 보기"
+    },
+    "actions": {
+      "showAll": "총 {{count}}개월 모두 보기",
+      "showLess": "접기"
+    }
+  },
   "registry": {
     "imageToPdf": {
       "name": "이미지 → PDF",
@@ -329,6 +394,10 @@
     "timer": {
       "name": "타이머",
       "description": "자유롭게 시간을 설정하고 카운트다운을 실행합니다"
+    },
+    "loanCalculator": {
+      "name": "대출 이자 계산기",
+      "description": "원리금/원금균등, 만기일시 상환액을 빠르게 계산하세요"
     }
   }
 }

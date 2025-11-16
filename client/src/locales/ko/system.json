@@ -35,6 +35,12 @@
         "pageTitle": "연봉 계산기",
         "pageDescription": "2025년 세율로 예상 실수령액을 계산합니다."
       },
+      "financeTools": {
+        "label": "금융 계산기",
+        "description": "대출 · 상환",
+        "pageTitle": "금융 계산기",
+        "pageDescription": "대출 상환 계획을 시나리오별로 비교하세요."
+      },
       "notes": {
         "label": "메모",
         "description": "메모 관리",

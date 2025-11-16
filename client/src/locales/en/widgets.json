@@ -317,6 +317,71 @@
       "exportFailedMessage": "We couldn’t export that crop. Try again."
     }
   },
+  "loanCalculator": {
+    "title": "Loan interest calculator",
+    "subtitle": "Plan your repayments with flexible interest and grace options.",
+    "badge": "Finance",
+    "sections": {
+      "inputs": "Loan details",
+      "results": "Repayment summary",
+      "schedule": "Monthly schedule"
+    },
+    "fields": {
+      "amount": "Loan amount",
+      "rate": "Annual interest rate",
+      "years": "Years",
+      "months": "Months",
+      "grace": "Grace period (months)",
+      "graceHint": "Interest-only period before amortization"
+    },
+    "repaymentTypes": {
+      "amortized": "Equal principal & interest",
+      "equalPrincipal": "Equal principal",
+      "interestOnly": "Interest-only"
+    },
+    "units": {
+      "currency": "₩",
+      "percent": "%"
+    },
+    "results": {
+      "monthlyPayment": "Monthly payment",
+      "fixedPayment": "Fixed amount after grace period",
+      "firstPayment": "Initial expected payment",
+      "totalInterest": "Total interest",
+      "totalInterestDesc": "Sum of all interest charges",
+      "totalPayment": "Total repayment",
+      "totalPaymentDesc": "Principal plus interest",
+      "averagePayment": "Average monthly payment",
+      "averagePaymentDesc": "Total repayment divided by months"
+    },
+    "summary": {
+      "rate": "Annual rate {{rate}}",
+      "period": "Term {{months}} months",
+      "grace": "Grace {{months}} months"
+    },
+    "notes": {
+      "disclaimer": "This calculator provides approximations only. Actual lender terms may vary."
+    },
+    "messages": {
+      "invalidTitle": "Check the period",
+      "invalidPeriod": "Enter at least one month of repayment time.",
+      "unavailableTitle": "Calculation unavailable",
+      "unavailableBody": "Adjust the inputs to run the loan schedule."
+    },
+    "schedule": {
+      "caption": "Rounded values. Final payment may differ slightly due to rounding.",
+      "month": "Month",
+      "payment": "Payment",
+      "principal": "Principal",
+      "interest": "Interest",
+      "balance": "Balance",
+      "moreHint": "Show {{remaining}} more months"
+    },
+    "actions": {
+      "showAll": "Show all {{count}} months",
+      "showLess": "Collapse list"
+    }
+  },
   "registry": {
     "imageToPdf": {
       "name": "Image to PDF",
@@ -329,6 +394,10 @@
     "timer": {
       "name": "Timer",
       "description": "Set any duration and start a countdown."
+    },
+    "loanCalculator": {
+      "name": "Loan calculator",
+      "description": "Estimate payments and total interest instantly."
     }
   }
 }

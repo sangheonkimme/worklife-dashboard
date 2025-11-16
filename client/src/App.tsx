@@ -37,6 +37,11 @@ const SettingsPage = lazy(() =>
     default: module.SettingsPage,
   }))
 );
+const FinancialCalculatorPage = lazy(() =>
+  import("./pages/FinancialCalculatorPage").then((module) => ({
+    default: module.FinancialCalculatorPage,
+  }))
+);
 
 // Loading fallback component
 const LoadingFallback = () => {
@@ -110,6 +115,16 @@ const App = () => {
                 <PrivateRoute>
                   <DashboardLayout>
                     <SalaryCalculatorPage />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/finance-tools"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <FinancialCalculatorPage />
                   </DashboardLayout>
                 </PrivateRoute>
               }

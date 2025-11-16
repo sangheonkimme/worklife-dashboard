@@ -172,23 +172,23 @@ export const DashboardPage = () => {
 
   return (
     <Stack gap="lg">
-      <Grid gutter="lg" align="stretch">
-        <Grid.Col span={{ base: 12, lg: 9 }}>
-          <StickyNotes />
-        </Grid.Col>
-        <Grid.Col span={{ base: 12, lg: 3 }}>
-          <DashboardChecklist />
-        </Grid.Col>
-      </Grid>
-      <div>
-        <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-          <SortableContext items={widgetOrder} strategy={rectSortingStrategy}>
-            <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
-              {widgetOrder.map((widgetId) => {
-                const widgetMeta = WIDGET_META[widgetId];
+        <Grid gutter="lg" align="stretch">
+          <Grid.Col span={{ base: 12, lg: 9 }}>
+            <StickyNotes />
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, lg: 3 }}>
+            <DashboardChecklist />
+          </Grid.Col>
+        </Grid>
+        <div>
+          <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+            <SortableContext items={widgetOrder} strategy={rectSortingStrategy}>
+              <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
+                {widgetOrder.map((widgetId) => {
+                  const widgetMeta = WIDGET_META[widgetId];
 
-                if (!widgetMeta) {
-                  return null;
+                  if (!widgetMeta) {
+                    return null;
                 }
 
                 const { Component: WidgetComponent, maxHeight } = widgetMeta;
@@ -206,11 +206,11 @@ export const DashboardPage = () => {
                   </SortableWidget>
                 );
               })}
-            </SimpleGrid>
-          </SortableContext>
-        </DndContext>
-      </div>
-    </Stack>
+              </SimpleGrid>
+            </SortableContext>
+          </DndContext>
+        </div>
+      </Stack>
   );
 };
 

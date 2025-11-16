@@ -1,4 +1,10 @@
 {
+  "calculatorPage": {
+    "title": "Finance tools",
+    "subtitle": "Model long-term loans, interest-only periods, and repayment strategies for any scenario.",
+    "widgetCardTitle": "Loan calculator",
+    "widgetCardDescription": "Compare monthly payments, total interest, and amortization schedules with multiple repayment styles."
+  },
   "dashboard": {
     "title": "Household dashboard",
     "subtitle": "Track budgets, transactions, and insights in one place.",

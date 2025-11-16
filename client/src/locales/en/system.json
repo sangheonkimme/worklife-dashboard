@@ -35,6 +35,12 @@
         "pageTitle": "Salary calculator",
         "pageDescription": "Estimate take-home pay with the 2025 tax brackets."
       },
+      "financeTools": {
+        "label": "Finance tools",
+        "description": "Loan & repayment",
+        "pageTitle": "Finance tools",
+        "pageDescription": "Simulate loan repayments and compare payment plans."
+      },
       "notes": {
         "label": "Notes",
         "description": "Note manager",

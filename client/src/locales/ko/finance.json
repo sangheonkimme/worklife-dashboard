@@ -1,4 +1,10 @@
 {
+  "calculatorPage": {
+    "title": "금융 계산 도구",
+    "subtitle": "원리금균등·원금균등·만기일시 등 다양한 상환 시나리오를 직접 비교해 보세요.",
+    "widgetCardTitle": "대출 이자 계산기",
+    "widgetCardDescription": "월 납입금과 총 이자를 한눈에 비교하고, 거치기간이 있을 때의 변화를 확인할 수 있습니다."
+  },
   "dashboard": {
     "title": "가계부 대시보드",
     "subtitle": "예산, 거래내역, 통계를 한 화면에서 확인하세요.",
