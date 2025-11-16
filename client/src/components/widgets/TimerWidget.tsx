@@ -376,7 +376,7 @@ export function TimerWidget({ onClose, showHeader = true }: WidgetProps) {
             color: currentStatusColor,
           },
         ]}
-        rootColor="var(--mantine-color-default)"
+        rootColor="var(--mantine-color-default-border)"
       />
 
       <Stack gap="xs">
