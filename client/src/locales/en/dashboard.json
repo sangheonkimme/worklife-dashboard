@@ -19,7 +19,10 @@
   "checklist": {
     "title": "Today's checklist",
     "limitReached": "You reached the maximum number of items.",
+    "limitBadge": "Limit reached",
     "countLabel": "{{current}} of {{max}} items",
+    "countLabelShort": "Current {{current}}/{{max}} tasks",
+    "countLabelUnlimited": "Current {{current}} tasks",
     "inputPlaceholder": "Add a task",
     "inputPlaceholderLimit": "You can't add more items.",
     "inputPlaceholderHint": "Type a task and press Enter",
