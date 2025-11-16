@@ -1,9 +1,5 @@
 import { useState, type ComponentType, type ReactNode } from "react";
-import {
-  Stack,
-  Grid,
-  SimpleGrid,
-} from "@mantine/core";
+import { Stack, Grid, SimpleGrid } from "@mantine/core";
 import {
   DndContext,
   type DragEndEvent,
@@ -35,11 +31,19 @@ type WidgetConfig = {
 };
 
 const DEFAULT_MAX_HEIGHT = 360;
-const LARGE_WIDGET_HEIGHT = 480;
+const LARGE_WIDGET_HEIGHT = 760;
 
 const DASHBOARD_WIDGETS: WidgetConfig[] = [
-  { id: "salary-calculator", Component: SalaryCalculatorCard, maxHeight: DEFAULT_MAX_HEIGHT },
-  { id: "pomodoro-timer", Component: PomodoroTimerCard, maxHeight: DEFAULT_MAX_HEIGHT },
+  {
+    id: "salary-calculator",
+    Component: SalaryCalculatorCard,
+    maxHeight: DEFAULT_MAX_HEIGHT,
+  },
+  {
+    id: "pomodoro-timer",
+    Component: PomodoroTimerCard,
+    maxHeight: DEFAULT_MAX_HEIGHT,
+  },
   { id: "stopwatch", Component: StopwatchCard, maxHeight: DEFAULT_MAX_HEIGHT },
   { id: "image-to-pdf", Component: ImageToPdfCard },
   { id: "timer", Component: TimerCard, maxHeight: LARGE_WIDGET_HEIGHT },
@@ -53,9 +57,21 @@ const WIDGET_META = DASHBOARD_WIDGETS.reduce<Record<string, WidgetConfig>>(
   {}
 );
 
-const SortableWidget = ({ id, children }: { id: string; children: ReactNode }) => {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id });
+const SortableWidget = ({
+  id,
+  children,
+}: {
+  id: string;
+  children: ReactNode;
+}) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
