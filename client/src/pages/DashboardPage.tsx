@@ -1,8 +1,25 @@
+import { useState, type ComponentType, type ReactNode } from "react";
 import {
   Stack,
   Grid,
   SimpleGrid,
 } from "@mantine/core";
+import {
+  DndContext,
+  type DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  rectSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { SalaryCalculatorCard } from "@/components/salary/SalaryCalculatorCard";
 import { StickyNotes } from "@/components/dashboard/StickyNotes";
 import { PomodoroTimerCard } from "@/components/dashboard/PomodoroTimerCard";
@@ -11,7 +28,79 @@ import { ImageToPdfCard } from "@/components/dashboard/ImageToPdfCard";
 import { TimerCard } from "@/components/dashboard/TimerCard";
 import { DashboardChecklist } from "@/components/dashboard/DashboardChecklist";
 
+type WidgetConfig = {
+  id: string;
+  Component: ComponentType;
+  maxHeight?: number;
+};
+
+const DEFAULT_MAX_HEIGHT = 360;
+
+const DASHBOARD_WIDGETS: WidgetConfig[] = [
+  { id: "salary-calculator", Component: SalaryCalculatorCard, maxHeight: DEFAULT_MAX_HEIGHT },
+  { id: "pomodoro-timer", Component: PomodoroTimerCard, maxHeight: DEFAULT_MAX_HEIGHT },
+  { id: "stopwatch", Component: StopwatchCard, maxHeight: DEFAULT_MAX_HEIGHT },
+  { id: "image-to-pdf", Component: ImageToPdfCard },
+  { id: "timer", Component: TimerCard, maxHeight: DEFAULT_MAX_HEIGHT },
+];
+
+const WIDGET_META = DASHBOARD_WIDGETS.reduce<Record<string, WidgetConfig>>(
+  (acc, widget) => {
+    acc[widget.id] = widget;
+    return acc;
+  },
+  {}
+);
+
+const SortableWidget = ({ id, children }: { id: string; children: ReactNode }) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    cursor: isDragging ? "grabbing" : "grab",
+    zIndex: isDragging ? 1 : undefined,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      {children}
+    </div>
+  );
+};
+
 export const DashboardPage = () => {
+  const [widgetOrder, setWidgetOrder] = useState<string[]>(() =>
+    DASHBOARD_WIDGETS.map(({ id }) => id)
+  );
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 5 },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = ({ active, over }: DragEndEvent) => {
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    setWidgetOrder((items) => {
+      const oldIndex = items.indexOf(String(active.id));
+      const newIndex = items.indexOf(String(over.id));
+
+      if (oldIndex === -1 || newIndex === -1) {
+        return items;
+      }
+
+      return arrayMove(items, oldIndex, newIndex);
+    });
+  };
+
   return (
     <Stack gap="lg">
       <Grid gutter="lg" align="stretch">
@@ -23,13 +112,34 @@ export const DashboardPage = () => {
         </Grid.Col>
       </Grid>
       <div>
-        <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
-          <SalaryCalculatorCard />
-          <PomodoroTimerCard />
-          <StopwatchCard />
-          <ImageToPdfCard />
-          <TimerCard />
-        </SimpleGrid>
+        <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+          <SortableContext items={widgetOrder} strategy={rectSortingStrategy}>
+            <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
+              {widgetOrder.map((widgetId) => {
+                const widgetMeta = WIDGET_META[widgetId];
+
+                if (!widgetMeta) {
+                  return null;
+                }
+
+                const { Component: WidgetComponent, maxHeight } = widgetMeta;
+
+                return (
+                  <SortableWidget key={widgetId} id={widgetId}>
+                    <div
+                      style={{
+                        maxHeight,
+                        overflowY: maxHeight ? "auto" : undefined,
+                      }}
+                    >
+                      <WidgetComponent />
+                    </div>
+                  </SortableWidget>
+                );
+              })}
+            </SimpleGrid>
+          </SortableContext>
+        </DndContext>
       </div>
     </Stack>
   );
