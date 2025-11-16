@@ -27,6 +27,7 @@ import { useTranslation } from "react-i18next";
 import { useTimerStore } from "@/store/useTimerStore";
 import type { WidgetProps } from "@/types/widget";
 import { formatTimeSimple } from "@/utils/timeFormat";
+import type { TimerStatus } from "@/types/timer";
 
 const statusColor: Record<string, string> = {
   idle: "gray",
@@ -61,8 +62,8 @@ export function TimerWidget({ onClose, showHeader = true }: WidgetProps) {
     Math.floor((totalMs % 60000) / 1000)
   );
   const audioContextRef = useRef<AudioContext | null>(null);
-  const preAlertPlayedRef = useRef(false);
-  const completionPlayedRef = useRef(false);
+  const prevPreAlertRef = useRef(preAlertTriggered);
+  const prevStatusRef = useRef<TimerStatus>(status);
 
   const ensureAudioContext = useCallback(() => {
     if (typeof window === "undefined") return null;
@@ -135,25 +136,23 @@ export function TimerWidget({ onClose, showHeader = true }: WidgetProps) {
   }, [settings.notifications]);
 
   useEffect(() => {
+    const previouslyTriggered = prevPreAlertRef.current;
+    prevPreAlertRef.current = preAlertTriggered;
+
     if (!settings.soundEnabled) return;
-    if (preAlertTriggered && !preAlertPlayedRef.current) {
+    if (preAlertTriggered && !previouslyTriggered) {
       playTone(880, 0.25);
-      preAlertPlayedRef.current = true;
-    }
-    if (!preAlertTriggered) {
-      preAlertPlayedRef.current = false;
     }
   }, [preAlertTriggered, settings.soundEnabled, playTone]);
 
   useEffect(() => {
+    const previousStatus = prevStatusRef.current;
+    prevStatusRef.current = status;
+
     if (!settings.soundEnabled) return;
-    if (status === "finished" && !completionPlayedRef.current) {
+    if (status === "finished" && previousStatus !== "finished") {
       playTone(520, 0.35);
       setTimeout(() => playTone(660, 0.35), 220);
-      completionPlayedRef.current = true;
-    }
-    if (status !== "finished") {
-      completionPlayedRef.current = false;
     }
   }, [status, settings.soundEnabled, playTone]);
 

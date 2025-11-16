@@ -35,13 +35,14 @@ type WidgetConfig = {
 };
 
 const DEFAULT_MAX_HEIGHT = 360;
+const LARGE_WIDGET_HEIGHT = 480;
 
 const DASHBOARD_WIDGETS: WidgetConfig[] = [
   { id: "salary-calculator", Component: SalaryCalculatorCard, maxHeight: DEFAULT_MAX_HEIGHT },
   { id: "pomodoro-timer", Component: PomodoroTimerCard, maxHeight: DEFAULT_MAX_HEIGHT },
   { id: "stopwatch", Component: StopwatchCard, maxHeight: DEFAULT_MAX_HEIGHT },
   { id: "image-to-pdf", Component: ImageToPdfCard },
-  { id: "timer", Component: TimerCard, maxHeight: DEFAULT_MAX_HEIGHT },
+  { id: "timer", Component: TimerCard, maxHeight: LARGE_WIDGET_HEIGHT },
 ];
 
 const WIDGET_META = DASHBOARD_WIDGETS.reduce<Record<string, WidgetConfig>>(
