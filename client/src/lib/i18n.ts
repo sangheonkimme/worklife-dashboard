@@ -10,6 +10,7 @@ import authKo from '@/locales/ko/auth.json' assert { type: 'json' };
 import widgetsKo from '@/locales/ko/widgets.json' assert { type: 'json' };
 import systemKo from '@/locales/ko/system.json' assert { type: 'json' };
 import salaryKo from '@/locales/ko/salary.json' assert { type: 'json' };
+import profileKo from '@/locales/ko/profile.json' assert { type: 'json' };
 import commonEn from '@/locales/en/common.json' assert { type: 'json' };
 import settingsEn from '@/locales/en/settings.json' assert { type: 'json' };
 import dashboardEn from '@/locales/en/dashboard.json' assert { type: 'json' };
@@ -19,6 +20,7 @@ import authEn from '@/locales/en/auth.json' assert { type: 'json' };
 import widgetsEn from '@/locales/en/widgets.json' assert { type: 'json' };
 import systemEn from '@/locales/en/system.json' assert { type: 'json' };
 import salaryEn from '@/locales/en/salary.json' assert { type: 'json' };
+import profileEn from '@/locales/en/profile.json' assert { type: 'json' };
 
 export type SupportedLanguage = 'ko' | 'en';
 export type LanguagePreference = SupportedLanguage | 'system';
@@ -36,6 +38,7 @@ const resources = {
     widgets: widgetsKo,
     system: systemKo,
     salary: salaryKo,
+    profile: profileKo,
   },
   en: {
     common: commonEn,
@@ -47,6 +50,7 @@ const resources = {
     widgets: widgetsEn,
     system: systemEn,
     salary: salaryEn,
+    profile: profileEn,
   },
 } as const;
 
@@ -122,6 +126,7 @@ if (!i18n.isInitialized) {
         'widgets',
         'system',
         'salary',
+        'profile',
       ],
       defaultNS: 'common',
       interpolation: { escapeValue: false },
