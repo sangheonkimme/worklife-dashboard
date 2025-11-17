@@ -1,4 +1,4 @@
-import { Box, Title, Grid, Text, Card, ScrollArea } from "@mantine/core";
+import { Box, Title, Grid, Text } from "@mantine/core";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { notifications } from "@mantine/notifications";
 import { useTranslation } from "react-i18next";
@@ -8,15 +8,9 @@ import { CreateStickyNoteButton } from "./CreateStickyNoteButton";
 import { STICKY_NOTE_COLOR_ARRAY } from "@/types/stickyNote";
 import type { StickyNote } from "@/types/stickyNote";
 import { getApiErrorMessage } from "@/utils/error";
-import {
-  DASHBOARD_WIDGET_CARD_HEIGHT,
-  DASHBOARD_WIDGET_HEIGHT,
-} from "@/constants/dashboard";
 
 const MAX_NOTES = 3;
 const POSITIONS = [0, 1, 2];
-
-const STICKY_NOTE_CONTENT_HEIGHT = DASHBOARD_WIDGET_CARD_HEIGHT;
 
 export function StickyNotes() {
   const queryClient = useQueryClient();
@@ -146,61 +140,40 @@ export function StickyNotes() {
   }
 
   return (
-    <Box
-      style={{
-        height: DASHBOARD_WIDGET_HEIGHT,
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
+    <Box>
       <Title order={4} mb="md">
         {t("dashboard:stickyNotes.title")}
       </Title>
 
-      <Card
-        shadow="sm"
-        radius="md"
-        withBorder
-        style={{
-          flex: 1,
-          minHeight: STICKY_NOTE_CONTENT_HEIGHT,
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
-        }}
-      >
-        <ScrollArea style={{ flex: 1 }} offsetScrollbars type="auto">
-          <Box p="md">
-            <Grid gutter="md">
-              {notes.map((note) => (
-                <Grid.Col key={note.id} span={{ base: 12, xs: 6, md: 4 }}>
-                  <StickyNoteCard
-                    note={note}
-                    onUpdate={handleUpdate}
-                    onDelete={handleDelete}
-                  />
-                </Grid.Col>
-              ))}
+      <Grid gutter="md">
+        {/* 기존 메모들 렌더링 */}
+        {notes.map((note) => (
+          <Grid.Col key={note.id} span={{ base: 12, xs: 6, md: 4 }}>
+            <StickyNoteCard
+              note={note}
+              onUpdate={handleUpdate}
+              onDelete={handleDelete}
+            />
+          </Grid.Col>
+        ))}
 
-              {notes.length < MAX_NOTES && (
-                <Grid.Col span={{ base: 12, xs: 6, md: 4 }}>
-                  <CreateStickyNoteButton
-                    onCreate={handleCreate}
-                    nextPosition={nextPosition}
-                    availableColor={availableColor}
-                  />
-                </Grid.Col>
-              )}
-            </Grid>
+        {/* 3개 미만일 때만 새 메모 버튼 1개 표시 */}
+        {notes.length < MAX_NOTES && (
+          <Grid.Col span={{ base: 12, xs: 6, md: 4 }}>
+            <CreateStickyNoteButton
+              onCreate={handleCreate}
+              nextPosition={nextPosition}
+              availableColor={availableColor}
+            />
+          </Grid.Col>
+        )}
+      </Grid>
 
-            {notes.length >= MAX_NOTES && (
-              <Text size="xs" c="dimmed" mt="md" ta="center">
-                {t("dashboard:stickyNotes.limitNotice", { count: MAX_NOTES })}
-              </Text>
-            )}
-          </Box>
-        </ScrollArea>
-      </Card>
+      {notes.length >= MAX_NOTES && (
+        <Text size="sm" c="dimmed" mt="sm">
+          {t("dashboard:stickyNotes.limitNotice", { count: MAX_NOTES })}
+        </Text>
+      )}
     </Box>
   );
 }

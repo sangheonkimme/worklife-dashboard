@@ -19,10 +19,7 @@
   "checklist": {
     "title": "오늘 체크리스트",
     "limitReached": "최대 항목 수에 도달했습니다",
-    "limitBadge": "최대 개수",
     "countLabel": "현재 {{current}}/{{max}}개 작성",
-    "countLabelShort": "현재 {{current}}/{{max}}개",
-    "countLabelUnlimited": "현재 {{current}}개",
     "inputPlaceholder": "할 일을 입력하세요",
     "inputPlaceholderLimit": "더 이상 항목을 추가할 수 없습니다",
     "inputPlaceholderHint": "할 일을 입력하고 Enter",

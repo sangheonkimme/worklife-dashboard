@@ -3,7 +3,6 @@ import { Card, Textarea, ActionIcon, Box } from "@mantine/core";
 import { IconX } from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
 import type { StickyNote } from "@/types/stickyNote";
-import { DASHBOARD_WIDGET_CARD_HEIGHT } from "@/constants/dashboard";
 
 interface StickyNoteCardProps {
   note: StickyNote;
@@ -57,7 +56,7 @@ export function StickyNoteCard({
       style={{
         backgroundColor: note.color,
         position: "relative",
-        height: `${DASHBOARD_WIDGET_CARD_HEIGHT}px`,
+        height: "230px",
         display: "flex",
         flexDirection: "column",
         transition: "all 0.2s ease",

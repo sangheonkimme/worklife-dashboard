@@ -1,19 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   ActionIcon,
-  Badge,
   Box,
   Card,
   Checkbox,
   Collapse,
   Divider,
   Group,
+  Paper,
   ScrollArea,
   Stack,
   Text,
   TextInput,
   ThemeIcon,
-  Title,
   UnstyledButton,
 } from "@mantine/core";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -32,17 +31,12 @@ import type {
   DashboardChecklistResponse,
 } from "@/types/dashboardChecklist";
 import { getApiErrorMessage } from "@/utils/error";
-import {
-  DASHBOARD_WIDGET_CARD_HEIGHT,
-  DASHBOARD_WIDGET_HEIGHT,
-} from "@/constants/dashboard";
 
 interface ChecklistItemRowProps {
   item: DashboardChecklistItem;
   onToggle: (id: string, checked: boolean) => void;
   onUpdate: (id: string, content: string) => void;
   onDelete: (id: string) => void;
-  showDivider?: boolean;
 }
 
 function ChecklistItemRow({
@@ -50,7 +44,6 @@ function ChecklistItemRow({
   onToggle,
   onUpdate,
   onDelete,
-  showDivider = false,
 }: ChecklistItemRowProps) {
   const { t } = useTranslation("dashboard");
   const [value, setValue] = useState(item.content);
@@ -69,62 +62,67 @@ function ChecklistItemRow({
   };
 
   return (
-    <Box>
-      <Group gap="sm" align="center" wrap="nowrap" px={4} py={4}>
-        <Checkbox
-          aria-label={t("checklist.checkboxAria")}
-          checked={item.isCompleted}
-          onChange={(event) => onToggle(item.id, event.currentTarget.checked)}
-          radius="sm"
-          size="sm"
-          styles={{ input: { cursor: "pointer" } }}
-        />
-        <TextInput
-          value={value}
-          onChange={(event) => setValue(event.currentTarget.value)}
-          onBlur={handleBlur}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              event.currentTarget.blur();
-            }
-          }}
-          variant="unstyled"
-          size="sm"
-          style={{ flex: 1, minWidth: 0 }}
-          styles={{
-            input: {
-              textDecoration: item.isCompleted ? "line-through" : "none",
-              color: item.isCompleted
-                ? "var(--mantine-color-dimmed)"
-                : "inherit",
-              paddingTop: 0,
-              paddingBottom: 0,
-            },
-          }}
-          placeholder={t("checklist.inputPlaceholder")}
-          readOnly={item.isCompleted}
-        />
-        <ActionIcon
-          variant="subtle"
-          color="red"
-          aria-label={t("checklist.deleteAria")}
-          onClick={() => onDelete(item.id)}
-        >
-          <IconTrash size={16} />
-        </ActionIcon>
-      </Group>
-      {showDivider && <Divider my={0} />}
-    </Box>
+    <Paper
+      withBorder
+      radius="md"
+      px="sm"
+      py={6}
+      style={{
+        display: "flex",
+        gap: "0.5rem",
+        alignItems: "center",
+        backgroundColor: item.isCompleted
+          ? "var(--mantine-color-gray-0)"
+          : "var(--mantine-color-body)",
+      }}
+    >
+      <Checkbox
+        aria-label={t("checklist.checkboxAria")}
+        checked={item.isCompleted}
+        onChange={(event) => onToggle(item.id, event.currentTarget.checked)}
+        radius="sm"
+        styles={{ input: { cursor: "pointer" } }}
+      />
+      <TextInput
+        value={value}
+        onChange={(event) => setValue(event.currentTarget.value)}
+        onBlur={handleBlur}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            event.currentTarget.blur();
+          }
+        }}
+        variant="unstyled"
+        size="sm"
+        style={{ flex: 1 }}
+        styles={{
+          input: {
+            textDecoration: item.isCompleted ? "line-through" : "none",
+            color: item.isCompleted ? "var(--mantine-color-dimmed)" : "inherit",
+          },
+        }}
+        placeholder={t("checklist.inputPlaceholder")}
+        readOnly={item.isCompleted}
+      />
+      <ActionIcon
+        variant="subtle"
+        color="red"
+        aria-label={t("checklist.deleteAria")}
+        onClick={() => onDelete(item.id)}
+      >
+        <IconTrash size={16} />
+      </ActionIcon>
+    </Paper>
   );
 }
 
-const CHECKLIST_CARD_HEIGHT = DASHBOARD_WIDGET_CARD_HEIGHT;
+const CARD_MIN_HEIGHT = 360;
 
 export function DashboardChecklist() {
   const queryClient = useQueryClient();
   const { t } = useTranslation(["dashboard", "system"]);
   const [inputValue, setInputValue] = useState("");
-  const [showCompleted, setShowCompleted] = useState(true);
+  const [showCompleted, setShowCompleted] = useState(false);
   const queryKey = ["dashboardChecklist"] as const;
 
   const { data, isLoading } = useQuery({
@@ -376,15 +374,6 @@ export function DashboardChecklist() {
 
   const maxItems = data?.maxItems ?? 0;
   const isLimitReached = maxItems > 0 && totalCount >= maxItems;
-  const countLabelText =
-    maxItems > 0
-      ? t("dashboard:checklist.countLabelShort", {
-          current: totalCount,
-          max: maxItems,
-        })
-      : t("dashboard:checklist.countLabelUnlimited", {
-          current: totalCount,
-        });
 
   const handleAdd = () => {
     if (!inputValue.trim() || isLimitReached) return;
@@ -404,166 +393,155 @@ export function DashboardChecklist() {
   };
 
   return (
-    <Box
+    <Card
+      shadow="sm"
+      padding="lg"
+      radius="md"
+      withBorder
       style={{
-        height: DASHBOARD_WIDGET_HEIGHT,
+        height: "100%",
+        minHeight: CARD_MIN_HEIGHT,
         display: "flex",
-        flexDirection: "column",
       }}
     >
-      <Group justify="space-between" align="center" mb={4}>
-        <Title order={4} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <span>{t("dashboard:checklist.title")}</span>
-          <Text size="xs" c={isLimitReached ? "red.6" : "dimmed"} component="span">
-            ({countLabelText})
-          </Text>
-          {isLimitReached && (
-            <Badge color="red" size="xs" radius="sm" variant="light">
-              {t("dashboard:checklist.limitBadge")}
-            </Badge>
-          )}
-        </Title>
-        <ThemeIcon variant="light" color="green" radius="md" size="lg">
-          <IconCheck size={16} />
-        </ThemeIcon>
-      </Group>
+      <Stack gap="sm" style={{ flex: 1 }}>
+        <Group justify="space-between">
+          <div>
+            <Text fw={600}>{t("dashboard:checklist.title")}</Text>
+            <Text size="sm" c="dimmed">
+              {isLimitReached
+                ? t("dashboard:checklist.limitReached")
+                : t("dashboard:checklist.countLabel", {
+                    current: totalCount,
+                    max: maxItems,
+                  })}
+            </Text>
+          </div>
 
-      <TextInput
-        value={inputValue}
-        onChange={(event) => setInputValue(event.currentTarget.value)}
-        placeholder={
-          isLimitReached
-            ? t("dashboard:checklist.inputPlaceholderLimit")
-            : t("dashboard:checklist.inputPlaceholderHint")
-        }
-        size="sm"
-        rightSection={
-          <ActionIcon
-            size="sm"
-            variant="filled"
-            color="blue"
-            radius="xl"
-            disabled={!inputValue.trim() || isLimitReached}
-            onClick={handleAdd}
-          >
-            <IconPlus size={14} />
-          </ActionIcon>
-        }
-        rightSectionWidth={32}
-        onKeyDown={(event) => {
-          if (event.key === "Enter" && !event.nativeEvent.isComposing) {
-            event.preventDefault();
-            handleAdd();
+          <ThemeIcon variant="light" color="green" radius="md">
+            <IconCheck size={18} />
+          </ThemeIcon>
+        </Group>
+
+        <TextInput
+          value={inputValue}
+          onChange={(event) => setInputValue(event.currentTarget.value)}
+          placeholder={
+            isLimitReached
+              ? t("dashboard:checklist.inputPlaceholderLimit")
+              : t("dashboard:checklist.inputPlaceholderHint")
           }
-        }}
-        disabled={isLimitReached}
-        mb="xs"
-      />
+          rightSection={
+            <ActionIcon
+              size="sm"
+              variant="filled"
+              color="blue"
+              radius="xl"
+              disabled={!inputValue.trim() || isLimitReached}
+              onClick={handleAdd}
+            >
+              <IconPlus size={14} />
+            </ActionIcon>
+          }
+          rightSectionWidth={32}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" && !event.nativeEvent.isComposing) {
+              event.preventDefault();
+              handleAdd();
+            }
+          }}
+          disabled={isLimitReached}
+        />
 
-      <Card
-        shadow="sm"
-        padding={0}
-        radius="md"
-        withBorder
-        style={{
-          flex: 1,
-          minHeight: CHECKLIST_CARD_HEIGHT,
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
-        }}
-      >
         <ScrollArea style={{ flex: 1 }} offsetScrollbars type="auto">
-          <Box px="md" py="sm">
-            <Stack gap={0}>
-              {isLoading && (
-                <Box py="sm">
-                  <Text size="sm" c="dimmed">
-                    {t("system:status.loading")}
-                  </Text>
-                </Box>
-              )}
+          <Stack gap="xs" pb="xs">
+            {isLoading && (
+              <Box py="sm">
+                <Text size="sm" c="dimmed">
+                  {t("system:status.loading")}
+                </Text>
+              </Box>
+            )}
 
-              {!isLoading && data && data.activeItems.length === 0 && (
-                <Text size="sm" c="dimmed" py="sm">
+            {!isLoading && data && data.activeItems.length === 0 && (
+              <Paper withBorder radius="md" p="md" bg="gray.0">
+                <Text size="sm" c="dimmed">
                   {t("dashboard:checklist.empty")}
                 </Text>
-              )}
+              </Paper>
+            )}
 
-              {data?.activeItems.map((item, index) => (
-                <ChecklistItemRow
-                  key={item.id}
-                  item={item}
-                  onToggle={handleToggle}
-                  onUpdate={handleUpdate}
-                  onDelete={handleDelete}
-                  showDivider={index !== data.activeItems.length - 1}
-                />
-              ))}
+            {data?.activeItems.map((item) => (
+              <ChecklistItemRow
+                key={item.id}
+                item={item}
+                onToggle={handleToggle}
+                onUpdate={handleUpdate}
+                onDelete={handleDelete}
+              />
+            ))}
 
-              {!!data?.completedItems.length && (
-                <Box pt="sm">
-                  <Divider mb="xs" />
-                  <Group justify="space-between" gap="xs">
-                    <UnstyledButton
-                      onClick={() => setShowCompleted((prev) => !prev)}
-                      style={{
-                        flex: 1,
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        padding: "0.25rem 0",
-                        color: "var(--mantine-color-dimmed)",
-                      }}
-                    >
-                      <Text size="sm">
-                        {t("dashboard:checklist.completedToggle", {
-                          count: data.completedItems.length,
-                        })}
-                      </Text>
-                      {showCompleted ? (
-                        <IconChevronUp size={16} />
-                      ) : (
-                        <IconChevronDown size={16} />
-                      )}
-                    </UnstyledButton>
-                    <ActionIcon
-                      size="sm"
-                      variant="light"
-                      color="red"
-                      aria-label={t(
-                        "dashboard:checklist.deleteCompletedAria"
-                      )}
-                      onClick={() =>
-                        clearCompletedMutation.mutate(
-                          data.completedItems.map((item) => item.id)
-                        )
-                      }
-                      loading={clearCompletedMutation.isPending}
-                    >
-                      <IconTrash size={14} />
-                    </ActionIcon>
-                  </Group>
-                  <Collapse in={showCompleted}>
-                    <Stack gap={0} mt="xs">
-                      {data.completedItems.map((item, index) => (
-                        <ChecklistItemRow
-                          key={item.id}
-                          item={item}
-                          onToggle={handleToggle}
-                          onUpdate={handleUpdate}
-                          onDelete={handleDelete}
-                          showDivider={index !== data.completedItems.length - 1}
-                        />
-                      ))}
-                    </Stack>
-                  </Collapse>
-                </Box>
-              )}
-            </Stack>
-          </Box>
+            {!!data?.completedItems.length && (
+              <Box>
+                <Divider mb="xs" />
+                <Group justify="space-between" gap="xs">
+                  <UnstyledButton
+                    onClick={() => setShowCompleted((prev) => !prev)}
+                    style={{
+                      flex: 1,
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      padding: "0.25rem 0",
+                      color: "var(--mantine-color-dimmed)",
+                    }}
+                  >
+                    <Text size="sm">
+                      {t("dashboard:checklist.completedToggle", {
+                        count: data.completedItems.length,
+                      })}
+                    </Text>
+                    {showCompleted ? (
+                      <IconChevronUp size={16} />
+                    ) : (
+                      <IconChevronDown size={16} />
+                    )}
+                  </UnstyledButton>
+                  <ActionIcon
+                    size="sm"
+                    variant="light"
+                    color="red"
+                    aria-label={t(
+                      "dashboard:checklist.deleteCompletedAria"
+                    )}
+                    onClick={() =>
+                      clearCompletedMutation.mutate(
+                        data.completedItems.map((item) => item.id)
+                      )
+                    }
+                    loading={clearCompletedMutation.isPending}
+                  >
+                    <IconTrash size={14} />
+                  </ActionIcon>
+                </Group>
+                <Collapse in={showCompleted}>
+                  <Stack gap="xs" mt="xs">
+                    {data.completedItems.map((item) => (
+                      <ChecklistItemRow
+                        key={item.id}
+                        item={item}
+                        onToggle={handleToggle}
+                        onUpdate={handleUpdate}
+                        onDelete={handleDelete}
+                      />
+                    ))}
+                  </Stack>
+                </Collapse>
+              </Box>
+            )}
+          </Stack>
         </ScrollArea>
-      </Card>
-    </Box>
+      </Stack>
+    </Card>
   );
 }

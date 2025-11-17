@@ -1,7 +1,6 @@
-import { Card, ActionIcon, Text, Stack } from "@mantine/core";
-import { IconPlus } from "@tabler/icons-react";
-import { useTranslation } from "react-i18next";
-import { DASHBOARD_WIDGET_CARD_HEIGHT } from "@/constants/dashboard";
+import { Card, ActionIcon, Text, Stack } from '@mantine/core';
+import { IconPlus } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 interface CreateStickyNoteButtonProps {
   onCreate: (color: string, position: number) => void;
@@ -23,14 +22,14 @@ export function CreateStickyNoteButton({
       radius="md"
       withBorder
       style={{
-        backgroundColor: "#f5f5f5",
-        height: `${DASHBOARD_WIDGET_CARD_HEIGHT}px`,
-        cursor: "pointer",
-        transition: "all 0.2s ease",
-        border: "2px dashed #ccc",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        backgroundColor: '#f5f5f5',
+        height: '230px',
+        cursor: 'pointer',
+        transition: 'all 0.2s ease',
+        border: '2px dashed #ccc',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
       }}
       styles={{
         root: {
