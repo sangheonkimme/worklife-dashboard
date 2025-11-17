@@ -5,6 +5,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { DashboardLayout } from "./components/DashboardLayout";
 import { AuthLayout } from "./components/AuthLayout";
 import { PrivateRoute } from "./components/auth/PrivateRoute";
+import { AnalyticsProvider } from "@/components/analytics/AnalyticsProvider";
 
 // Lazy load pages
 const DashboardPage = lazy(() =>
@@ -58,6 +59,7 @@ const App = () => {
   return (
     <GoogleOAuthProvider clientId={googleClientId}>
       <BrowserRouter>
+        <AnalyticsProvider />
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
             {/* Auth Routes */}

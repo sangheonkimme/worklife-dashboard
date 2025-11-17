@@ -22,6 +22,7 @@ npm install
 
 ```env
 VITE_API_URL=http://localhost:5001
+VITE_GA_ID=G-XXXXXXXXXX # 선택 사항: 구글 애널리틱스 측정 ID
 ```
 
 ### 개발 서버 실행
