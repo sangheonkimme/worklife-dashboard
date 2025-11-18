@@ -24,6 +24,7 @@ import { ImageToPdfCard } from "@/components/dashboard/ImageToPdfCard";
 import { ImageCropCard } from "@/components/dashboard/ImageCropCard";
 import { TimerCard } from "@/components/dashboard/TimerCard";
 import { DashboardChecklist } from "@/components/dashboard/DashboardChecklist";
+import { trackEvent } from "@/lib/analytics";
 
 type WidgetConfig = {
   id: string;
@@ -158,15 +159,25 @@ export const DashboardPage = () => {
       return;
     }
 
-    setWidgetOrder((items) => {
-      const oldIndex = items.indexOf(String(active.id));
-      const newIndex = items.indexOf(String(over.id));
+    const activeId = String(active.id);
+    const overId = String(over.id);
+    const oldIndex = widgetOrder.indexOf(activeId);
+    const newIndex = widgetOrder.indexOf(overId);
 
-      if (oldIndex === -1 || newIndex === -1) {
-        return items;
-      }
+    if (oldIndex === -1 || newIndex === -1) {
+      return;
+    }
 
-      return arrayMove(items, oldIndex, newIndex);
+    setWidgetOrder((items) => arrayMove(items, oldIndex, newIndex));
+
+    trackEvent({
+      name: "dashboard_widget_reordered",
+      params: {
+        widget_id: activeId,
+        from_index: oldIndex,
+        to_index: newIndex,
+        total_widgets: widgetOrder.length,
+      },
     });
   };
 

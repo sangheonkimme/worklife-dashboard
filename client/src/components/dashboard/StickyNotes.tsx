@@ -8,6 +8,7 @@ import { CreateStickyNoteButton } from "./CreateStickyNoteButton";
 import { STICKY_NOTE_COLOR_ARRAY } from "@/types/stickyNote";
 import type { StickyNote } from "@/types/stickyNote";
 import { getApiErrorMessage } from "@/utils/error";
+import { trackEvent } from "@/lib/analytics";
 
 const MAX_NOTES = 3;
 const POSITIONS = [0, 1, 2];
@@ -26,12 +27,22 @@ export function StickyNotes() {
   const createMutation = useMutation({
     mutationFn: (data: { color: string; position: number }) =>
       stickyNotesApi.create(data),
-    onSuccess: () => {
+    onSuccess: (createdNote, variables) => {
       queryClient.invalidateQueries({ queryKey: ["stickyNotes"] });
       notifications.show({
         title: t("system:notifications.successTitle"),
         message: t("dashboard:stickyNotes.notifications.createSuccess"),
         color: "green",
+      });
+
+      trackEvent({
+        name: "sticky_note_saved",
+        params: {
+          action: "create",
+          color: variables?.color,
+          position: variables?.position,
+          note_id: (createdNote as StickyNote | undefined)?.id,
+        },
       });
     },
     onError: (error: unknown) => {
@@ -67,6 +78,16 @@ export function StickyNotes() {
 
       return { previousNotes };
     },
+    onSuccess: (_result, variables) => {
+      trackEvent({
+        name: "sticky_note_saved",
+        params: {
+          action: "update",
+          note_id: variables.id,
+          char_count: variables.content.length,
+        },
+      });
+    },
     onError: (_error, _variables, context) => {
       // 실패 시 롤백
       if (context?.previousNotes) {
@@ -86,12 +107,19 @@ export function StickyNotes() {
   // 스티커 메모 삭제 mutation
   const deleteMutation = useMutation({
     mutationFn: (id: string) => stickyNotesApi.deleteById(id),
-    onSuccess: () => {
+    onSuccess: (_result, id) => {
       queryClient.invalidateQueries({ queryKey: ["stickyNotes"] });
       notifications.show({
         title: t("system:notifications.successTitle"),
         message: t("dashboard:stickyNotes.notifications.deleteSuccess"),
         color: "green",
+      });
+
+      trackEvent({
+        name: "sticky_note_deleted",
+        params: {
+          note_id: id,
+        },
       });
     },
     onError: () => {

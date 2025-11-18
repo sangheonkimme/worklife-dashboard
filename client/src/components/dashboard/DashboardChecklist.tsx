@@ -31,6 +31,7 @@ import type {
   DashboardChecklistResponse,
 } from "@/types/dashboardChecklist";
 import { getApiErrorMessage } from "@/utils/error";
+import { trackEvent } from "@/lib/analytics";
 
 interface ChecklistItemRowProps {
   item: DashboardChecklistItem;
@@ -285,6 +286,19 @@ export function DashboardChecklist() {
       });
 
       return { previousData };
+    },
+    onSuccess: (_result, variables) => {
+      const current =
+        queryClient.getQueryData<DashboardChecklistResponse>(queryKey);
+      trackEvent({
+        name: "checklist_item_completed",
+        params: {
+          item_id: variables.id,
+          is_completed: variables.isCompleted,
+          active_count: current?.activeItems.length ?? 0,
+          completed_count: current?.completedItems.length ?? 0,
+        },
+      });
     },
     onError: (_error, _variables, context) => {
       if (context?.previousData) {
