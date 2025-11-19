@@ -43,6 +43,11 @@ const FinancialCalculatorPage = lazy(() =>
     default: module.FinancialCalculatorPage,
   }))
 );
+const LandingPage = lazy(() =>
+  import("./pages/LandingPage").then((module) => ({
+    default: module.LandingPage,
+  }))
+);
 
 // Loading fallback component
 const LoadingFallback = () => {
@@ -162,11 +167,11 @@ const App = () => {
               }
             />
 
-            {/* Default Route */}
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            {/* Public landing */}
+            <Route path="/" element={<LandingPage />} />
 
             {/* 404 Route */}
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>
       </BrowserRouter>
