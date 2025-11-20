@@ -1,0 +1,403 @@
+{
+  "pomodoro": {
+    "title": "포모도로 타이머",
+    "sessionLabels": {
+      "focus": "집중 시간",
+      "shortBreak": "짧은 휴식",
+      "longBreak": "긴 휴식"
+    },
+    "actions": {
+      "start": "시작",
+      "pause": "일시정지",
+      "resume": "재개",
+      "stop": "중지"
+    },
+    "badges": {
+      "today": "오늘:",
+      "completed": "{{count}}회 완료"
+    },
+    "aria": {
+      "goToDashboard": "대시보드로 이동",
+      "closeWidget": "위젯 닫기"
+    },
+    "notifications": {
+      "title": "포모도로 타이머",
+      "focusComplete": "집중 시간이 끝났습니다. 휴식을 취하세요!",
+      "breakComplete": "휴식이 끝났습니다. 다음 집중을 시작하세요."
+    }
+  },
+  "stopwatch": {
+    "title": "스톱워치",
+    "status": {
+      "running": "실행 중",
+      "paused": "일시정지",
+      "idle": "정지"
+    },
+    "actions": {
+      "start": "시작",
+      "pause": "일시정지",
+      "resume": "재개",
+      "stop": "중지",
+      "recordLap": "랩 기록",
+      "reset": "리셋",
+      "openHistory": "히스토리",
+      "openSettings": "설정"
+    },
+    "menu": {
+      "notifications": "알림 설정",
+      "enableNotifications": "알림 활성화",
+      "goalLabel": "목표 시간 (분)",
+      "goalPlaceholder": "0 = 목표 없음"
+    },
+    "labels": {
+      "statusRunning": "실행 중",
+      "statusPaused": "일시정지",
+      "statusIdle": "정지",
+      "lapTimesRecent": "랩 타임 (최근 3개)",
+      "lapCount": "랩:",
+      "average": "평균:",
+      "lapsBadge": "랩:",
+      "averageBadge": "평균:",
+      "lapsValue": "{{count}}개",
+      "averageValue": "{{value}}",
+      "goalMinutes": "목표 시간 (분)",
+      "lapSummary": "랩: {{count}}개",
+      "noLaps": "랩 타임이 없습니다."
+    },
+    "buttons": {
+      "saveSession": "세션 저장"
+    },
+    "history": {
+      "title": "저장된 세션",
+      "empty": "저장된 세션이 없습니다.",
+      "total": "총 {{count}}개 세션",
+      "deleteAll": "전체 삭제",
+      "deleteTitle": "세션 삭제",
+      "deleteMessage": "\"{{name}}\" 세션이 삭제되었습니다.",
+      "clearTitle": "히스토리 삭제",
+      "clearMessage": "모든 세션이 삭제되었습니다.",
+      "confirmClear": "모든 저장된 세션을 삭제할까요?",
+      "untitled": "무제",
+      "lapHeader": "랩",
+      "lapTimeHeader": "랩 시간",
+      "totalTimeHeader": "총 시간",
+      "noLapData": "랩 타임이 없습니다.",
+      "aria": {
+        "expand": "세부 정보 펼치기",
+        "collapse": "세부 정보 접기",
+        "delete": "세션 삭제"
+      }
+    },
+    "saveModal": {
+      "title": "세션 저장",
+      "nameLabel": "세션 이름",
+      "namePlaceholder": "예: 기능 개발, 운동, 요리",
+      "notesLabel": "메모 (선택)",
+      "notesPlaceholder": "세션에 대한 메모를 남겨주세요",
+      "cancel": "취소",
+      "submit": "저장",
+      "validation": "세션 이름을 입력해주세요.",
+      "successTitle": "세션 저장 완료",
+      "successMessage": "\"{{name}}\" 세션이 저장되었습니다.",
+      "errorTitle": "세션 저장 실패",
+      "errorMessage": "세션을 저장하는 중 오류가 발생했습니다."
+    },
+    "notifications": {
+      "goalReachedTitle": "스톱워치 목표 시간 도달",
+      "goalReachedBody": "목표 시간 {{time}}에 도달했습니다!"
+    },
+    "widget": {
+      "aria": {
+        "goToDashboard": "대시보드로 이동",
+        "closeWidget": "위젯 닫기"
+      },
+      "lapCount": "랩: {{count}}개"
+    },
+    "dock": {
+      "tooltipTitle": "스톱워치",
+      "statusRunning": "실행 중",
+      "statusPaused": "일시정지",
+      "statusIdle": "정지",
+      "lapCount": "랩: {{count}}개"
+    }
+  },
+  "timer": {
+    "title": "일반 타이머",
+    "status": {
+      "idle": "대기중",
+      "running": "진행 중",
+      "paused": "일시정지",
+      "finished": "완료"
+    },
+    "badges": {
+      "endingSoon": "곧 종료",
+      "autoRepeat": "자동 반복"
+    },
+    "tooltips": {
+      "autoRepeat": "완료 후 동일한 시간으로 다시 시작합니다."
+    },
+    "aria": {
+      "openSettings": "타이머 설정 열기",
+      "closeWidget": "타이머 위젯 닫기"
+    },
+    "display": {
+      "total": "총 {{time}}"
+    },
+    "sections": {
+      "quickPresetsTitle": "빠른 설정",
+      "quickPresetsDescription": "클릭 한 번으로 시간 지정",
+      "customTitle": "커스텀 시간"
+    },
+    "fields": {
+      "minutes": "분",
+      "seconds": "초"
+    },
+    "buttons": {
+      "start": "시작",
+      "pause": "일시정지",
+      "resume": "재개",
+      "reset": "리셋",
+      "restart": "다시 설정",
+      "apply": "적용"
+    },
+    "messages": {
+      "finished": "타이머가 완료되었습니다. 위 버튼으로 다시 시작하세요.",
+      "invalidTitle": "유효한 시간을 입력하세요",
+      "invalidMessage": "1초 이상으로 설정해야 합니다."
+    },
+    "modal": {
+      "title": "타이머 설정",
+      "notificationsLabel": "타이머 알림 받기",
+      "soundLabel": "소리 알림",
+      "soundDescription": "사전 알림과 완료 시 짧은 비프음을 재생합니다.",
+      "autoRepeatLabel": "완료 후 자동 반복",
+      "autoRepeatDescription": "타이머가 끝나면 동일한 시간으로 다시 시작합니다.",
+      "preAlertLabel": "사전 알림",
+      "preAlertPlaceholder": "시간을 선택하세요",
+      "browserPermission": "브라우저 알림을 위해 권한이 필요할 수 있습니다. 최초 사용 시 브라우저 팝업을 허용해주세요."
+    },
+    "preAlertOptions": {
+      "none": "사용 안 함",
+      "30s": "30초 전",
+      "1m": "1분 전",
+      "5m": "5분 전"
+    },
+    "notifications": {
+      "startErrorTitle": "시간을 설정해주세요",
+      "startErrorMessage": "1초 이상의 시간을 설정해야 타이머를 시작할 수 있습니다.",
+      "preAlertTitle": "타이머 알림",
+      "preAlertMessage": "{{seconds}}초 후에 타이머가 종료됩니다.",
+      "browserPreAlert": "곧 타이머가 종료됩니다. 준비하세요!",
+      "completeTitle": "타이머 완료",
+      "completeMessage": "설정한 시간이 모두 경과했습니다.",
+      "browserComplete": "설정한 타이머가 종료되었습니다."
+    },
+    "presets": {
+      "minutesLabel": "{{value}}분"
+    },
+    "notes": {
+      "autoRepeatBadge": "자동 반복",
+      "endingSoonBadge": "곧 종료"
+    }
+  },
+  "imageToPdf": {
+    "title": "이미지 → PDF",
+    "notifications": {
+      "uploadSuccess": "{{count}}개의 이미지가 추가되었습니다.",
+      "clearSuccess": "모든 이미지가 삭제되었습니다.",
+      "emptyErrorTitle": "이미지 없음",
+      "emptyErrorMessage": "변환할 이미지를 먼저 업로드해주세요.",
+      "generateSuccessTitle": "PDF 생성 완료",
+      "generateSuccessMessage": "{{fileName}} 파일이 다운로드되었습니다.",
+      "generateErrorTitle": "PDF 생성 실패",
+      "generateErrorMessage": "PDF 생성 중 문제가 발생했습니다.",
+      "unexpectedErrorMessage": "예상치 못한 오류가 발생했습니다."
+    },
+    "upload": {
+      "headline": "이미지를 드래그하거나 클릭하여 업로드",
+      "subtitle": "PNG, JPG, JPEG, WEBP 파일 지원 (최대 10MB)",
+      "dropHint": "이 영역에 이미지를 끌어다 놓으세요"
+    },
+    "preview": {
+      "empty": "업로드된 이미지가 없습니다",
+      "title": "업로드된 이미지 ({{count}}개)",
+      "clearAll": "전체 삭제"
+    },
+    "button": "PDF 생성 및 다운로드",
+    "options": {
+      "title": "PDF 설정",
+      "pageSize": "페이지 크기",
+      "orientation": "페이지 방향",
+      "orientationOptions": {
+        "portrait": "세로",
+        "landscape": "가로"
+      },
+      "imageFit": "이미지 맞춤",
+      "imageFitOptions": {
+        "fit": "맞춤",
+        "fill": "채우기",
+        "original": "원본"
+      },
+      "imageFitDescriptions": {
+        "fit": "비율을 유지하며 페이지에 맞춥니다.",
+        "fill": "페이지를 채우도록 크기 조정합니다.",
+        "original": "이미지 원본 크기를 유지합니다."
+      }
+    },
+    "errors": {
+      "noImages": "변환할 이미지가 없습니다.",
+      "embedFailed": "{{name}} 이미지를 PDF에 추가하지 못했습니다.",
+      "canvasContext": "Canvas 컨텍스트를 가져올 수 없습니다.",
+      "imageLoad": "이미지를 불러오지 못했습니다.",
+      "generic": "PDF 생성 중 오류가 발생했습니다."
+    }
+  },
+  "imageCrop": {
+    "title": "이미지 자르기",
+    "subtitle": "업로드한 이미지를 빠르게 자르고 내보내세요.",
+    "dropzone": {
+      "title": "이미지를 드롭하거나 클릭하여 업로드",
+      "replaceTitle": "현재 이미지를 교체하려면 드롭/클릭",
+      "subtitle": "PNG, JPEG, WebP 최대 20MB · ⌘/Ctrl + V 붙여넣기 지원"
+    },
+    "aspect": {
+      "free": "자유 비율",
+      "custom": "사용자 지정"
+    },
+    "sections": {
+      "inputArea": "이미지 입력",
+      "inputDescription": "자르기 전에 이미지를 업로드·드롭·붙여넣기 해주세요.",
+      "aspect": "비율 프리셋",
+      "freeformArea": "자르기 영역 크기",
+      "zoom": "확대/축소",
+      "format": "출력 형식",
+      "quality": "품질",
+      "transparent": "투명 배경 유지",
+      "transparentHint": "JPEG는 투명 배경을 지원하지 않습니다."
+    },
+    "fields": {
+      "aspectWidth": "가로",
+      "aspectHeight": "세로",
+      "cropWidth": "가로(px)",
+      "cropHeight": "세로(px)"
+    },
+    "actions": {
+      "download": "자르기 다운로드",
+      "copy": "클립보드에 복사",
+      "clearImage": "현재 이미지 제거"
+    },
+    "empty": {
+      "title": "이미지를 드롭하거나 붙여넣어 시작하세요",
+      "description": "업로드 영역을 사용하거나 클립보드에서 바로 붙여넣을 수 있습니다."
+    },
+    "history": {
+      "title": "최근 내보내기",
+      "empty": "내보내기를 수행하면 여기에서 다시 사용할 수 있습니다.",
+      "download": "다운로드",
+      "copy": "복사",
+      "remove": "삭제",
+      "clear": "기록 지우기"
+    },
+    "notifications": {
+      "unsupportedTitle": "지원하지 않는 파일",
+      "unsupportedMessage": "PNG, JPEG, WebP 형식의 이미지를 업로드해주세요.",
+      "sizeTitle": "파일이 너무 큽니다",
+      "sizeMessage": "20MB 이하의 이미지를 선택해주세요.",
+      "loadedTitle": "이미지 불러옴",
+      "loadedMessage": "{{width}}×{{height}} px를 불러왔습니다.",
+      "loadFailedTitle": "이미지를 불러올 수 없음",
+      "loadFailedMessage": "이미지 파일을 읽는 중 문제가 발생했습니다.",
+      "noImageTitle": "이미지 필요",
+      "noImageMessage": "내보내기 전에 이미지를 추가해주세요.",
+      "exportSuccessTitle": "자르기 완료",
+      "exportSuccessMessage": "잘라낸 이미지가 준비되었습니다.",
+      "copiedTitle": "복사 완료",
+      "copiedMessage": "이미지가 클립보드에 복사되었습니다.",
+      "exportFailedTitle": "내보내기 실패",
+      "exportFailedMessage": "자른 이미지를 내보내지 못했습니다. 다시 시도해주세요."
+    }
+  },
+  "loanCalculator": {
+    "title": "대출 이자 계산기",
+    "subtitle": "다양한 상환 방식을 한 화면에서 비교해 보세요.",
+    "badge": "금융 도구",
+    "sections": {
+      "inputs": "대출 조건",
+      "results": "상환 요약",
+      "schedule": "월별 상환 일정"
+    },
+    "fields": {
+      "amount": "대출 금액",
+      "rate": "연이자율",
+      "years": "기간(년)",
+      "months": "기간(개월)",
+      "grace": "거치기간(개월)",
+      "graceHint": "거치기간 동안에는 이자만 납부"
+    },
+    "repaymentTypes": {
+      "amortized": "원리금균등",
+      "equalPrincipal": "원금균등",
+      "interestOnly": "만기일시(이자만)"
+    },
+    "units": {
+      "currency": "원",
+      "percent": "%"
+    },
+    "results": {
+      "monthlyPayment": "월 납입금",
+      "fixedPayment": "거치 종료 후 고정 납입액",
+      "firstPayment": "예상 첫 납입금",
+      "totalInterest": "총 이자",
+      "totalInterestDesc": "전체 기간 동안 납부할 이자 합계",
+      "totalPayment": "총 상환액",
+      "totalPaymentDesc": "원금 + 이자",
+      "averagePayment": "월 평균 납입금",
+      "averagePaymentDesc": "총 상환액 ÷ 전체 개월 수"
+    },
+    "summary": {
+      "rate": "연이율 {{rate}}",
+      "period": "총 {{months}}개월",
+      "grace": "거치 {{months}}개월"
+    },
+    "notes": {
+      "disclaimer": "실제 금융기관 조건과 차이가 있을 수 있으며 참고용으로만 사용해주세요."
+    },
+    "messages": {
+      "invalidTitle": "기간을 확인하세요",
+      "invalidPeriod": "최소 1개월 이상의 상환 기간을 입력해야 합니다.",
+      "unavailableTitle": "계산할 수 없습니다",
+      "unavailableBody": "입력값을 조정한 뒤 다시 계산해주세요."
+    },
+    "schedule": {
+      "caption": "모든 금액은 반올림한 값이며 마지막 회차는 소폭 차이가 날 수 있습니다.",
+      "month": "회차",
+      "payment": "납입금",
+      "principal": "원금",
+      "interest": "이자",
+      "balance": "잔액",
+      "moreHint": "나머지 {{remaining}}개월 보기"
+    },
+    "actions": {
+      "showAll": "총 {{count}}개월 모두 보기",
+      "showLess": "접기"
+    }
+  },
+  "registry": {
+    "imageToPdf": {
+      "name": "이미지 → PDF",
+      "description": "여러 이미지를 하나의 PDF 파일로 변환합니다"
+    },
+    "imageCrop": {
+      "name": "이미지 자르기",
+      "description": "이미지를 자르고 필요한 형식으로 바로 내보냅니다"
+    },
+    "timer": {
+      "name": "타이머",
+      "description": "자유롭게 시간을 설정하고 카운트다운을 실행합니다"
+    },
+    "loanCalculator": {
+      "name": "대출 이자 계산기",
+      "description": "원리금/원금균등, 만기일시 상환액을 빠르게 계산하세요"
+    }
+  }
+}

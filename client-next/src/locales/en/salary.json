@@ -1,0 +1,97 @@
+{
+  "input": {
+    "title": "Salary inputs",
+    "reset": "Reset",
+    "salaryType": "Salary type",
+    "salaryTypeOptions": {
+      "annual": "Annual salary",
+      "monthly": "Monthly salary"
+    },
+    "amountLabel": {
+      "annual": "Annual salary",
+      "monthly": "Monthly salary"
+    },
+    "amountPlaceholder": "Enter the amount",
+    "currencySuffix": " KRW",
+    "optionsTitle": "Additional options",
+    "retirement": {
+      "label": "Severance",
+      "separate": "Separate",
+      "included": "Included"
+    },
+    "nonTaxable": {
+      "label": "Non-taxable amount (annual)",
+      "placeholder": "e.g. 2,400,000 KRW (200,000 KRW per month)",
+      "monthly": "Monthly {{amount}}"
+    },
+    "dependents": {
+      "label": "Number of dependents (including yourself)",
+      "unit": "{{count}} people"
+    },
+    "children": {
+      "label": "Children aged 8 to 20",
+      "unit": "{{count}} children"
+    },
+    "smallCompany": "SME income tax deduction"
+  },
+  "result": {
+    "title": "Payslip",
+    "earningsTitle": "Earnings",
+    "monthlySalary": "Monthly salary",
+    "deductionsTitle": "Deductions",
+    "insuranceTitle": "Social insurance",
+    "taxTitle": "Income tax",
+    "totalDeductions": "Total deductions",
+    "netPayTitle": "Net pay",
+    "notes": {
+      "disclaimer": "* Actual deductions may vary by employer and individual circumstances.",
+      "rates": "* 2025 tax rates are applied."
+    }
+  },
+  "breakdown": {
+    "title": "Deduction details",
+    "insuranceTitle": "Social insurance details",
+    "taxTitle": "Income tax details",
+    "footnote1": "* Actual deductions may vary by employer and individual circumstances.",
+    "footnote2": "* 2025 tax rates are applied."
+  },
+  "deductions": {
+    "nationalPension": {
+      "label": "National pension (4.5%)",
+      "tooltip": "4.5% of taxable income (capped at 5.9M KRW per month)."
+    },
+    "healthInsurance": {
+      "label": "Health insurance (3.545%)",
+      "tooltip": "3.545% of taxable income."
+    },
+    "longTermCare": {
+      "label": "Long-term care insurance (12.95%)",
+      "tooltip": "12.95% of the health insurance premium."
+    },
+    "employmentInsurance": {
+      "label": "Employment insurance (0.9%)",
+      "tooltip": "0.9% of taxable income."
+    },
+    "taxBase": {
+      "label": "Income tax (base)",
+      "tooltip": "Calculated using the simplified tax table and adjusted by dependents."
+    },
+    "taxFinal": {
+      "label": "Income tax (after reduction)",
+      "tooltip": "Final income tax after SME reduction."
+    },
+    "taxDefault": {
+      "label": "Income tax",
+      "tooltip": "Calculated using the simplified tax table and adjusted by dependents."
+    },
+    "smallCompanyReduction": {
+      "label": "SME income tax reduction (90%)",
+      "tooltip": "Applied when eligible for the small/medium company deduction."
+    },
+    "localIncomeTax": {
+      "label": "Local income tax (10%)",
+      "tooltipDefault": "10% of income tax is deducted.",
+      "tooltipReduced": "10% of the reduced income tax is deducted."
+    }
+  }
+}
