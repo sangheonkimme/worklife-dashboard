@@ -45,7 +45,7 @@ PORT=5001
 NODE_ENV=development
 
 # 클라이언트
-CLIENT_URL="http://localhost:5173"
+CLIENT_URL="http://localhost:3000"
 ```
 
 ### 개발 서버 실행

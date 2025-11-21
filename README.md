@@ -111,7 +111,7 @@ npm install
 npm run dev
 ```
 
-클라이언트: http://localhost:5173
+클라이언트: http://localhost:3000 (Next.js 개발 서버 기본 포트)
 
 ## 주요 명령어
 
@@ -232,7 +232,7 @@ JWT_EXPIRES_IN="1h"
 JWT_REFRESH_EXPIRES_IN="7d"
 PORT=5001
 NODE_ENV=development
-CLIENT_URL="http://localhost:5173"
+CLIENT_URL="http://localhost:3000"
 ```
 
 ## 배포

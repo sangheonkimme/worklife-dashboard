@@ -33,7 +33,7 @@ worklife-dashboard/
 ```bash
 cd client
 npm install              # 의존성 설치
-npm run dev              # 개발 서버 시작 (http://localhost:5173)
+npm run dev              # 개발 서버 시작 (http://localhost:3000)
 npm run build            # 프로덕션 빌드 (TypeScript + Vite)
 npm run preview          # 프로덕션 빌드 미리보기
 npm run lint             # ESLint 실행
@@ -263,7 +263,7 @@ JWT_EXPIRES_IN="1h"
 JWT_REFRESH_EXPIRES_IN="7d"
 PORT=5001
 NODE_ENV=development
-CLIENT_URL="http://localhost:5173"
+CLIENT_URL="http://localhost:3000"
 ```
 
 ## 주요 패턴

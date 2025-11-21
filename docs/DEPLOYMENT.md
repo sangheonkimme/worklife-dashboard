@@ -48,7 +48,7 @@ JWT_REFRESH_SECRET=dev-refresh-secret-change-in-production
 # 서버 설정
 PORT=5001
 NODE_ENV=development
-CLIENT_URL=http://localhost:5173
+CLIENT_URL=http://localhost:3000
 
 ```
 
@@ -85,7 +85,7 @@ npm install
 npm run dev
 ```
 
-클라이언트: http://localhost:5173
+클라이언트: http://localhost:3000
 
 ### 사용 가능한 Docker 명령어
 
@@ -482,7 +482,7 @@ cp .env.docker .env
 DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:5432/worklife_dashboard
 JWT_SECRET=test-secret
 JWT_REFRESH_SECRET=test-refresh-secret
-CLIENT_URL=http://localhost:5173
+CLIENT_URL=http://localhost:3000
 ```
 
 ### 3. Docker Compose 실행
@@ -513,7 +513,7 @@ docker run -p 5001:5001 \
   -e DATABASE_URL="postgresql://postgres:postgres@host.docker.internal:5432/worklife_dashboard" \
   -e JWT_SECRET="test-secret" \
   -e JWT_REFRESH_SECRET="test-refresh-secret" \
-  -e CLIENT_URL="http://localhost:5173" \
+  -e CLIENT_URL="http://localhost:3000" \
   worklife-server
 ```
 

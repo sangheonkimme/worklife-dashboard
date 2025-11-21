@@ -31,7 +31,7 @@ VITE_GA_ID=G-XXXXXXXXXX # 선택 사항: 구글 애널리틱스 측정 ID
 npm run dev
 ```
 
-애플리케이션이 http://localhost:5173 에서 실행됩니다.
+애플리케이션이 http://localhost:3000 에서 실행됩니다. (Next.js 기본 포트)
 
 ## 📁 프로젝트 구조
 
