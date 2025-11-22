@@ -81,8 +81,8 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     {
       key: "transactions",
       icon: IconWallet,
-      path: "/transactions",
-      aliasPaths: ["/expense"] as readonly string[],
+      path: "/dashboard/transactions",
+      aliasPaths: ["/dashboard/expense"] as readonly string[],
     },
     {
       key: "dashboard",
@@ -93,25 +93,25 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     {
       key: "salary",
       icon: IconCalculator,
-      path: "/salary",
+      path: "/dashboard/salary",
       aliasPaths: [] as readonly string[],
     },
     {
       key: "financeTools",
       icon: IconCurrencyWon,
-      path: "/finance-tools",
+      path: "/dashboard/finance-tools",
       aliasPaths: [] as readonly string[],
     },
     {
       key: "notes",
       icon: IconNotes,
-      path: "/notes",
+      path: "/dashboard/notes",
       aliasPaths: [] as readonly string[],
     },
     {
       key: "settings",
       icon: IconSettings,
-      path: "/settings",
+      path: "/dashboard/settings",
       aliasPaths: [] as readonly string[],
     },
   ] as const;
@@ -191,13 +191,13 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 <Menu.Label>{t('layout.menu.account')}</Menu.Label>
                 <Menu.Item
                   leftSection={<IconUser size={14} />}
-                  onClick={() => router.push("/profile")}
+                  onClick={() => router.push("/dashboard/profile")}
                 >
                   {t("layout.menu.profile")}
                 </Menu.Item>
                 <Menu.Item
                   leftSection={<IconSettings size={14} />}
-                  onClick={() => router.push("/settings")}
+                  onClick={() => router.push("/dashboard/settings")}
                 >
                   {t("layout.menu.settings")}
                 </Menu.Item>

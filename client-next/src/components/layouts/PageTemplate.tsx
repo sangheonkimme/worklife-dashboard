@@ -91,14 +91,13 @@ export const PageTemplate = ({
                   {cta.label}
                 </Button>
               ) : (
-                <NextLink href={cta.href} passHref legacyBehavior>
-                  <Button
-                    component="a"
-                    rightSection={<IconArrowRight size={18} />}
-                  >
-                    {cta.label}
-                  </Button>
-                </NextLink>
+                <Button
+                  component={NextLink}
+                  href={cta.href}
+                  rightSection={<IconArrowRight size={18} />}
+                >
+                  {cta.label}
+                </Button>
               )
             ) : null}
             {secondaryCta ? (
@@ -120,11 +119,14 @@ export const PageTemplate = ({
                   {secondaryCta.label}
                 </Button>
               ) : (
-                <NextLink href={secondaryCta.href} passHref legacyBehavior>
-                  <Button component="a" variant="light" color="worklife-navy.7">
-                    {secondaryCta.label}
-                  </Button>
-                </NextLink>
+                <Button
+                  component={NextLink}
+                  href={secondaryCta.href}
+                  variant="light"
+                  color="worklife-navy.7"
+                >
+                  {secondaryCta.label}
+                </Button>
               )
             ) : null}
           </Stack>

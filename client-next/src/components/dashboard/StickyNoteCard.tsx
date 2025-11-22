@@ -115,22 +115,22 @@ export function StickyNoteCard({
                 color: "#999",
               },
               // 스크롤바 스타일링
-              "&::-webkit-scrollbar": {
+              "&::WebkitScrollbar": {
                 width: "6px",
               },
-              "&::-webkit-scrollbar-track": {
+              "&::WebkitScrollbarTrack": {
                 background: "transparent",
               },
-              "&::-webkit-scrollbar-thumb": {
+              "&::WebkitScrollbarThumb": {
                 background: "rgba(0, 0, 0, 0.2)",
                 borderRadius: "3px",
                 opacity: 0,
                 transition: "opacity 0.3s ease",
               },
-              "&:hover::-webkit-scrollbar-thumb": {
+              "&:hover::WebkitScrollbarThumb": {
                 opacity: 1,
               },
-              "&::-webkit-scrollbar-thumb:hover": {
+              "&::WebkitScrollbarThumb:hover": {
                 background: "rgba(0, 0, 0, 0.3)",
               },
               // Firefox용 스크롤바 스타일

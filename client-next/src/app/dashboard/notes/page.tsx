@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import {
   Container,
   Title,
@@ -132,6 +132,10 @@ export default function NotesPage() {
     closeTemplateModal();
     openNoteModal();
   };
+
+  const handleMarkdownChange = useCallback((value: string) => {
+    setFormData((prev) => ({ ...prev, content: value }));
+  }, []);
 
   const handleSubmit = () => {
     if (!formData.title.trim()) {
@@ -474,7 +478,7 @@ export default function NotesPage() {
                   </Text>
                   <MarkdownEditor
                     value={formData.content || ''}
-                    onChange={(value) => setFormData({ ...formData, content: value })}
+                    onChange={handleMarkdownChange}
                   />
                 </Box>
               )}

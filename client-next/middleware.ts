@@ -5,16 +5,7 @@ import {
   DEFAULT_ACCESS_TOKEN_MAX_AGE,
 } from "@/lib/constants/auth";
 
-const PROTECTED_PATHS = [
-  "/dashboard",
-  "/transactions",
-  "/expense",
-  "/notes",
-  "/settings",
-  "/profile",
-  "/finance-tools",
-  "/salary",
-];
+const PROTECTED_PATHS = ["/dashboard"];
 
 
 const isProtectedRoute = (pathname: string) =>
@@ -84,14 +75,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    "/dashboard/:path*",
-    "/transactions/:path*",
-    "/expense/:path*",
-    "/notes/:path*",
-    "/settings/:path*",
-    "/profile/:path*",
-    "/finance-tools/:path*",
-    "/salary/:path*",
-  ],
+  matcher: ["/dashboard/:path*"],
 };

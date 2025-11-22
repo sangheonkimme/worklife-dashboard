@@ -33,15 +33,22 @@ export function TagManager({ opened, onClose, tag }: TagManagerProps) {
   });
 
   useEffect(() => {
-    if (tag) {
+    if (!opened || tag) return;
+    form.reset();
+  }, [opened, tag, form]);
+
+  useEffect(() => {
+    if (!opened || !tag) return;
+
+    const current = form.values;
+    const nextColor = tag.color || '#228be6';
+    if (current.name !== tag.name || current.color !== nextColor) {
       form.setValues({
         name: tag.name,
-        color: tag.color || '#228be6',
+        color: nextColor,
       });
-    } else {
-      form.reset();
     }
-  }, [tag, opened, form]);
+  }, [opened, tag, form]);
 
   const handleSubmit = async (values: typeof form.values) => {
     try {

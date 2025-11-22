@@ -8,7 +8,7 @@ export function SalaryCalculatorCard() {
   const router = useRouter();
 
   const handleClick = () => {
-    router.push("/salary");
+    router.push("/dashboard/salary");
   };
 
   return (

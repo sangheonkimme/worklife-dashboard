@@ -19,7 +19,7 @@ const ExpensePage = () => {
         "PDF, 스프레드시트 내보내기",
       ]}
       badge="Budgeting"
-      cta={{ label: "세부 내역 보기", href: "/transactions" }}
+      cta={{ label: "세부 내역 보기", href: "/dashboard/transactions" }}
     >
       <section style={{ marginTop: 32, lineHeight: "1.7" }}>
         <h3>보고 포맷</h3>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ComponentType, type ReactNode } from "react";
+import { useEffect, useState, type ComponentType, type ReactNode } from "react";
 import dynamic from "next/dynamic";
 import { Stack, Grid, SimpleGrid, Card, Skeleton } from "@mantine/core";
 import {
@@ -235,6 +235,11 @@ const DashboardPage = () => {
   const [widgetOrder, setWidgetOrder] = useState<string[]>(() =>
     DASHBOARD_WIDGETS.map(({ id }) => id)
   );
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -271,6 +276,26 @@ const DashboardPage = () => {
       },
     });
   };
+
+  if (!mounted) {
+    return (
+      <Stack gap="lg">
+        <Grid gutter="lg" align="stretch">
+          <Grid.Col span={{ base: 12, lg: 9 }}>
+            <WidgetSkeleton />
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, lg: 3 }}>
+            <WidgetSkeleton />
+          </Grid.Col>
+        </Grid>
+        <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
+          {widgetOrder.map((id) => (
+            <WidgetSkeleton key={id} />
+          ))}
+        </SimpleGrid>
+      </Stack>
+    );
+  }
 
   return (
     <Stack gap="lg">
