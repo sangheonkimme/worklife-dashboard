@@ -18,6 +18,7 @@ import {
   ThemeIcon,
   Title,
   useMantineTheme,
+  useMantineColorScheme,
 } from "@mantine/core";
 import {
   IconBolt,
@@ -97,11 +98,15 @@ const testimonials = [
 
 export const LandingPage = () => {
   const theme = useMantineTheme();
+  const { colorScheme } = useMantineColorScheme();
+  const isDark = colorScheme === "dark";
 
   return (
     <Box
       style={{
-        background: `linear-gradient(180deg, ${theme.colors["light-gray"][1]} 0%, ${theme.white} 70%)`,
+        background: isDark
+          ? `linear-gradient(180deg, ${theme.colors.dark[8]} 0%, ${theme.colors.dark[7]} 70%)`
+          : `linear-gradient(180deg, ${theme.colors.gray[0]} 0%, ${theme.white} 70%)`,
         minHeight: "100vh",
       }}
     >
@@ -112,8 +117,10 @@ export const LandingPage = () => {
           top: 0,
           zIndex: 10,
           backdropFilter: "blur(12px)",
-          borderBottom: `1px solid ${theme.colors["light-gray"][3]}`,
-          backgroundColor: "rgba(255,255,255,0.85)",
+          borderBottom: `1px solid ${
+            isDark ? theme.colors.dark[5] : theme.colors.gray[3]
+          }`,
+          backgroundColor: isDark ? "rgba(16,20,32,0.85)" : "rgba(255,255,255,0.85)",
         }}
       >
         <Container size="lg" py="md">
@@ -131,7 +138,7 @@ export const LandingPage = () => {
                 component={NextLink}
                 href="/login"
                 fw={500}
-                c="dark"
+                c={isDark ? "gray.0" : "dark"}
                 style={{ textDecoration: "none" }}
               >
                 로그인
@@ -206,8 +213,12 @@ export const LandingPage = () => {
                   radius="xl"
                   padding="xl"
                   style={{
-                    boxShadow: "0 30px 80px rgba(58,71,108,0.15)",
-                    background: `linear-gradient(145deg, ${theme.colors["worklife-mint"][3]}, ${theme.colors["sky-blue"][3]})`,
+                    boxShadow: isDark
+                      ? "0 30px 80px rgba(0,0,0,0.35)"
+                      : "0 30px 80px rgba(58,71,108,0.15)",
+                    background: isDark
+                      ? `linear-gradient(145deg, ${theme.colors["worklife-mint"][8]}, ${theme.colors["sky-blue"][8]})`
+                      : `linear-gradient(145deg, ${theme.colors["worklife-mint"][3]}, ${theme.colors["sky-blue"][3]})`,
                     border: "none",
                   }}
                 >
@@ -407,18 +418,22 @@ export const LandingPage = () => {
               radius="xl"
               padding="xl"
               style={{
-                background: `linear-gradient(120deg, ${theme.colors["worklife-mint"][4]}, ${theme.colors["sky-blue"][4]})`,
-                boxShadow: "0 20px 60px rgba(41,110,104,0.2)",
+                background: isDark
+                  ? `linear-gradient(120deg, ${theme.colors["worklife-mint"][8]}, ${theme.colors["sky-blue"][7]})`
+                  : `linear-gradient(120deg, ${theme.colors["worklife-mint"][4]}, ${theme.colors["sky-blue"][4]})`,
+                boxShadow: isDark
+                  ? "0 20px 60px rgba(0,0,0,0.4)"
+                  : "0 20px 60px rgba(41,110,104,0.2)",
                 border: "none",
               }}
             >
               <Grid align="center">
                 <Grid.Col span={{ base: 12, md: 8 }}>
                   <Stack gap="sm">
-                    <Title order={2} c="dark">
+                    <Title order={2} c={isDark ? "gray.0" : "dark"}>
                       오늘의 순간을 기록하고 내일의 성장을 준비하세요
                     </Title>
-                    <Text c="dark" fz="lg">
+                    <Text c={isDark ? "gray.0" : "dark"} fz="lg">
                       무료로 시작해 2주 동안 루틴을 설계해보세요. 학교, 회사, 사이드 프로젝트
                       어디에서든 이어서 기록할 수 있습니다.
                     </Text>
@@ -455,7 +470,11 @@ export const LandingPage = () => {
       <Box
         component="footer"
         py="xl"
-        style={{ borderTop: `1px solid ${theme.colors["light-gray"][3]}` }}
+        style={{
+          borderTop: `1px solid ${
+            isDark ? theme.colors.dark[5] : theme.colors.gray[3]
+          }`,
+        }}
       >
         <Container size="lg">
           <Group justify="space-between">
