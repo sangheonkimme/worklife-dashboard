@@ -55,12 +55,16 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
   const { setColorScheme: setMantineColorScheme } = useMantineColorScheme();
   const colorScheme = useUiStore((state) => state.colorScheme);
-  const toggleColorScheme = useUiStore((state) => state.toggleColorScheme);
+  const setColorSchemePreference = useUiStore(
+    (state) => state.setColorSchemePreference
+  );
   const { user, logout } = useAuth();
   const {
+    settings,
     status: settingsStatus,
     error: settingsError,
     refetch: refetchSettings,
+    updateSettings,
   } = useUserSettings();
   const router = useRouter();
   const pathname = usePathname();
@@ -128,6 +132,21 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     (item) => item.path === pathname || item.aliasPaths?.includes(pathname)
   );
 
+  const handleColorSchemeToggle = async () => {
+    const nextPreference = colorScheme === "dark" ? "light" : "dark";
+    setColorSchemePreference(nextPreference);
+    setMantineColorScheme(nextPreference);
+    try {
+      await updateSettings({
+        appearance: {
+          colorScheme: nextPreference,
+        },
+      });
+    } catch (error) {
+      console.error("Failed to persist color scheme preference", error);
+    }
+  };
+
   const handleLogout = () => {
     void logout();
   };
@@ -164,7 +183,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           <Group gap="sm">
             <ActionIcon
               variant="default"
-              onClick={() => toggleColorScheme()}
+              onClick={() => void handleColorSchemeToggle()}
               size="lg"
             >
               {colorScheme === "dark" ? (
