@@ -392,7 +392,7 @@ model UserSettings {
   payday                       Int      @default(1)
   currency                     String   @default("KRW")
   weekStartsOn                 Int      @default(1)
-  colorScheme                  String   @default("dark")
+  colorScheme                  String   @default("system")
   sidebarPinned                Boolean  @default(false)
   widgetDockPosition           String   @default("right")
   widgetAutoClose              Boolean  @default(false)

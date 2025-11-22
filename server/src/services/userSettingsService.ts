@@ -67,7 +67,7 @@ const DEFAULT_USER_SETTINGS: UserSettingsPayload = {
     weekStartsOn: 1,
   },
   appearance: {
-    colorScheme: 'dark',
+    colorScheme: 'system',
     sidebarPinned: false,
     widgetDockPosition: 'right',
     widgetAutoClose: false,
