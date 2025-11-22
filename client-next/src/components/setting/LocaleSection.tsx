@@ -12,9 +12,14 @@ const LANGUAGE_VALUES = ["system", "ko", "en"] as const;
 interface LocaleSectionProps {
   form: SettingsForm;
   timezoneOptions: { label: string; value: string }[];
+  onTimezoneOpen?: () => void;
 }
 
-export const LocaleSection = ({ form, timezoneOptions }: LocaleSectionProps) => {
+export const LocaleSection = ({
+  form,
+  timezoneOptions,
+  onTimezoneOpen,
+}: LocaleSectionProps) => {
   const { t } = useTranslation("settings");
   const formatLocaleOptions = useMemo(
     () => [
@@ -61,6 +66,7 @@ export const LocaleSection = ({ form, timezoneOptions }: LocaleSectionProps) => 
           withAsterisk
           nothingFoundMessage={t("locale.noResults")}
           data={timezoneOptions}
+          onDropdownOpen={onTimezoneOpen}
           {...form.getInputProps("timezone")}
         />
         <Select

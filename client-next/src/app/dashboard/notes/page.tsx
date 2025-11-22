@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from 'next/dynamic';
 import { useState, useCallback } from 'react';
 import {
   Container,
@@ -52,13 +53,41 @@ import { TagList } from '@/components/notes/TagList';
 import { SearchBar } from '@/components/notes/SearchBar';
 import { SearchFilters } from '@/components/notes/SearchFilters';
 import { TagInput } from '@/components/notes/TagInput';
-import { MarkdownEditor } from '@/components/notes/NoteEditor/MarkdownEditor';
-import { ChecklistEditor } from '@/components/notes/NoteEditor/ChecklistEditor';
-import { AttachmentUpload } from '@/components/notes/Attachments/AttachmentUpload';
-import { TemplateModal } from '@/components/notes/NoteModals/TemplateModal';
 import { QuickNote } from '@/components/notes/QuickNote';
 import { formatDate } from '@/utils/format';
 import { useTranslation } from 'react-i18next';
+
+const MarkdownEditor = dynamic(
+  () =>
+    import('@/components/notes/NoteEditor/MarkdownEditor').then(
+      (mod) => mod.MarkdownEditor
+    ),
+  { ssr: false, loading: () => <Text size="sm">에디터 로딩 중...</Text> }
+);
+
+const ChecklistEditor = dynamic(
+  () =>
+    import('@/components/notes/NoteEditor/ChecklistEditor').then(
+      (mod) => mod.ChecklistEditor
+    ),
+  { ssr: false, loading: () => <Text size="sm">체크리스트 로딩 중...</Text> }
+);
+
+const AttachmentUpload = dynamic(
+  () =>
+    import('@/components/notes/Attachments/AttachmentUpload').then(
+      (mod) => mod.AttachmentUpload
+    ),
+  { ssr: false, loading: () => <LoadingOverlay visible /> }
+);
+
+const TemplateModal = dynamic(
+  () =>
+    import('@/components/notes/NoteModals/TemplateModal').then(
+      (mod) => mod.TemplateModal
+    ),
+  { ssr: false }
+);
 
 export default function NotesPage() {
   const {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -58,6 +58,25 @@ const getTimezoneOptions = () => {
   }
   return FALLBACK_TIMEZONES.map((tz) => ({ label: tz, value: tz }));
 };
+
+const getCommonTimezoneOptions = () =>
+  [
+    "Asia/Seoul",
+    "Asia/Tokyo",
+    "Asia/Shanghai",
+    "Asia/Singapore",
+    "Asia/Hong_Kong",
+    "Asia/Bangkok",
+    "Europe/London",
+    "Europe/Paris",
+    "Europe/Berlin",
+    "America/New_York",
+    "America/Chicago",
+    "America/Los_Angeles",
+    "America/Denver",
+    "Australia/Sydney",
+    "Australia/Melbourne",
+  ].map((tz) => ({ label: tz, value: tz }));
 
 const createDefaultSettings = (): UserSettings => ({
   locale: "ko-KR",
@@ -203,11 +222,42 @@ const SettingsPageClient = () => {
   } = useUserSettings();
 
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
-  const timezoneOptions = useMemo(() => getTimezoneOptions(), []);
+  const [timezoneOptions, setTimezoneOptions] = useState(
+    getCommonTimezoneOptions()
+  );
+  const [timezonesExpanded, setTimezonesExpanded] = useState(false);
+  const loadAllTimezones = useCallback(() => {
+    if (timezonesExpanded) return;
+    const load = () => {
+      setTimezoneOptions(getTimezoneOptions());
+      setTimezonesExpanded(true);
+    };
+    if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+      const idleCallback = window
+        .requestIdleCallback as (cb: () => void, opts?: IdleRequestOptions) => void;
+      idleCallback(load, { timeout: 500 });
+    } else {
+      setTimeout(load, 0);
+    }
+  }, [timezonesExpanded]);
   const initialValues = useMemo(
     () => settings ?? createDefaultSettings(),
     [settings]
   );
+
+  useEffect(() => {
+    const initialTz = initialValues.timezone;
+    if (
+      initialTz &&
+      !timezoneOptions.some((option) => option.value === initialTz)
+    ) {
+      setTimezoneOptions((current) => [
+        { label: initialTz, value: initialTz },
+        ...current,
+      ]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialValues.timezone]);
 
   const form = useForm<
     SettingsFormValues,
@@ -220,6 +270,15 @@ const SettingsPageClient = () => {
     if (settings) {
       form.setValues(settings);
       form.resetDirty(settings);
+      if (
+        settings.timezone &&
+        !timezoneOptions.some((option) => option.value === settings.timezone)
+      ) {
+        setTimezoneOptions((current) => [
+          { label: settings.timezone, value: settings.timezone },
+          ...current,
+        ]);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settings]);
@@ -340,7 +399,11 @@ const SettingsPageClient = () => {
         <form id="user-settings-form" onSubmit={form.onSubmit(handleSubmit)}>
           <Stack gap="lg">
             <FinanceSection form={form} locale={form.values.locale} />
-            <LocaleSection form={form} timezoneOptions={timezoneOptions} />
+            <LocaleSection
+              form={form}
+              timezoneOptions={timezoneOptions}
+              onTimezoneOpen={loadAllTimezones}
+            />
             <AppearanceSection form={form} />
             <TimerSection form={form} />
             <NotificationsSection form={form} />

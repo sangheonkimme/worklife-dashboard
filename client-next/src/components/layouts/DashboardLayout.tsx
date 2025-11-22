@@ -137,9 +137,13 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     setColorSchemePreference(nextPreference);
     setMantineColorScheme(nextPreference);
     try {
+      const currentAppearance = settings?.appearance;
       await updateSettings({
         appearance: {
           colorScheme: nextPreference,
+          sidebarPinned: currentAppearance?.sidebarPinned ?? true,
+          widgetDockPosition: currentAppearance?.widgetDockPosition ?? "right",
+          widgetAutoClose: currentAppearance?.widgetAutoClose ?? true,
         },
       });
     } catch (error) {
