@@ -29,6 +29,18 @@
         "pageTitle": "Dashboard",
         "pageDescription": "View your frequently used tools at a glance."
       },
+      "imageCrop": {
+        "label": "Image cropper",
+        "description": "Crop & export images",
+        "pageTitle": "Image cropper",
+        "pageDescription": "Crop, resize, and export images quickly."
+      },
+      "imageToPdf": {
+        "label": "Image to PDF",
+        "description": "Combine images to PDF",
+        "pageTitle": "Image to PDF",
+        "pageDescription": "Convert multiple images into a single PDF."
+      },
       "salary": {
         "label": "Salary calculator",
         "description": "Net pay calculator",

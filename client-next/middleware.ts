@@ -6,12 +6,16 @@ import {
 } from "@/lib/constants/auth";
 
 const PROTECTED_PATHS = ["/dashboard"];
+const PUBLIC_DASHBOARD_PATHS = ["/dashboard", "/dashboard/"];
 
 
 const isProtectedRoute = (pathname: string) =>
-  PROTECTED_PATHS.some((path) =>
-    pathname === path || pathname.startsWith(`${path}/`)
+  PROTECTED_PATHS.some(
+    (path) => pathname === path || pathname.startsWith(`${path}/`)
   );
+
+const isPublicDashboardRoute = (pathname: string) =>
+  PUBLIC_DASHBOARD_PATHS.includes(pathname);
 
 const redirectToLogin = (request: NextRequest) => {
   const loginUrl = new URL("/login", request.url);
@@ -23,6 +27,10 @@ const redirectToLogin = (request: NextRequest) => {
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  if (isPublicDashboardRoute(pathname)) {
+    return NextResponse.next();
+  }
 
   if (!isProtectedRoute(pathname)) {
     return NextResponse.next();

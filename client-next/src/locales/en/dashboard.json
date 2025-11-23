@@ -40,5 +40,11 @@
       "clearErrorTitle": "Delete failed",
       "clearErrorMessage": "Unable to delete completed items."
     }
+  },
+  "guestCta": {
+    "title": "Use dashboard tools without logging in",
+    "description": "Quick utilities like image crop, PDF conversion, and timers work without an account. Sign in to save sticky notes and checklists.",
+    "login": "Log in",
+    "signup": "Sign up"
   }
 }

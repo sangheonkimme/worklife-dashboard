@@ -29,6 +29,18 @@
         "pageTitle": "대시보드",
         "pageDescription": "자주 쓰는 기능을 한 눈에 살펴보세요."
       },
+      "imageCrop": {
+        "label": "이미지 자르기",
+        "description": "이미지 크롭/내보내기",
+        "pageTitle": "이미지 자르기",
+        "pageDescription": "이미지를 빠르게 크롭하고 내보내세요."
+      },
+      "imageToPdf": {
+        "label": "이미지 → PDF",
+        "description": "이미지 합쳐 PDF",
+        "pageTitle": "이미지 → PDF",
+        "pageDescription": "여러 이미지를 한 번에 PDF로 변환하세요."
+      },
       "salary": {
         "label": "연봉 계산기",
         "description": "실수령액 계산",

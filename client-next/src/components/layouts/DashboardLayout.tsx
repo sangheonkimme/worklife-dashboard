@@ -33,6 +33,8 @@ import {
   IconNotes,
   IconSettings,
   IconAlertTriangle,
+  IconCrop,
+  IconFileTypePdf,
 } from "@tabler/icons-react";
 import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
@@ -92,6 +94,18 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       key: "dashboard",
       icon: IconHome,
       path: "/dashboard",
+      aliasPaths: [] as readonly string[],
+    },
+    {
+      key: "imageCrop",
+      icon: IconCrop,
+      path: "/tools/image-crop",
+      aliasPaths: [] as readonly string[],
+    },
+    {
+      key: "imageToPdf",
+      icon: IconFileTypePdf,
+      path: "/tools/image-to-pdf",
       aliasPaths: [] as readonly string[],
     },
     {

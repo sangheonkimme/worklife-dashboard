@@ -1,8 +1,25 @@
 "use client";
 
-import { useEffect, useState, type ComponentType, type ReactNode } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type ComponentType,
+  type ReactNode,
+} from "react";
 import dynamic from "next/dynamic";
-import { Stack, Grid, SimpleGrid, Card, Skeleton } from "@mantine/core";
+import Link from "next/link";
+import {
+  Stack,
+  Grid,
+  SimpleGrid,
+  Card,
+  Skeleton,
+  Text,
+  Group,
+  Button,
+} from "@mantine/core";
+import { useTranslation } from "react-i18next";
 import {
   DndContext,
   type DragEndEvent,
@@ -20,6 +37,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { trackEvent } from "@/lib/analytics";
+import { useAuth } from "@/hooks/useAuth";
 
 type WidgetConfig = {
   id: string;
@@ -127,28 +145,29 @@ const StopwatchCard = dynamic(
 );
 
 const DASHBOARD_WIDGETS: WidgetConfig[] = [
-  { id: "image-crop", Component: ImageCropCard },
-  { id: "image-to-pdf", Component: ImageToPdfCard },
-  { id: "timer", Component: TimerCard, maxHeight: LARGE_WIDGET_HEIGHT },
   {
     id: "salary-calculator",
     Component: SalaryCalculatorCard,
     maxHeight: DEFAULT_MAX_HEIGHT,
   },
-  {
-    id: "pomodoro-timer",
-    Component: PomodoroTimerCard,
-    maxHeight: DEFAULT_MAX_HEIGHT,
-  },
-  { id: "stopwatch", Component: StopwatchCard, maxHeight: DEFAULT_MAX_HEIGHT },
+  { id: "image-crop", Component: ImageCropCard },
+  { id: "image-to-pdf", Component: ImageToPdfCard },
+  { id: "timer", Component: TimerCard, maxHeight: LARGE_WIDGET_HEIGHT },
+  { id: "pomodoro-timer", Component: PomodoroTimerCard },
+  { id: "stopwatch", Component: StopwatchCard },
 ];
 
-const WIDGET_META = DASHBOARD_WIDGETS.reduce<Record<string, WidgetConfig>>(
-  (acc, widget) => {
-    acc[widget.id] = widget;
-    return acc;
-  },
-  {}
+const PUBLIC_WIDGET_IDS = [
+  "image-crop",
+  "image-to-pdf",
+  "timer",
+  "salary-calculator",
+  "pomodoro-timer",
+  "stopwatch",
+] as const;
+
+const PUBLIC_WIDGETS = DASHBOARD_WIDGETS.filter((widget) =>
+  PUBLIC_WIDGET_IDS.includes(widget.id as (typeof PUBLIC_WIDGET_IDS)[number])
 );
 
 const SortableWidget = ({
@@ -232,14 +251,42 @@ const SortableWidget = ({
 };
 
 const DashboardPage = () => {
+  const { isAuthenticated } = useAuth();
+  const { t } = useTranslation("dashboard");
+  const availableWidgets = useMemo(
+    () => (isAuthenticated ? DASHBOARD_WIDGETS : PUBLIC_WIDGETS),
+    [isAuthenticated]
+  );
+  const widgetMeta = useMemo(
+    () =>
+      availableWidgets.reduce<Record<string, WidgetConfig>>((acc, widget) => {
+        acc[widget.id] = widget;
+        return acc;
+      }, {}),
+    [availableWidgets]
+  );
   const [widgetOrder, setWidgetOrder] = useState<string[]>(() =>
-    DASHBOARD_WIDGETS.map(({ id }) => id)
+    availableWidgets.map(({ id }) => id)
   );
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    setWidgetOrder((prevOrder) => {
+      const allowedIds = availableWidgets.map(({ id }) => id);
+      const filtered = prevOrder.filter((id) => allowedIds.includes(id));
+      const missing = allowedIds.filter((id) => !filtered.includes(id));
+      const nextOrder = [...filtered, ...missing];
+      const isSameOrder =
+        nextOrder.length === prevOrder.length &&
+        nextOrder.every((id, index) => id === prevOrder[index]);
+
+      return isSameOrder ? prevOrder : nextOrder;
+    });
+  }, [availableWidgets]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -299,26 +346,47 @@ const DashboardPage = () => {
 
   return (
     <Stack gap="lg">
-      <Grid gutter="lg" align="stretch">
-        <Grid.Col span={{ base: 12, lg: 9 }}>
-          <StickyNotes />
-        </Grid.Col>
-        <Grid.Col span={{ base: 12, lg: 3 }}>
-          <DashboardChecklist />
-        </Grid.Col>
-      </Grid>
+      {isAuthenticated ? (
+        <Grid gutter="lg" align="stretch">
+          <Grid.Col span={{ base: 12, lg: 9 }}>
+            <StickyNotes />
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, lg: 3 }}>
+            <DashboardChecklist />
+          </Grid.Col>
+        </Grid>
+      ) : (
+        <Card radius="md" padding="lg" withBorder>
+          <Stack gap="xs">
+            <Text fw={600} size="lg">
+              {t("guestCta.title")}
+            </Text>
+            <Text size="sm" c="dimmed">
+              {t("guestCta.description")}
+            </Text>
+            <Group gap="sm">
+              <Button component={Link} href="/login">
+                {t("guestCta.login")}
+              </Button>
+              <Button component={Link} href="/signup" variant="light">
+                {t("guestCta.signup")}
+              </Button>
+            </Group>
+          </Stack>
+        </Card>
+      )}
       <div>
         <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
           <SortableContext items={widgetOrder} strategy={rectSortingStrategy}>
             <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
               {widgetOrder.map((widgetId) => {
-                const widgetMeta = WIDGET_META[widgetId];
+                const widget = widgetMeta[widgetId];
 
-                if (!widgetMeta) {
+                if (!widget) {
                   return null;
                 }
 
-                const { Component: WidgetComponent, maxHeight } = widgetMeta;
+                const { Component: WidgetComponent, maxHeight } = widget;
 
                 return (
                   <SortableWidget key={widgetId} id={widgetId}>

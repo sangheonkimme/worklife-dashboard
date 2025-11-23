@@ -143,7 +143,7 @@ export const LandingPage = () => {
               >
                 로그인
               </Anchor>
-              <Button component={NextLink} href="/signup" radius="md">
+              <Button component={NextLink} href="/dashboard" radius="md">
                 무료로 시작하기
               </Button>
             </Group>
@@ -180,7 +180,7 @@ export const LandingPage = () => {
                     </Text>
                   </Stack>
                   <Group gap="md" wrap="wrap">
-                    <Button size="lg" radius="md" component={NextLink} href="/signup">
+                    <Button size="lg" radius="md" component={NextLink} href="/dashboard">
                       지금 무료 체험
                     </Button>
                     <Button
@@ -445,7 +445,7 @@ export const LandingPage = () => {
                       size="lg"
                       radius="md"
                       component={NextLink}
-                      href="/signup"
+                      href="/dashboard"
                       leftSection={<IconShieldCheck size={18} />}
                     >
                       무료 체험 시작

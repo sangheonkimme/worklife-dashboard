@@ -202,6 +202,8 @@
   },
   "imageToPdf": {
     "title": "이미지 → PDF",
+    "subtitle": "여러 이미지를 하나의 PDF로 깔끔하게 합치세요.",
+    "cta": "품질 유지와 순서 편집은 전체 화면 도구에서 진행하세요.",
     "notifications": {
       "uploadSuccess": "{{count}}개의 이미지가 추가되었습니다.",
       "clearSuccess": "모든 이미지가 삭제되었습니다.",
@@ -255,6 +257,7 @@
   "imageCrop": {
     "title": "이미지 자르기",
     "subtitle": "업로드한 이미지를 빠르게 자르고 내보내세요.",
+    "cta": "세밀한 크기와 포맷 설정은 전체 화면 도구에서 할 수 있어요.",
     "dropzone": {
       "title": "이미지를 드롭하거나 클릭하여 업로드",
       "replaceTitle": "현재 이미지를 교체하려면 드롭/클릭",
