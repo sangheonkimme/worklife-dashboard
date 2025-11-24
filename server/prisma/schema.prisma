@@ -17,42 +17,43 @@ datasource db {
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
-  password  String?  // Google 로그인 시 null 가능
+  password  String? // Google 로그인 시 null 가능
   name      String
   googleId  String?  @unique // Google OAuth ID
-  picture   String?  // Google 프로필 사진 URL
+  picture   String? // Google 프로필 사진 URL
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  transactions Transaction[]
-  categories   Category[]
-  budgets      Budget[]
-  salaryCalculations SalaryCalculation[]
-  notes        Note[]
-  folders      Folder[]
-  tags         Tag[]
-  templates    NoteTemplate[]
-  stickyNotes  StickyNote[]
-  pomodoroSessions PomodoroSession[]
-  pomodoroSettings PomodoroSettings?
-  userSettings UserSettings?
+  transactions            Transaction[]
+  categories              Category[]
+  budgets                 Budget[]
+  salaryCalculations      SalaryCalculation[]
+  notes                   Note[]
+  folders                 Folder[]
+  tags                    Tag[]
+  templates               NoteTemplate[]
+  stickyNotes             StickyNote[]
+  pomodoroSessions        PomodoroSession[]
+  pomodoroSettings        PomodoroSettings?
+  userSettings            UserSettings?
   dashboardChecklistItems DashboardChecklistItem[]
+  subscriptions           Subscription[]
 
   @@map("users")
 }
 
 // 카테고리 모델
 model Category {
-  id          String   @id @default(cuid())
-  name        String
-  type        CategoryType // INCOME or EXPENSE
-  color       String?
-  icon        String?
-  isDefault   Boolean  @default(false) // 기본 제공 카테고리
-  userId      String?
-  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String       @id @default(cuid())
+  name      String
+  type      CategoryType // INCOME or EXPENSE
+  color     String?
+  icon      String?
+  isDefault Boolean      @default(false) // 기본 제공 카테고리
+  userId    String?
+  user      User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
 
   transactions Transaction[]
 
@@ -64,6 +65,35 @@ enum CategoryType {
   EXPENSE
 }
 
+enum SpendingType {
+  FIXED
+  VARIABLE
+}
+
+enum TransactionSource {
+  MANUAL
+  SUBSCRIPTION
+}
+
+enum BillingCycle {
+  WEEKLY
+  MONTHLY
+  YEARLY
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAUSED
+  CANCELLED
+}
+
+enum SubscriptionHistoryType {
+  PRICE_CHANGE
+  STATUS_CHANGE
+  BILLING_CYCLE_CHANGE
+  NOTE
+}
+
 enum LanguageCode {
   ko
   en
@@ -72,23 +102,72 @@ enum LanguageCode {
 
 // 거래 내역 모델
 model Transaction {
-  id          String   @id @default(cuid())
-  amount      Float
-  description String?
-  date        DateTime
-  type        CategoryType
-  categoryId  String
-  category    Category @relation(fields: [categoryId], references: [id])
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             String            @id @default(cuid())
+  amount         Float
+  description    String?
+  date           DateTime
+  type           CategoryType
+  spendingType   SpendingType      @default(VARIABLE)
+  source         TransactionSource @default(MANUAL)
+  externalId     String?
+  subscriptionId String?
+  categoryId     String
+  category       Category          @relation(fields: [categoryId], references: [id])
+  subscription   Subscription?     @relation(fields: [subscriptionId], references: [id])
+  userId         String
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
 
   noteTransactions NoteTransaction[]
 
-  @@map("transactions")
+  @@unique([userId, externalId])
   @@index([userId, date])
   @@index([categoryId])
+  @@map("transactions")
+}
+
+model Subscription {
+  id               String                @id @default(cuid())
+  userId           String
+  user             User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name             String
+  amount           Decimal               @db.Decimal(18, 2)
+  currency         String                @default("KRW")
+  billingCycle     BillingCycle
+  nextBillingDate  DateTime
+  paymentMethod    String?
+  category         String?
+  status           SubscriptionStatus    @default(ACTIVE)
+  trialEndDate     DateTime?
+  notifyDaysBefore Int?
+  notes            String?
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+  transactions     Transaction[]
+  histories        SubscriptionHistory[]
+
+  @@index([userId, nextBillingDate])
+  @@index([userId, status])
+  @@map("subscriptions")
+}
+
+model SubscriptionHistory {
+  id             String                  @id @default(cuid())
+  subscriptionId String
+  subscription   Subscription            @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  type           SubscriptionHistoryType
+  prevAmount     Decimal?                @db.Decimal(18, 2)
+  newAmount      Decimal?                @db.Decimal(18, 2)
+  prevCycle      BillingCycle?
+  newCycle       BillingCycle?
+  prevStatus     SubscriptionStatus?
+  newStatus      SubscriptionStatus?
+  description    String?
+  createdAt      DateTime                @default(now())
+
+  @@index([subscriptionId, createdAt])
+  @@map("subscription_histories")
 }
 
 // 예산 모델
@@ -102,31 +181,31 @@ model Budget {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  @@map("budgets")
   @@unique([userId, categoryId, month])
   @@index([userId, month])
+  @@map("budgets")
 }
 
 // 급여 계산 이력 모델
 model SalaryCalculation {
   id              String   @id @default(cuid())
-  salaryType      String   // 'annual' or 'monthly'
-  grossSalary     Float    // 세전 급여
-  nationalPension Float    // 국민연금
-  healthInsurance Float    // 건강보험
-  longTermCare    Float    // 장기요양보험
-  employmentIns   Float    // 고용보험
-  incomeTax       Float    // 소득세
-  localIncomeTax  Float    // 지방소득세
-  netSalary       Float    // 실수령액
+  salaryType      String // 'annual' or 'monthly'
+  grossSalary     Float // 세전 급여
+  nationalPension Float // 국민연금
+  healthInsurance Float // 건강보험
+  longTermCare    Float // 장기요양보험
+  employmentIns   Float // 고용보험
+  incomeTax       Float // 소득세
+  localIncomeTax  Float // 지방소득세
+  netSalary       Float // 실수령액
   dependents      Int      @default(0) // 부양가족 수
   nonTaxable      Float    @default(0) // 비과세액
   userId          String
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt       DateTime @default(now())
 
-  @@map("salary_calculations")
   @@index([userId, createdAt])
+  @@map("salary_calculations")
 }
 
 // 폴더 모델
@@ -135,7 +214,7 @@ model Folder {
   name      String
   color     String?
   icon      String?
-  parentId  String?  // 중첩 폴더를 위한 자기 참조
+  parentId  String? // 중첩 폴더를 위한 자기 참조
   parent    Folder?  @relation("FolderToFolder", fields: [parentId], references: [id], onDelete: Cascade)
   children  Folder[] @relation("FolderToFolder")
   userId    String
@@ -143,11 +222,11 @@ model Folder {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  notes     Note[]
+  notes Note[]
 
-  @@map("folders")
   @@index([userId])
   @@index([parentId])
+  @@map("folders")
 }
 
 // 태그 모델
@@ -160,11 +239,11 @@ model Tag {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  noteTags  NoteTag[]
+  noteTags NoteTag[]
 
-  @@map("tags")
   @@unique([userId, name])
   @@index([userId])
+  @@map("tags")
 }
 
 // 메모 타입 enum
@@ -189,11 +268,11 @@ model Note {
   content        String         @db.Text
   type           NoteType       @default(TEXT)
   visibility     NoteVisibility @default(PRIVATE)
-  password       String?        // PROTECTED일 때만 사용
+  password       String? // PROTECTED일 때만 사용
   isPinned       Boolean        @default(false)
   isFavorite     Boolean        @default(false)
   isArchived     Boolean        @default(false)
-  deletedAt      DateTime?      // 소프트 삭제
+  deletedAt      DateTime? // 소프트 삭제
   publishedUrl   String?        @unique // 공개 URL
   deviceRevision Int            @default(0) // 디바이스 동기화용
   folderId       String?
@@ -208,13 +287,13 @@ model Note {
   attachments      Attachment[]
   noteTransactions NoteTransaction[]
 
-  @@map("notes")
   @@index([userId, createdAt])
   @@index([userId, updatedAt])
   @@index([userId, isPinned])
   @@index([userId, isFavorite])
   @@index([folderId])
   @@index([deletedAt])
+  @@map("notes")
 }
 
 // 메모-태그 연결 테이블 (다대다)
@@ -226,10 +305,10 @@ model NoteTag {
   tag       Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 
-  @@map("note_tags")
   @@unique([noteId, tagId])
   @@index([noteId])
   @@index([tagId])
+  @@map("note_tags")
 }
 
 // 체크리스트 항목 모델
@@ -243,8 +322,8 @@ model ChecklistItem {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  @@map("checklist_items")
   @@index([noteId, order])
+  @@map("checklist_items")
 }
 
 // 메모 템플릿 모델
@@ -260,8 +339,8 @@ model NoteTemplate {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  @@map("note_templates")
   @@index([userId])
+  @@map("note_templates")
 }
 
 // 첨부파일 타입 enum
@@ -278,16 +357,16 @@ model Attachment {
   fileSize     Int
   mimeType     String
   type         AttachmentType
-  url          String         // 저장된 파일 경로 또는 URL
-  hash         String?        // 파일 해시 (중복 제거용)
-  thumbnailUrl String?        // 이미지 썸네일
+  url          String // 저장된 파일 경로 또는 URL
+  hash         String? // 파일 해시 (중복 제거용)
+  thumbnailUrl String? // 이미지 썸네일
   noteId       String
   note         Note           @relation(fields: [noteId], references: [id], onDelete: Cascade)
   createdAt    DateTime       @default(now())
 
-  @@map("attachments")
   @@index([noteId])
   @@index([hash])
+  @@map("attachments")
 }
 
 // 메모-거래 연결 테이블 (다대다)
@@ -299,10 +378,10 @@ model NoteTransaction {
   transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
   createdAt     DateTime    @default(now())
 
-  @@map("note_transactions")
   @@unique([noteId, transactionId])
   @@index([noteId])
   @@index([transactionId])
+  @@map("note_transactions")
 }
 
 // 스티커 메모 모델
@@ -316,8 +395,8 @@ model StickyNote {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("sticky_notes")
   @@index([userId])
+  @@map("sticky_notes")
 }
 
 // 대시보드 체크리스트 항목 모델
@@ -331,9 +410,9 @@ model DashboardChecklistItem {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  @@map("dashboard_checklist_items")
   @@index([userId, isCompleted])
   @@index([userId, order])
+  @@map("dashboard_checklist_items")
 }
 
 // 포모도로 세션 타입 enum
@@ -349,17 +428,17 @@ model PomodoroSession {
   userId      String
   user        User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   type        PomodoroSessionType // 'FOCUS' | 'SHORT_BREAK' | 'LONG_BREAK'
-  duration    Int                 // 예정 시간 (초)
+  duration    Int // 예정 시간 (초)
   completed   Boolean             @default(false) // 완료 여부
   startedAt   DateTime            @default(now())
-  completedAt DateTime?           // 실제 완료 시간
-  taskName    String?             // 선택적: 작업 연동
-  tags        String[]            // 태그 배열
+  completedAt DateTime? // 실제 완료 시간
+  taskName    String? // 선택적: 작업 연동
+  tags        String[] // 태그 배열
   notes       String?             @db.Text
   createdAt   DateTime            @default(now())
 
-  @@map("pomodoro_sessions")
   @@index([userId, startedAt])
+  @@map("pomodoro_sessions")
 }
 
 // 사용자별 포모도로 설정 모델
@@ -368,13 +447,13 @@ model PomodoroSettings {
   userId              String   @unique
   user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   focusDuration       Int      @default(1500) // 25분 (초)
-  shortBreakDuration  Int      @default(300)  // 5분 (초)
-  longBreakDuration   Int      @default(900)  // 15분 (초)
-  longBreakInterval   Int      @default(4)    // 몇 번마다 긴 휴식
+  shortBreakDuration  Int      @default(300) // 5분 (초)
+  longBreakDuration   Int      @default(900) // 15분 (초)
+  longBreakInterval   Int      @default(4) // 몇 번마다 긴 휴식
   autoStartBreak      Boolean  @default(false)
   autoStartFocus      Boolean  @default(false)
   soundEnabled        Boolean  @default(true)
-  soundVolume         Int      @default(50)   // 0-100
+  soundVolume         Int      @default(50) // 0-100
   notificationEnabled Boolean  @default(true)
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
@@ -383,40 +462,40 @@ model PomodoroSettings {
 }
 
 model UserSettings {
-  id                           String   @id @default(cuid())
-  userId                       String   @unique
-  user                         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  locale                       String   @default("ko-KR")
-  language                     LanguageCode @default(system)
-  timezone                     String   @default("Asia/Seoul")
-  payday                       Int      @default(1)
-  currency                     String   @default("KRW")
-  weekStartsOn                 Int      @default(1)
-  colorScheme                  String   @default("system")
-  sidebarPinned                Boolean  @default(false)
-  widgetDockPosition           String   @default("right")
-  widgetAutoClose              Boolean  @default(false)
-  timerPresets                 Json     @default("[300000,600000,900000,1800000]")
-  timerAutoRepeat              Boolean  @default(false)
-  timerPreAlertMs              Int?
-  timerNotifications           Boolean  @default(true)
-  timerSoundEnabled            Boolean  @default(true)
-  pomodoroFocusDuration        Int      @default(1500)
-  pomodoroShortBreakDuration   Int      @default(300)
-  pomodoroLongBreakDuration    Int      @default(900)
-  pomodoroLongBreakInterval    Int      @default(4)
-  pomodoroAutoStartBreak       Boolean  @default(false)
-  pomodoroAutoStartFocus       Boolean  @default(false)
-  pomodoroSoundEnabled         Boolean  @default(true)
-  pomodoroSoundVolume          Int      @default(50)
-  pomodoroNotificationEnabled  Boolean  @default(true)
-  stopwatchDefaultGoalTime     Int?
-  stopwatchNotificationsEnabled Boolean @default(true)
-  notifyTransactions           Boolean  @default(true)
-  notifyMonthlyReport          Boolean  @default(false)
-  notifyChecklist              Boolean  @default(true)
-  createdAt                    DateTime @default(now())
-  updatedAt                    DateTime @updatedAt
+  id                            String       @id @default(cuid())
+  userId                        String       @unique
+  user                          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  locale                        String       @default("ko-KR")
+  language                      LanguageCode @default(system)
+  timezone                      String       @default("Asia/Seoul")
+  payday                        Int          @default(1)
+  currency                      String       @default("KRW")
+  weekStartsOn                  Int          @default(1)
+  colorScheme                   String       @default("system")
+  sidebarPinned                 Boolean      @default(false)
+  widgetDockPosition            String       @default("right")
+  widgetAutoClose               Boolean      @default(false)
+  timerPresets                  Json         @default("[300000,600000,900000,1800000]")
+  timerAutoRepeat               Boolean      @default(false)
+  timerPreAlertMs               Int?
+  timerNotifications            Boolean      @default(true)
+  timerSoundEnabled             Boolean      @default(true)
+  pomodoroFocusDuration         Int          @default(1500)
+  pomodoroShortBreakDuration    Int          @default(300)
+  pomodoroLongBreakDuration     Int          @default(900)
+  pomodoroLongBreakInterval     Int          @default(4)
+  pomodoroAutoStartBreak        Boolean      @default(false)
+  pomodoroAutoStartFocus        Boolean      @default(false)
+  pomodoroSoundEnabled          Boolean      @default(true)
+  pomodoroSoundVolume           Int          @default(50)
+  pomodoroNotificationEnabled   Boolean      @default(true)
+  stopwatchDefaultGoalTime      Int?
+  stopwatchNotificationsEnabled Boolean      @default(true)
+  notifyTransactions            Boolean      @default(true)
+  notifyMonthlyReport           Boolean      @default(false)
+  notifyChecklist               Boolean      @default(true)
+  createdAt                     DateTime     @default(now())
+  updatedAt                     DateTime     @updatedAt
 
   @@map("user_settings")
 }
