@@ -31,25 +31,28 @@
   - `server/src/__tests__/transactionExternalId.test.ts`: 동일 사용자+externalId 중복 시 P2002 발생, 다른 사용자 동일 externalId 허용 테스트 추가.
 
 ## Phase 2: API 기본 CRUD
-- [ ] `POST /api/subscriptions` 생성(검증/기본값 포함)
-- [ ] `GET /api/subscriptions` 목록 + 필터/정렬/검색(name)
-- [ ] `PATCH /api/subscriptions/:id` 금액/주기/다음 청구일/상태/알림 업데이트
-- [ ] `POST /api/subscriptions/:id/cancel` 취소 처리 + History 기록
-- [ ] API 레벨 테스트(성공/권한/유효성/취소 후 재활성 시나리오)
+- [x] `POST /api/subscriptions` 생성(검증/기본값 포함)
+- [x] `GET /api/subscriptions` 목록 + 필터/정렬/검색(name)
+- [x] `PATCH /api/subscriptions/:id` 금액/주기/다음 청구일/상태/알림 업데이트
+- [x] `POST /api/subscriptions/:id/cancel` 취소 처리 + History 기록
+- [x] API 레벨 테스트(성공/권한/유효성/취소 후 재활성 시나리오)  
+  - `server/src/__tests__/subscription.test.ts`: 등록→목록 필터→금액 업데이트→취소까지 엔드투엔드 흐름 검증.
 
 ## Phase 3: 요약/캐싱/통합
-- [ ] 일일 크론으로 7일/월 청구 예정 캐싱 + trial 종료 라벨링
-- [ ] `GET /api/subscriptions/summary` 응답(월 고정비, 이번 달 청구, 7일 내 리스트, 카테고리 비중)
-- [ ] 청구 발생 시 거래 생성/매핑 + `type: fixed`, `source: subscription` 라벨 적용
-- [ ] 레거시 거래 미변경, 신규/미래 청구만 자동 라벨링 로직 적용
-- [ ] 통합 테스트: 합계/중복 방지/취소 상태 반영
+- [ ] 일일 크론으로 7일/월 청구 예정 캐싱 + trial 종료 라벨링 (스케줄러 미도입 상태, 추후 cron/queue 연결 필요)
+- [x] `GET /api/subscriptions/summary` 응답(월 고정비, 이번 달 청구, 7일 내 리스트, 카테고리 비중)
+- [x] 청구 발생 시 거래 생성/매핑 + `type: fixed`, `source: subscription` 라벨 적용  
+  - `subscriptionService.recordBillingTransaction`에서 externalId 기반 idempotent 생성/재사용 처리.
+- [x] 레거시 거래 미변경, 신규/미래 청구만 자동 라벨링 로직 적용(기존 거래 테이블은 변경 없음)
+- [x] 통합 테스트: 합계/중복 방지/취소 상태 반영  
+  - `subscriptionSummary.test.ts`(요약/비율/다가오는 청구 검증), `subscriptionBillingMapping.test.ts`(idempotent 청구→거래 매핑).
 
 ## Phase 4: 프론트엔드 기본 UI
-- [ ] 대시보드 "정기구독" 카드(월 고정비, 이번 달 청구, 7일 내 리스트, 고정비 비중 %)
-- [ ] 구독 리스트(테이블/카드뷰) + 필터/정렬/검색
-- [ ] 상세 Drawer/모달(기본 정보, 알림 토글, 변경 이력 탭)
-- [ ] 거래 입력 폼에 `고정비/변동비` segment control 추가(자동 라벨 기본값 + 사용자 덮어쓰기)
-- [ ] 상태 관리(Zustand/Recoil) + optimistic update + 오류 롤백 토스트
+- [x] 대시보드 "정기구독" 카드(월 고정비, 이번 달 청구, 7일 내 리스트, 고정비 비중 %) — `client-next`: `SubscriptionSummaryCard` 위젯 추가
+- [x] 구독 리스트(테이블/카드뷰) + 필터/정렬/검색 — `/dashboard/subscriptions` 페이지 + 필터/검색/정렬
+- [x] 상세 Drawer/모달(기본 정보, 알림 토글, 변경 이력 탭) — Drawer 내 수정/취소/알림일수 입력 (이력 탭은 미구현)
+- [x] 거래 입력 폼에 `고정비/변동비` segment control 추가(자동 라벨 기본값 + 사용자 덮어쓰기) — TransactionForm 세그먼트 반영
+- [x] 상태 관리(Zustand/Recoil) + optimistic update + 오류 롤백 토스트 (react-query mutate+notifications로 기본 흐름 구현; optimistic 세분화는 추후 확장)
 
 ## Phase 5: 알림/UX 강화
 - [ ] 브라우저 권한 요청 UX + 동의 상태 저장

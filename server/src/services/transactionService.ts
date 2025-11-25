@@ -1,5 +1,10 @@
 import { prisma } from '../lib/prisma';
-import { CategoryType, Prisma } from '@prisma/client';
+import {
+  CategoryType,
+  Prisma,
+  SpendingType,
+  TransactionSource,
+} from '@prisma/client';
 
 // 거래 생성 DTO
 export interface CreateTransactionDto {
@@ -8,6 +13,10 @@ export interface CreateTransactionDto {
   date: string;
   type: CategoryType;
   categoryId: string;
+  spendingType?: SpendingType;
+  source?: TransactionSource;
+  subscriptionId?: string | null;
+  externalId?: string | null;
 }
 
 // 거래 수정 DTO
@@ -17,6 +26,10 @@ export interface UpdateTransactionDto {
   date?: string;
   type?: CategoryType;
   categoryId?: string;
+  spendingType?: SpendingType;
+  source?: TransactionSource;
+  subscriptionId?: string | null;
+  externalId?: string | null;
 }
 
 // 거래 조회 필터
@@ -162,6 +175,10 @@ export const transactionService = {
         date: new Date(data.date),
         type: data.type,
         categoryId: data.categoryId,
+        spendingType: data.spendingType,
+        source: data.source,
+        subscriptionId: data.subscriptionId || undefined,
+        externalId: data.externalId || undefined,
         userId,
       },
       include: {
@@ -219,6 +236,10 @@ export const transactionService = {
         ...(data.date && { date: new Date(data.date) }),
         ...(data.type && { type: data.type }),
         ...(data.categoryId && { categoryId: data.categoryId }),
+        ...(data.spendingType && { spendingType: data.spendingType }),
+        ...(data.source && { source: data.source }),
+        ...(data.subscriptionId !== undefined && { subscriptionId: data.subscriptionId }),
+        ...(data.externalId !== undefined && { externalId: data.externalId }),
       },
       include: {
         category: {

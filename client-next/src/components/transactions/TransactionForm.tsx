@@ -15,7 +15,7 @@ import { IconCash, IconShoppingCart } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { categoryApi } from '@/services/api/transactionApi';
-import type { CategoryType, CreateTransactionDto } from '@/types/transaction';
+import type { CategoryType, CreateTransactionDto, SpendingType } from '@/types/transaction';
 
 interface TransactionFormProps {
   initialValues?: Partial<CreateTransactionDto>;
@@ -38,6 +38,10 @@ export default function TransactionForm({
       categoryId: initialValues?.categoryId || '',
       date: initialValues?.date || new Date().toISOString(),
       description: initialValues?.description || '',
+      spendingType: initialValues?.spendingType || 'VARIABLE',
+      source: initialValues?.source || 'MANUAL',
+      subscriptionId: initialValues?.subscriptionId,
+      externalId: initialValues?.externalId,
     },
     validate: {
       amount: (value) => (value > 0 ? null : t('transactionForm.validation.amount')),
@@ -89,6 +93,17 @@ export default function TransactionForm({
             form.setFieldValue('type', value as CategoryType);
             form.setFieldValue('categoryId', ''); // Reset selection when type changes
           }}
+          fullWidth
+        />
+
+        <SegmentedControl
+          mt="xs"
+          data={[
+            { value: 'VARIABLE', label: '변동비' },
+            { value: 'FIXED', label: '고정비' },
+          ]}
+          value={form.values.spendingType as SpendingType}
+          onChange={(value) => form.setFieldValue('spendingType', value as SpendingType)}
           fullWidth
         />
 

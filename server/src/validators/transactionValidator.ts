@@ -10,6 +10,10 @@ export const createTransactionSchema = z.object({
       message: '거래 유형을 선택해주세요',
     }),
     categoryId: z.string().min(1, '카테고리를 선택해주세요'),
+    spendingType: z.enum(['FIXED', 'VARIABLE']).optional(),
+    source: z.enum(['MANUAL', 'SUBSCRIPTION']).optional(),
+    subscriptionId: z.string().optional(),
+    externalId: z.string().optional(),
   }),
 });
 
@@ -24,6 +28,10 @@ export const updateTransactionSchema = z.object({
     date: z.string().datetime('유효한 날짜 형식이어야 합니다').optional(),
     type: z.enum(['INCOME', 'EXPENSE']).optional(),
     categoryId: z.string().min(1).optional(),
+    spendingType: z.enum(['FIXED', 'VARIABLE']).optional(),
+    source: z.enum(['MANUAL', 'SUBSCRIPTION']).optional(),
+    subscriptionId: z.string().optional(),
+    externalId: z.string().optional(),
   }),
 });
 

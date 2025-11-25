@@ -144,6 +144,17 @@ const StopwatchCard = dynamic(
   }
 );
 
+const SubscriptionSummaryCard = dynamic(
+  () =>
+    import("@/components/subscriptions/SubscriptionSummaryCard").then(
+      (mod) => mod.SubscriptionSummaryCard
+    ),
+  {
+    loading: () => <WidgetSkeleton height={DEFAULT_MAX_HEIGHT} />,
+    ssr: false,
+  }
+);
+
 const DASHBOARD_WIDGETS: WidgetConfig[] = [
   {
     id: "salary-calculator",
@@ -155,6 +166,7 @@ const DASHBOARD_WIDGETS: WidgetConfig[] = [
   { id: "timer", Component: TimerCard, maxHeight: LARGE_WIDGET_HEIGHT },
   { id: "pomodoro-timer", Component: PomodoroTimerCard },
   { id: "stopwatch", Component: StopwatchCard },
+  { id: "subscription-summary", Component: SubscriptionSummaryCard },
 ];
 
 const PUBLIC_WIDGET_IDS = [
@@ -268,13 +280,10 @@ const DashboardPage = () => {
   const [widgetOrder, setWidgetOrder] = useState<string[]>(() =>
     availableWidgets.map(({ id }) => id)
   );
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
+    // keep widget order in sync with available widgets (auth toggles)
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setWidgetOrder((prevOrder) => {
       const allowedIds = availableWidgets.map(({ id }) => id);
       const filtered = prevOrder.filter((id) => allowedIds.includes(id));
@@ -323,26 +332,6 @@ const DashboardPage = () => {
       },
     });
   };
-
-  if (!mounted) {
-    return (
-      <Stack gap="lg">
-        <Grid gutter="lg" align="stretch">
-          <Grid.Col span={{ base: 12, lg: 9 }}>
-            <WidgetSkeleton />
-          </Grid.Col>
-          <Grid.Col span={{ base: 12, lg: 3 }}>
-            <WidgetSkeleton />
-          </Grid.Col>
-        </Grid>
-        <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
-          {widgetOrder.map((id) => (
-            <WidgetSkeleton key={id} />
-          ))}
-        </SimpleGrid>
-      </Stack>
-    );
-  }
 
   return (
     <Stack gap="lg">

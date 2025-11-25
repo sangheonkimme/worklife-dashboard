@@ -29,6 +29,12 @@
         "pageTitle": "대시보드",
         "pageDescription": "자주 쓰는 기능을 한 눈에 살펴보세요."
       },
+      "subscriptions": {
+        "label": "정기구독",
+        "description": "고정비/구독 관리",
+        "pageTitle": "정기구독 관리",
+        "pageDescription": "고정비와 정기 결제를 한 곳에서 관리하세요."
+      },
       "imageCrop": {
         "label": "이미지 자르기",
         "description": "이미지 크롭/내보내기",
