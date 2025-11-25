@@ -30,68 +30,98 @@ import {
   IconShieldCheck,
   IconTargetArrow,
   IconUsersGroup,
+  IconCloud,
+  IconBrain,
+  IconFocus2,
+  IconPlayerPlay,
 } from "@tabler/icons-react";
 
 const heroStats = [
-  { value: "14일", label: "루틴 구축 평균 기간" },
-  { value: "92%", label: "기록 회고 습관 유지율" },
-  { value: "24/7", label: "웹 · 모바일 어디서나" },
+  { value: "+38%", label: "집중 시간 상승" },
+  { value: "85%", label: "루틴 유지율" },
+  { value: "14일", label: "무료 체험" },
 ];
 
 const features = [
   {
-    title: "워크 & 라이프 타임라인",
+    title: "WOLIDA Dash",
     description:
-      "출근길 메모부터 수업 노트까지, 하루의 순간을 하나의 타임라인으로 정리하세요.",
-    details: ["모바일 퀵 캡처", "음성 → 텍스트", "분류 추천"],
+      "할 일, 캘린더, 루틴이 자동으로 정렬되는 하루 타임라인. 멀티 앱 전환 없이 흐름을 잇습니다.",
+    details: ["루틴/과제 동기화", "타임블록·리마인드", "자동 정렬 타임라인"],
     icon: IconChartHistogram,
   },
   {
-    title: "스터디 & 업무 캘린더",
+    title: "WOLIDA Notes",
     description:
-      "수업/미팅을 자동 동기화하고, 준비 체크리스트와 참고 자료를 옆에 붙여둘 수 있습니다.",
-    details: ["구글/애플 캘린더 연동", "To-do & 자료 첨부", "리마인더"],
-    icon: IconCalendarTime,
+      "강의·회의·스터디 메모를 태그와 자료로 묶어 Dash와 양방향 링크. 복습과 공유가 빠릅니다.",
+    details: ["태그/검색", "자료·Drive 링크", "타임라인 연결"],
+    icon: IconUsersGroup,
   },
   {
-    title: "리플레이 노트",
+    title: "WOLIDA Focus",
     description:
-      "중요한 회의나 강의를 구간별로 북마크하고, 다시 볼 때 필요한 포인트를 정리합니다.",
-    details: ["타임태그 북마크", "공유 링크", "AI 요약 메모"],
-    icon: IconUsersGroup,
+      "포모도로·타임블록·방해금지로 집중을 설계하고, 끝나면 자동 로그로 남깁니다.",
+    details: ["포커스 타이머", "자동 기록", "세션 리포트"],
+    icon: IconFocus2,
+  },
+  {
+    title: "WOLIDA Drive",
+    description:
+      "PDF·이미지·템플릿을 폴더/태그로 관리하고 노트·타임라인에서 바로 미리보기.",
+    details: ["구글 드라이브 연동", "양방향 링크", "버전 관리"],
+    icon: IconCloud,
+  },
+  {
+    title: "WOLIDA Money",
+    description:
+      "구독/급여/지출을 주기별로 정리해 달력·알림에 연결. 결제 잊김을 줄입니다.",
+    details: ["정기결제 리마인드", "지출 태그", "월간 리포트"],
+    icon: IconCreditCardPay,
   },
 ];
 
 const workflows = [
   {
-    title: "아침 루틴",
-    description:
-      "하루 목표와 수업/업무 일정을 빠르게 적어두고, 통근 중 모바일로 확인합니다.",
+    title: "Morning Sync",
+    description: "기상 후 오늘의 루틴·캘린더·알림을 한 번에 정렬합니다.",
     icon: IconChecklist,
   },
   {
-    title: "집중 세션 기록",
-    description:
-      "Pomodoro·스터디 세션이 끝날 때마다 결과와 느낌을 기록해 다음 과제를 준비합니다.",
-    icon: IconCreditCardPay,
+    title: "Study Session",
+    description: "타임블록 + Focus 타이머 + 노트를 자동 연결해 학습 로그를 남깁니다.",
+    icon: IconBrain,
   },
   {
-    title: "퇴근 후 회고",
-    description:
-      "하루를 돌아보고 내일 챙길 일을 정리하며, 개인/팀 공유 노트로 바로 전송합니다.",
+    title: "Work Sprint",
+    description: "스프린트 목표·자료·태스크를 한 보드에서 실행하고 리마인드 받기.",
     icon: IconTargetArrow,
+  },
+  {
+    title: "Evening Review",
+    description: "완료/미완료/메모를 회고 템플릿으로 정리하고 내일 계획을 생성.",
+    icon: IconCalendarTime,
+  },
+  {
+    title: "Auto Logging",
+    description: "타이머·노트·캘린더 이벤트를 하루 타임라인에 자동 저장.",
+    icon: IconPlayerPlay,
+  },
+  {
+    title: "Drive Sync",
+    description: "구글 드라이브 자료를 바로 링크·미리보기, 제출물 증빙까지 한 번에.",
+    icon: IconCloud,
   },
 ];
 
 const testimonials = [
   {
     quote:
-      "업무 중 적어둔 아이디어를 퇴근길에 이어서 보완할 수 있어요. 개인 메모와 팀 메모를 구분할 수 있어 부담 없이 기록합니다.",
-    author: "김하늘 / 마케팅 매니저",
+      "포커스 타이머가 끝나면 자동으로 노트에 로그가 쌓여서 회고가 쉬워졌어요. 하루 흐름이 하나의 타임라인으로 정리됩니다.",
+    author: "김하늘 / UX 디자이너",
   },
   {
     quote:
-      "학교-인턴 생활을 동시에 하다 보니 일정이 복잡했는데, 하나의 대시보드에서 정리하고 리마인드까지 받아 큰 도움이 됐어요.",
+      "강의·과제·인턴 업무가 섞여 있었는데, WOLIDA에서 아침에 Sync만 하면 루틴이 자동으로 배치돼요. 집중 시간이 주간 단위로 보입니다.",
     author: "박지우 / 대학생 & 인턴",
   },
 ];
@@ -130,7 +160,7 @@ export const LandingPage = () => {
                 <IconBolt size={20} />
               </ThemeIcon>
               <Text fw={700} fz="lg">
-                Worklife Dashboard
+                WOLIDA
               </Text>
             </Group>
             <Group gap="sm">
@@ -163,25 +193,24 @@ export const LandingPage = () => {
                     gradient={{ from: "worklife-mint.5", to: "sky-blue.6" }}
                     w="fit-content"
                   >
-                    더 똑똑한 팀 운영
+                    Work-Life OS
                   </Badge>
                   <Stack gap="sm">
                     <Title order={1} style={{ fontSize: "48px", lineHeight: 1.2 }}>
-                      직장인과 학생을 위한
+                      WOLIDA — 일상을 OS처럼 관리하는
                       <br />
                       <Text component="span" c="worklife-mint.7">
-                        워크라이프 대시보드
+                        단 하나의 대시보드
                       </Text>
                     </Title>
                     <Text fz="lg" c="dimmed">
-                      출근 전 준비, 강의 중 필기, 야근 후 회고까지 일상의 기록을 놓치지
-                      마세요. 언제든 꺼내볼 수 있도록 워크와 라이프의 순간을 한 화면에
-                      정리해드립니다.
+                      할 일/캘린더 앱을 넘어 루틴·공부·업무·노트·포커스 타이머·자료가 매일
+                      자동으로 동기화되는 Work-Life OS. 14일 무료로 집중력과 흐름을 설계하세요.
                     </Text>
                   </Stack>
                   <Group gap="md" wrap="wrap">
                     <Button size="lg" radius="md" component={NextLink} href="/dashboard">
-                      지금 무료 체험
+                      14일 무료로 시작
                     </Button>
                     <Button
                       size="lg"
@@ -190,7 +219,7 @@ export const LandingPage = () => {
                       component={NextLink}
                       href="/login"
                     >
-                      이미 계정이 있어요
+                      팀 로그인
                     </Button>
                   </Group>
                   <Divider />
@@ -226,21 +255,21 @@ export const LandingPage = () => {
                     <Group justify="space-between">
                       <Stack gap={4}>
                         <Text fz="sm" fw={600}>
-                          오늘의 하이라이트
+                          Today OS Panel
                         </Text>
                         <Text c="dimmed" fz="sm">
-                          통근길 · 캠퍼스 · 사무실 어디서든
+                          루틴 · 캘린더 · 포커스 · 메모 자동 동기화
                         </Text>
                       </Stack>
                       <Badge size="lg" radius="md" variant="light">
-                        SYNC
+                        SYNC ON
                       </Badge>
                     </Group>
                     <Stack gap="sm">
-                      <Text fw={600}>AM Study & PM Sprint</Text>
+                      <Text fw={600}>Behavior-based Daily Sync</Text>
                       <Text fz="sm">
-                        · 오전 강의 요약 완료, 복습 태그 3개 추가
-                        <br />· 오후 제품 디자인 미팅 메모 공유됨
+                        · 아침 루틴 정렬, 회의/강의 자동 배치
+                        <br />· 포커스 타이머 종료 시 노트와 로그 자동 저장
                       </Text>
                     </Stack>
                     <Divider variant="dashed" />
@@ -251,15 +280,15 @@ export const LandingPage = () => {
                         </Text>
                         <Title order={3}>3h 20m</Title>
                         <Text fz="sm" c="forestgreen">
-                          +40m 어제보다 더 집중했어요
+                          어제보다 +40m, 세션 4회 로그 완료
                         </Text>
                       </Stack>
                       <Stack gap={4}>
                         <Text c="dimmed" fz="sm">
-                          남은 과제 & TODO
+                          오늘의 루틴 진행률
                         </Text>
-                        <Title order={3}>완료 4 / 6</Title>
-                        <Text fz="sm">리뷰 요청 1건</Text>
+                        <Title order={3}>완료 6 / 8</Title>
+                        <Text fz="sm">다음 알림: 오후 스프린트 2시</Text>
                       </Stack>
                     </SimpleGrid>
                   </Stack>
@@ -274,10 +303,10 @@ export const LandingPage = () => {
             <Card radius="lg" padding="xl" withBorder>
               <Group justify="space-between" align="center">
                 <Stack gap={4}>
-                  <Text fw={600}>직장·학교·사이드 프로젝트를 모두 챙기는 사람들에게</Text>
+                  <Text fw={600}>Work & Life, Organized</Text>
                   <Text fz="sm" c="dimmed">
-                    캘린더, 메신저, 노트 앱을 전전하던 기록을 하나로 모아 시간과 에너지를
-                    절약하세요.
+                    캘린더·노트·포커스·자료를 전전하던 시간을 줄이고, 하루를 하나의 OS처럼
+                    설계하세요.
                   </Text>
                 </Stack>
                 <Group gap="sm" wrap="wrap">
@@ -297,12 +326,12 @@ export const LandingPage = () => {
             <Stack gap="xl">
               <Stack gap="sm" align="center">
                 <Badge variant="light" color="worklife-mint.6">
-                  Why Worklife Dashboard
+                  Why WOLIDA
                 </Badge>
-                <Title order={2}>일상과 업무 사이를 자연스럽게 연결</Title>
+                <Title order={2}>일상을 OS처럼, 루틴부터 프로젝트까지 한 판에</Title>
                 <Text c="dimmed">
-                  바쁜 직장인과 학습자 모두가 “기록 → 회고 → 공유” 흐름을 쉽게 반복할 수
-                  있도록 설계했습니다.
+                  “루틴 → 포커스 → 기록 → 회고” 흐름이 자동으로 이어지도록 설계했습니다.
+                  멀티앱 전환을 줄이고 인지 부하를 낮춥니다.
                 </Text>
               </Stack>
               <SimpleGrid cols={{ base: 1, md: 3 }} spacing="lg">
@@ -337,10 +366,10 @@ export const LandingPage = () => {
                   <Badge variant="light" color="worklife-mint.6">
                     Workflows
                   </Badge>
-                  <Title order={2}>당신의 루틴을 그대로 옮겨오세요</Title>
+                  <Title order={2}>Flow Engine으로 하루를 자동 정렬</Title>
                   <Text c="dimmed">
-                    하루를 이루는 루틴을 자주 쓰는 도구들과 연결하고, 필요할 때 바로 펼쳐볼 수
-                    있도록 돕습니다.
+                    아침 Sync부터 저녁 회고, 학습/스프린트까지 흐름을 블록으로 설계하고
+                    자동으로 로그를 남깁니다.
                   </Text>
                   <List
                     spacing="sm"
@@ -351,9 +380,9 @@ export const LandingPage = () => {
                       </ThemeIcon>
                     }
                   >
-                    <List.Item>Slack · 이메일 연결로 실시간 알림</List.Item>
-                    <List.Item>Google Drive 연동 증빙 보관</List.Item>
-                    <List.Item>팀/권한 별 뷰 & 승인 단계 설정</List.Item>
+                    <List.Item>Google Drive 연동으로 자료·증빙 즉시 연결</List.Item>
+                    <List.Item>포커스 타이머/노트/캘린더 자동 로그</List.Item>
+                    <List.Item>루틴/스프린트 템플릿으로 반복 작업 단축</List.Item>
                   </List>
                 </Stack>
               </Grid.Col>
@@ -387,8 +416,7 @@ export const LandingPage = () => {
                 </Badge>
                 <Title order={2}>사용자들이 전하는 변화</Title>
                 <Text c="dimmed">
-                  작은 팀일수록 자동화의 가치를 먼저 느꼈습니다. 이미 쓰고 있는 SaaS와
-                  연동되어 더욱 빠르게 적응할 수 있어요.
+                  포커스·노트·캘린더가 한 흐름으로 묶이면서 집중과 회고가 쉬워집니다.
                 </Text>
               </Stack>
               <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg">
@@ -434,8 +462,8 @@ export const LandingPage = () => {
                       오늘의 순간을 기록하고 내일의 성장을 준비하세요
                     </Title>
                     <Text c={isDark ? "gray.0" : "dark"} fz="lg">
-                      무료로 시작해 2주 동안 루틴을 설계해보세요. 학교, 회사, 사이드 프로젝트
-                      어디에서든 이어서 기록할 수 있습니다.
+                      지금 WOLIDA로 나만의 Work-Life OS를 시작해보세요. 14일 무료, 카드 등록
+                      없이 바로 시작할 수 있습니다.
                     </Text>
                   </Stack>
                 </Grid.Col>
@@ -479,7 +507,7 @@ export const LandingPage = () => {
         <Container size="lg">
           <Group justify="space-between">
             <Text fz="sm" c="dimmed">
-              © {new Date().getFullYear()} Worklife Dashboard
+              © {new Date().getFullYear()} WOLIDA
             </Text>
             <Group gap="lg" fz="sm">
               {[
