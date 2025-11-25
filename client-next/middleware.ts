@@ -8,7 +8,6 @@ import {
 const PROTECTED_PATHS = ["/dashboard"];
 const PUBLIC_DASHBOARD_PATHS = ["/dashboard", "/dashboard/"];
 
-
 const isProtectedRoute = (pathname: string) =>
   PROTECTED_PATHS.some(
     (path) => pathname === path || pathname.startsWith(`${path}/`)
@@ -27,10 +26,7 @@ const redirectToLogin = (request: NextRequest) => {
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-
-  if (isPublicDashboardRoute(pathname)) {
-    return NextResponse.next();
-  }
+  const isPublicDashboard = isPublicDashboardRoute(pathname);
 
   if (!isProtectedRoute(pathname)) {
     return NextResponse.next();
@@ -77,6 +73,10 @@ export async function middleware(request: NextRequest) {
     }
   } catch (error) {
     console.error("Failed to refresh access token in middleware", error);
+  }
+
+  if (isPublicDashboard) {
+    return NextResponse.next();
   }
 
   return redirectToLogin(request);
