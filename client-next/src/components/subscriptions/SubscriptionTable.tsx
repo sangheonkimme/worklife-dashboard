@@ -38,6 +38,19 @@ export const SubscriptionTable = () => {
   const cancelMutation = useCancelSubscription();
 
   const rows = useMemo(() => data?.data ?? [], [data]);
+  const formInitialValues: Partial<CreateSubscriptionDto> = editing
+    ? {
+        name: editing.name,
+        amount: Number(editing.amount),
+        billingCycle: editing.billingCycle,
+        nextBillingDate: editing.nextBillingDate,
+        paymentMethod: editing.paymentMethod ?? undefined,
+        category: editing.category ?? undefined,
+        status: editing.status,
+        notifyDaysBefore: editing.notifyDaysBefore ?? 3,
+        notes: editing.notes ?? undefined,
+      }
+    : { billingCycle: 'MONTHLY', nextBillingDate: dayjs().toISOString(), notifyDaysBefore: 3 };
 
   const handleSubmit = (values: CreateSubscriptionDto) => {
     if (editing) {
@@ -144,7 +157,7 @@ export const SubscriptionTable = () => {
                 {isLoading && (
                   <Table.Tr>
                     <Table.Td colSpan={7}>
-                      <Text c="dimmed" align="center">
+                      <Text c="dimmed" ta="center">
                         불러오는 중...
                       </Text>
                     </Table.Td>
@@ -226,14 +239,7 @@ export const SubscriptionTable = () => {
         styles={{ title: { fontWeight: 700 } }}
       >
         <SubscriptionForm
-          initialValues={
-            editing
-              ? {
-                  ...editing,
-                  notifyDaysBefore: editing.notifyDaysBefore ?? 3,
-                }
-              : { billingCycle: 'MONTHLY', nextBillingDate: dayjs().toISOString(), notifyDaysBefore: 3 }
-          }
+          initialValues={formInitialValues}
           onSubmit={handleSubmit}
           loading={createMutation.isPending || updateMutation.isPending}
         />

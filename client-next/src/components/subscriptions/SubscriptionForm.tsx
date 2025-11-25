@@ -13,7 +13,6 @@ import type {
   BillingCycle,
   CreateSubscriptionDto,
   SubscriptionStatus,
-  UpdateSubscriptionDto,
 } from "@/types/subscription";
 
 const billingCycleOptions: { value: BillingCycle; label: string }[] = [
@@ -28,7 +27,7 @@ const statusOptions: { value: SubscriptionStatus; label: string }[] = [
   { value: "CANCELLED", label: "취소" },
 ];
 
-type FormValues = CreateSubscriptionDto | UpdateSubscriptionDto;
+type FormValues = CreateSubscriptionDto;
 
 interface Props {
   initialValues?: Partial<CreateSubscriptionDto>;
@@ -55,9 +54,12 @@ export const SubscriptionForm = ({
       notes: initialValues?.notes || "",
     },
     validate: {
-      name: (value) => (value ? null : "서비스명을 입력해주세요"),
-      amount: (value) => (value > 0 ? null : "금액은 0보다 커야 합니다"),
-      nextBillingDate: (value) => (value ? null : "다음 결제일을 입력해주세요"),
+      name: (value: FormValues["name"]) =>
+        value ? null : "서비스명을 입력해주세요",
+      amount: (value: FormValues["amount"]) =>
+        value > 0 ? null : "금액은 0보다 커야 합니다",
+      nextBillingDate: (value: FormValues["nextBillingDate"]) =>
+        value ? null : "다음 결제일을 입력해주세요",
     },
   });
 
@@ -99,7 +101,10 @@ export const SubscriptionForm = ({
                 : null
             }
             onChange={(date) =>
-              form.setFieldValue("nextBillingDate", date?.toISOString() || "")
+              form.setFieldValue(
+                "nextBillingDate",
+                date ? new Date(date).toISOString() : ""
+              )
             }
           />
         </Group>
