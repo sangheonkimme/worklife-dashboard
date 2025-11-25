@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { AppProviders } from "./providers";
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://www.worklife-dashboard.com";
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://worklife-dashboard.example"),
+  metadataBase: new URL(siteUrl),
   title: {
     default: "Worklife Dashboard | 워크와 라이프를 잇는 기록 허브",
     template: "%s | Worklife Dashboard",
@@ -14,10 +17,13 @@ export const metadata: Metadata = {
     title: "Worklife Dashboard",
     description:
       "직장 & 캠퍼스 생활을 모두 챙기는 사람들을 위한 루틴 기반 기록 플랫폼.",
-    url: "https://worklife-dashboard.example",
+    url: siteUrl,
     siteName: "Worklife Dashboard",
     locale: "ko_KR",
     type: "website",
+  },
+  alternates: {
+    canonical: "https://www.worklife-dashboard.com",
   },
 };
 

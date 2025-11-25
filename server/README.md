@@ -44,7 +44,8 @@ JWT_REFRESH_EXPIRES_IN="7d"
 PORT=5001
 NODE_ENV=development
 
-# 클라이언트
+# 클라이언트 (여러 도메인은 쉼표로 구분)
+# 예: CLIENT_URL="https://worklife-dashboard.vercel.app,https://www.worklife-dashboard.com,https://worklife-dashboard.com"
 CLIENT_URL="http://localhost:3000"
 ```
 

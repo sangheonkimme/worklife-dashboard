@@ -48,6 +48,7 @@ JWT_REFRESH_SECRET=dev-refresh-secret-change-in-production
 # 서버 설정
 PORT=5001
 NODE_ENV=development
+# 클라이언트 URL (여러 개는 쉼표로 구분)
 CLIENT_URL=http://localhost:3000
 
 ```
@@ -161,12 +162,14 @@ Cloudtype은 한국의 클라우드 플랫폼으로, Dockerfile 기반 배포를
 Cloudtype에서는 서버만 배포하므로, PostgreSQL 데이터베이스를 먼저 준비해야 합니다:
 
 **옵션 1: Supabase (무료, 권장)**
+
 1. [Supabase](https://supabase.com)에 가입
 2. 새 프로젝트 생성
 3. Settings > Database에서 연결 정보 확인
 4. Connection String 복사 (형식: `postgresql://postgres:[PASSWORD]@[HOST]:5432/postgres`)
 
 **옵션 2: 다른 PostgreSQL 서비스**
+
 - [Neon](https://neon.tech) (무료)
 - [Railway](https://railway.app)
 - AWS RDS, Google Cloud SQL 등
@@ -185,12 +188,14 @@ Cloudtype에서는 서버만 배포하므로, PostgreSQL 데이터베이스를 �
 Cloudtype은 두 가지 방법으로 설정할 수 있습니다:
 
 **방법 1: 서브 디렉토리 컨텍스트 사용**
+
 - **배포 방식**: Dockerfile
 - **Dockerfile 경로**: `Dockerfile`
 - **컨텍스트 경로**: `server`
 - **포트**: `5001`
 
 **방법 2: 루트 컨텍스트 사용**
+
 - **배포 방식**: Dockerfile
 - **Dockerfile 경로**: `Dockerfile.cloudtype`
 - **컨텍스트 경로**: `.` (루트)
@@ -218,11 +223,12 @@ JWT_REFRESH_EXPIRES_IN=7d
 PORT=5001
 NODE_ENV=production
 
-# CORS 설정 (Vercel 클라이언트 URL)
-CLIENT_URL=https://your-app.vercel.app
+# CORS 설정 (여러 도메인은 쉼표로 구분)
+CLIENT_URL=https://worklife-dashboard.vercel.app,https://www.worklife-dashboard.com,https://worklife-dashboard.com
 ```
 
 **환경 변수 입력 방법:**
+
 - Cloudtype 대시보드에서 한 줄씩 추가
 - 또는 `.env` 형식으로 한 번에 붙여넣기 가능
 
@@ -274,10 +280,10 @@ Vercel 클라이언트의 환경 변수를 Cloudtype URL로 업데이트:
 
 ### 8. Cloudtype 서버의 CLIENT_URL 업데이트
 
-서버 환경 변수에서 `CLIENT_URL`을 Vercel URL로 설정했는지 확인:
+서버 환경 변수에서 `CLIENT_URL`에 배포된 도메인을 모두 포함했는지 확인 (쉼표로 구분):
 
 ```bash
-CLIENT_URL=https://your-app.vercel.app
+CLIENT_URL=https://www.worklife-dashboard.com,https://worklife-dashboard.com
 ```
 
 ### 주요 장점
@@ -291,19 +297,23 @@ CLIENT_URL=https://your-app.vercel.app
 ### 트러블슈팅
 
 #### 빌드 실패
+
 - **Dockerfile 경로 확인**: `server/Dockerfile`
 - **컨텍스트 경로 확인**: `server`
 
 #### 연결 실패
+
 - **DATABASE_URL 확인**: PostgreSQL 연결 문자열 형식 검증
 - **포트 설정**: Cloudtype에서 5001 포트가 열려있는지 확인
 
 #### 마이그레이션 실패
+
 - **DATABASE_URL 권한**: 데이터베이스 사용자가 테이블 생성 권한이 있는지 확인
 - **로그 확인**: Cloudtype 대시보드에서 로그 확인
 
 #### CORS 에러
-- **CLIENT_URL**: 서버 환경 변수가 Vercel URL과 일치하는지 확인
+
+- **CLIENT_URL**: 서버 환경 변수에 연결할 도메인이 모두 포함되어 있는지 확인 (예: `https://www.worklife-dashboard.com,https://worklife-dashboard.com`)
 - **프로토콜**: `https://`로 시작하는지 확인 (http:// 아님)
 
 ### 모니터링
@@ -349,7 +359,7 @@ docker run -d \
   -e DATABASE_URL="postgresql://user:password@your-db-host:5432/database" \
   -e JWT_SECRET="your-jwt-secret" \
   -e JWT_REFRESH_SECRET="your-refresh-secret" \
-  -e CLIENT_URL="https://your-vercel-app.vercel.app" \
+  -e CLIENT_URL="https://worklife-dashboard.vercel.app,https://www.worklife-dashboard.com,https://worklife-dashboard.com" \
   -e NODE_ENV="production" \
   ghcr.io/your-username/worklife-dashboard/server:latest
 ```
@@ -364,7 +374,7 @@ JWT_EXPIRES_IN=1h
 JWT_REFRESH_EXPIRES_IN=7d
 PORT=5001
 NODE_ENV=production
-CLIENT_URL=https://your-vercel-app.vercel.app
+CLIENT_URL=https://worklife-dashboard.vercel.app,https://www.worklife-dashboard.com,https://worklife-dashboard.com
 ```
 
 ### 5. 데이터베이스 마이그레이션
@@ -549,10 +559,10 @@ postgresql://[user]:[password]@[host]:[port]/[database]
 ### CORS 에러
 
 - **문제**: 클라이언트 URL이 서버 환경 변수와 불일치
-- **해결**: 서버의 `CLIENT_URL` 환경 변수를 Vercel 배포 URL로 업데이트
+- **해결**: 서버의 `CLIENT_URL` 환경 변수에 연결할 모든 도메인을 쉼표로 추가
 
 ```bash
-CLIENT_URL=https://your-app.vercel.app
+CLIENT_URL=https://worklife-dashboard.vercel.app,https://www.worklife-dashboard.com,https://worklife-dashboard.com
 ```
 
 ## 모니터링

@@ -36,15 +36,34 @@ const PORT = process.env.PORT || 5000;
 // 미들웨어 설정
 app.use(helmet()); // 보안 헤더
 
-// CLIENT_URL에서 끝의 슬래시 제거
-const clientUrl = (process.env.CLIENT_URL || "http://localhost:3000").replace(
-  /\/$/,
-  ""
+// 허용할 클라이언트 도메인 목록 생성 (쉼표로 구분된 CLIENT_URL 지원)
+const clientOrigins = (process.env.CLIENT_URL || "")
+  .split(",")
+  .map((url) => url.trim().replace(/\/$/, ""))
+  .filter(Boolean);
+
+const allowedOrigins = Array.from(
+  new Set([
+    // 기본 로컬 개발 도메인
+    "http://localhost:3000",
+    "http://localhost:5173",
+    // 신규 프로덕션 도메인
+    "https://worklife-dashboard.com",
+    "https://www.worklife-dashboard.com",
+    // Vercel 배포 도메인
+    "https://worklife-dashboard.vercel.app",
+    ...clientOrigins,
+  ])
 );
 
 app.use(
   cors({
-    origin: clientUrl,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error(`Origin ${origin} not allowed by CORS`));
+    },
     credentials: true,
   })
 ); // CORS
