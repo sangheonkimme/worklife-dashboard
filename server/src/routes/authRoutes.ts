@@ -8,7 +8,7 @@ import {
   updateProfile,
   googleLogin,
 } from '../controllers/authController';
-import { authenticateToken, authenticateRefreshToken } from '../middlewares/auth';
+import { authenticateToken } from '../middlewares/auth';
 import { validate } from '../middlewares/validate';
 import {
   registerSchema,
@@ -52,7 +52,7 @@ router.get('/me', authenticateToken, me);
  * @desc    액세스 토큰 갱신
  * @access  Private (리프레시 토큰 필요)
  */
-router.post('/refresh', authenticateRefreshToken, refreshToken);
+router.post('/refresh', refreshToken);
 
 /**
  * @route   PUT /api/auth/profile

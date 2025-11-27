@@ -17,12 +17,14 @@ const createErrorResponse = (status: number, message: string) => {
 
 export async function POST(request: NextRequest) {
   const cookieHeader = request.headers.get("cookie") ?? "";
+  const origin = request.headers.get("origin") ?? request.nextUrl.origin;
 
   try {
     const apiResponse = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
       method: "POST",
       headers: {
         cookie: cookieHeader,
+        origin,
       },
       credentials: "include",
     });

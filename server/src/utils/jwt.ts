@@ -1,15 +1,23 @@
 import jwt, { Secret, SignOptions } from "jsonwebtoken";
 
-const JWT_SECRET: Secret = process.env.JWT_SECRET || "your-secret-key";
-const JWT_REFRESH_SECRET: Secret =
-  process.env.JWT_REFRESH_SECRET || "your-refresh-secret";
-const JWT_EXPIRES_IN: string = process.env.JWT_EXPIRES_IN || "1h";
-const JWT_REFRESH_EXPIRES_IN: string =
-  process.env.JWT_REFRESH_EXPIRES_IN || "7d";
+const getRequiredEnv = (key: string): string => {
+  const value = process.env[key];
+  if (!value) {
+    throw new Error(`Environment variable ${key} is required for JWT configuration`);
+  }
+  return value;
+};
+
+const JWT_SECRET: Secret = getRequiredEnv("JWT_SECRET");
+const JWT_REFRESH_SECRET: Secret = getRequiredEnv("JWT_REFRESH_SECRET");
+const JWT_EXPIRES_IN: string = process.env.JWT_EXPIRES_IN || "15m";
+const JWT_REFRESH_EXPIRES_IN: string = process.env.JWT_REFRESH_EXPIRES_IN || "7d";
 
 export interface JwtPayload {
   userId: string;
-  email: string;
+  email?: string;
+  sessionId?: string;
+  sub?: string;
 }
 
 /**
@@ -19,7 +27,7 @@ export interface JwtPayload {
  */
 export const generateAccessToken = (payload: JwtPayload): string => {
   const options = { expiresIn: JWT_EXPIRES_IN } as SignOptions;
-  return jwt.sign(payload, JWT_SECRET, options);
+  return jwt.sign({ ...payload, sub: payload.userId }, JWT_SECRET, options);
 };
 
 /**
@@ -29,7 +37,7 @@ export const generateAccessToken = (payload: JwtPayload): string => {
  */
 export const generateRefreshToken = (payload: JwtPayload): string => {
   const options = { expiresIn: JWT_REFRESH_EXPIRES_IN } as SignOptions;
-  return jwt.sign(payload, JWT_REFRESH_SECRET, options);
+  return jwt.sign({ ...payload, sub: payload.userId }, JWT_REFRESH_SECRET, options);
 };
 
 /**

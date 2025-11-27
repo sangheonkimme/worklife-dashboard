@@ -16,6 +16,7 @@
     "test:coverage": "jest --coverage",
     "docker:dev": "cd .. && docker-compose -f docker-compose.dev.yml up --build",
     "docker:dev:detach": "cd .. && docker-compose -f docker-compose.dev.yml up --build -d",
+    "docker:dev:recreate": "cd .. && docker-compose -f docker-compose.dev.yml up --build --force-recreate",
     "docker:dev:down": "cd .. && docker-compose -f docker-compose.dev.yml down",
     "docker:dev:logs": "cd .. && docker-compose -f docker-compose.dev.yml logs -f",
     "docker:prod": "cd .. && docker-compose up --build",

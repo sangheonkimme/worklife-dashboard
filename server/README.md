@@ -35,18 +35,27 @@ npm run db:seed
 DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/worklife_dashboard"
 
 # JWT 비밀키
-JWT_SECRET="your-secret-key"
-JWT_REFRESH_SECRET="your-refresh-secret"
-JWT_EXPIRES_IN="1h"
+JWT_SECRET="replace-with-strong-secret"
+JWT_REFRESH_SECRET="replace-with-strong-refresh-secret"
+# 기본: access 15m, refresh 7d — 필요 시 오버라이드
+JWT_EXPIRES_IN="15m"
 JWT_REFRESH_EXPIRES_IN="7d"
+# 또는 밀리초 단위로 refresh 쿠키 수명 지정 (선택)
+# JWT_REFRESH_EXPIRES_IN_MS=604800000
 
 # 서버
 PORT=5001
 NODE_ENV=development
 
-# 클라이언트 (여러 도메인은 쉼표로 구분)
+# 쿠키 / CORS
+# 쿠키 도메인 (프로덕션 예: .worklife-dashboard.com)
+COOKIE_DOMAIN=""
+# 허용할 프런트엔드 오리진 (쉼표 구분, 슬래시 없이)
 # 예: CLIENT_URL="https://worklife-dashboard.vercel.app,https://www.worklife-dashboard.com,https://worklife-dashboard.com"
 CLIENT_URL="http://localhost:3000"
+
+# Google OAuth
+GOOGLE_CLIENT_ID="your-google-client-id"
 ```
 
 ### 개발 서버 실행

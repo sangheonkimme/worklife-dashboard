@@ -38,8 +38,24 @@ model User {
   userSettings            UserSettings?
   dashboardChecklistItems DashboardChecklistItem[]
   subscriptions           Subscription[]
+  refreshSessions         RefreshSession[]
 
   @@map("users")
+}
+
+model RefreshSession {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash  String   @unique
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  createdAt  DateTime @default(now())
+  ipAddress  String?
+  userAgent  String?
+
+  @@index([userId])
+  @@map("refresh_sessions")
 }
 
 // 카테고리 모델

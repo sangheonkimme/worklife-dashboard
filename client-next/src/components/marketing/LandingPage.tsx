@@ -35,6 +35,8 @@ import {
   IconFocus2,
   IconPlayerPlay,
 } from "@tabler/icons-react";
+import { useAuth } from "@/hooks/useAuth";
+import { Loader } from "@mantine/core";
 
 const heroStats = [
   { value: "+38%", label: "집중 시간 상승" },
@@ -130,6 +132,17 @@ export const LandingPage = () => {
   const theme = useMantineTheme();
   const { colorScheme } = useMantineColorScheme();
   const isDark = colorScheme === "dark";
+   const {
+    user,
+    isAuthenticated,
+    isLoading,
+    logout,
+    isLoginLoading,
+    isRegisterLoading,
+    isGoogleLoginLoading,
+  } = useAuth();
+
+  const isAuthMutating = isLoginLoading || isRegisterLoading || isGoogleLoginLoading;
 
   return (
     <Box
@@ -164,18 +177,46 @@ export const LandingPage = () => {
               </Text>
             </Group>
             <Group gap="sm">
-              <Anchor
-                component={NextLink}
-                href="/login"
-                fw={500}
-                c={isDark ? "gray.0" : "dark"}
-                style={{ textDecoration: "none" }}
-              >
-                로그인
-              </Anchor>
-              <Button component={NextLink} href="/dashboard" radius="md">
-                무료로 시작하기
-              </Button>
+              {isLoading ? (
+                <Loader size="sm" />
+              ) : isAuthenticated ? (
+                <>
+                  <Badge color="worklife-mint.6" variant="light">
+                    {user?.name || user?.email || "로그인됨"}
+                  </Badge>
+                  <Button component={NextLink} href="/dashboard" radius="md">
+                    대시보드
+                  </Button>
+                  <Button
+                    variant="light"
+                    radius="md"
+                    onClick={() => {
+                      void logout();
+                    }}
+                    loading={isAuthMutating}
+                  >
+                    로그아웃
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Anchor
+                    component={NextLink}
+                    href="/login"
+                    fw={500}
+                    c={isDark ? "gray.0" : "dark"}
+                    style={{ textDecoration: "none" }}
+                  >
+                    로그인
+                  </Anchor>
+                  <Button component={NextLink} href="/signup" radius="md" variant="light">
+                    회원가입
+                  </Button>
+                  <Button component={NextLink} href="/dashboard" radius="md">
+                    무료로 시작하기
+                  </Button>
+                </>
+              )}
             </Group>
           </Group>
         </Container>
@@ -209,18 +250,37 @@ export const LandingPage = () => {
                     </Text>
                   </Stack>
                   <Group gap="md" wrap="wrap">
-                    <Button size="lg" radius="md" component={NextLink} href="/dashboard">
-                      14일 무료로 시작
-                    </Button>
-                    <Button
-                      size="lg"
-                      radius="md"
-                      variant="light"
-                      component={NextLink}
-                      href="/login"
-                    >
-                      팀 로그인
-                    </Button>
+                    {isAuthenticated ? (
+                      <>
+                        <Button size="lg" radius="md" component={NextLink} href="/dashboard">
+                          대시보드 바로가기
+                        </Button>
+                        <Button
+                          size="lg"
+                          radius="md"
+                          variant="light"
+                          component={NextLink}
+                          href="/settings"
+                        >
+                          프로필·설정
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button size="lg" radius="md" component={NextLink} href="/signup">
+                          14일 무료로 시작
+                        </Button>
+                        <Button
+                          size="lg"
+                          radius="md"
+                          variant="light"
+                          component={NextLink}
+                          href="/login"
+                        >
+                          팀 로그인
+                        </Button>
+                      </>
+                    )}
                   </Group>
                   <Divider />
                   <Group gap="xl" wrap="wrap">

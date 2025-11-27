@@ -50,6 +50,7 @@ export async function middleware(request: NextRequest) {
       method: "POST",
       headers: {
         cookie: request.headers.get("cookie") ?? "",
+        origin: request.nextUrl.origin,
       },
     });
 
