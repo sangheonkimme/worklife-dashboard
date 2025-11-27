@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 import {
   ACCESS_TOKEN_COOKIE_NAME,
   DEFAULT_ACCESS_TOKEN_MAX_AGE,
+  getAccessTokenCookieOptions,
 } from "@/lib/constants/auth";
 
 const PROTECTED_PATHS = ["/dashboard"];
@@ -20,7 +21,11 @@ const redirectToLogin = (request: NextRequest) => {
   const loginUrl = new URL("/login", request.url);
   loginUrl.searchParams.set("redirectTo", request.nextUrl.pathname);
   const response = NextResponse.redirect(loginUrl);
-  response.cookies.delete(ACCESS_TOKEN_COOKIE_NAME);
+  response.cookies.set({
+    ...getAccessTokenCookieOptions(0),
+    value: "",
+    maxAge: 0,
+  });
   return response;
 };
 
@@ -61,13 +66,8 @@ export async function middleware(request: NextRequest) {
       if (newAccessToken) {
         const response = NextResponse.next();
         response.cookies.set({
-          name: ACCESS_TOKEN_COOKIE_NAME,
+          ...getAccessTokenCookieOptions(DEFAULT_ACCESS_TOKEN_MAX_AGE),
           value: newAccessToken,
-          httpOnly: false,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "lax",
-          path: "/",
-          maxAge: DEFAULT_ACCESS_TOKEN_MAX_AGE,
         });
         return response;
       }

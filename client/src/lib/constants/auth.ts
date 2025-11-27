@@ -1,5 +1,9 @@
 export const ACCESS_TOKEN_COOKIE_NAME = "accessToken";
 export const DEFAULT_ACCESS_TOKEN_MAX_AGE = 60 * 15; // 15 minutes
+export const ACCESS_TOKEN_COOKIE_DOMAIN =
+  process.env.NEXT_PUBLIC_COOKIE_DOMAIN ||
+  process.env.COOKIE_DOMAIN ||
+  undefined;
 
 export const getAccessTokenCookieOptions = (maxAge = DEFAULT_ACCESS_TOKEN_MAX_AGE) => ({
   name: ACCESS_TOKEN_COOKIE_NAME,
@@ -8,4 +12,5 @@ export const getAccessTokenCookieOptions = (maxAge = DEFAULT_ACCESS_TOKEN_MAX_AG
   sameSite: "lax" as const,
   path: "/",
   maxAge,
+  ...(ACCESS_TOKEN_COOKIE_DOMAIN ? { domain: ACCESS_TOKEN_COOKIE_DOMAIN } : {}),
 });

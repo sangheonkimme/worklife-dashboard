@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-  ACCESS_TOKEN_COOKIE_NAME,
   DEFAULT_ACCESS_TOKEN_MAX_AGE,
+  getAccessTokenCookieOptions,
 } from "@/lib/constants/auth";
 
 const API_BASE_URL =
@@ -10,7 +10,11 @@ const API_BASE_URL =
 const createErrorResponse = (status: number, message: string) => {
   const response = NextResponse.json({ success: false, message }, { status });
   if (status === 401) {
-    response.cookies.delete(ACCESS_TOKEN_COOKIE_NAME);
+    response.cookies.set({
+      ...getAccessTokenCookieOptions(0),
+      value: "",
+      maxAge: 0,
+    });
   }
   return response;
 };
@@ -45,13 +49,8 @@ export async function POST(request: NextRequest) {
 
     const response = NextResponse.json({ success: true, accessToken });
     response.cookies.set({
-      name: ACCESS_TOKEN_COOKIE_NAME,
+      ...getAccessTokenCookieOptions(DEFAULT_ACCESS_TOKEN_MAX_AGE),
       value: accessToken,
-      httpOnly: false,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: DEFAULT_ACCESS_TOKEN_MAX_AGE,
     });
     return response;
   } catch (error) {
