@@ -1,4 +1,6 @@
-import { Box, Paper, Text, Group, ActionIcon, Progress, Stack } from '@mantine/core';
+"use client";
+
+import { Box, Paper, Text, Group, ActionIcon, Progress, Stack } from "@mantine/core";
 import {
   IconPlayerPlay,
   IconPlayerPause,
@@ -7,10 +9,10 @@ import {
   IconX,
   IconMaximize,
 } from '@tabler/icons-react';
-import { useTranslation } from 'react-i18next';
-import { useStopwatchStore } from '@/store/useStopwatchStore';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { formatTime } from '@/utils/timeFormat';
+import { useTranslation } from "react-i18next";
+import { useStopwatchStore } from "@/store/useStopwatchStore";
+import { useRouter, usePathname } from "next/navigation";
+import { formatTime } from "@/utils/timeFormat";
 
 export function StopwatchWidget() {
   const {
@@ -25,18 +27,17 @@ export function StopwatchWidget() {
     recordLap,
     setWidgetVisible,
   } = useStopwatchStore();
-  const { t } = useTranslation('widgets');
-
-  const navigate = useNavigate();
-  const location = useLocation();
+  const { t } = useTranslation("widgets");
+  const router = useRouter();
+  const pathname = usePathname();
 
   // 타이머가 idle이고 시작하지 않았으면 위젯 숨김
-  if (status === 'idle' && elapsedTime === 0 && laps.length === 0) {
+  if (status === "idle" && elapsedTime === 0 && laps.length === 0) {
     return null;
   }
 
   // 대시보드 페이지에서는 위젯 숨김 (큰 카드가 있으므로)
-  if (location.pathname === '/dashboard' || location.pathname === '/') {
+  if (pathname === "/dashboard" || pathname === "/") {
     return null;
   }
 
@@ -47,9 +48,9 @@ export function StopwatchWidget() {
 
   // 상태별 색상
   const getColor = () => {
-    if (status === 'paused') return 'yellow';
-    if (status === 'running') return 'blue';
-    return 'gray';
+    if (status === "paused") return "yellow";
+    if (status === "running") return "blue";
+    return "gray";
   };
 
   const color = getColor();
@@ -59,7 +60,7 @@ export function StopwatchWidget() {
   const progress = Math.min((elapsedTime / maxTime) * 100, 100);
 
   const handleMaximize = () => {
-    navigate('/dashboard');
+    router.push("/dashboard");
   };
 
   return (
@@ -69,13 +70,13 @@ export function StopwatchWidget() {
       radius="md"
       withBorder
       style={{
-        position: 'fixed',
+        position: "fixed",
         bottom: 20,
         right: 20,
         zIndex: 1000,
         minWidth: 280,
         maxWidth: 320,
-        cursor: 'default',
+        cursor: "default",
       }}
     >
       <Stack gap="xs">
@@ -86,13 +87,13 @@ export function StopwatchWidget() {
               style={{
                 width: 8,
                 height: 8,
-                borderRadius: '50%',
+                borderRadius: "50%",
                 backgroundColor: `var(--mantine-color-${color}-6)`,
-                animation: status === 'running' ? 'pulse 2s infinite' : 'none',
+                animation: status === "running" ? "pulse 2s infinite" : "none",
               }}
             />
             <Text size="sm" fw={600}>
-              {t('stopwatch.title')}
+              {t("stopwatch.title")}
             </Text>
           </Group>
           <Group gap={4}>
@@ -101,7 +102,7 @@ export function StopwatchWidget() {
               color="gray"
               size="sm"
               onClick={handleMaximize}
-              aria-label={t('stopwatch.widget.aria.goToDashboard')}
+              aria-label={t("stopwatch.widget.aria.goToDashboard")}
             >
               <IconMaximize size={16} />
             </ActionIcon>
@@ -110,7 +111,7 @@ export function StopwatchWidget() {
               color="gray"
               size="sm"
               onClick={() => setWidgetVisible(false)}
-              aria-label={t('stopwatch.widget.aria.closeWidget')}
+              aria-label={t("stopwatch.widget.aria.closeWidget")}
             >
               <IconX size={16} />
             </ActionIcon>
@@ -128,32 +129,32 @@ export function StopwatchWidget() {
         {/* 랩 개수 */}
         {laps.length > 0 && (
           <Text size="xs" c="dimmed" ta="center">
-            {t('stopwatch.widget.lapCount', { count: laps.length })}
+            {t("stopwatch.widget.lapCount", { count: laps.length })}
           </Text>
         )}
 
         {/* 컨트롤 버튼 */}
         <Group justify="center" gap="xs">
-          {status === 'idle' && (
+          {status === "idle" && (
             <ActionIcon
               variant="filled"
               color={color}
               size="lg"
               onClick={startTimer}
-              aria-label={t('stopwatch.actions.start')}
+              aria-label={t("stopwatch.actions.start")}
             >
               <IconPlayerPlay size={18} />
             </ActionIcon>
           )}
 
-          {status === 'running' && (
+          {status === "running" && (
             <>
               <ActionIcon
                 variant="filled"
                 color="yellow"
                 size="lg"
                 onClick={pauseTimer}
-                aria-label={t('stopwatch.actions.pause')}
+                aria-label={t("stopwatch.actions.pause")}
               >
                 <IconPlayerPause size={18} />
               </ActionIcon>
@@ -162,7 +163,7 @@ export function StopwatchWidget() {
                 color="blue"
                 size="lg"
                 onClick={recordLap}
-                aria-label={t('stopwatch.actions.recordLap')}
+                aria-label={t("stopwatch.actions.recordLap")}
               >
                 <IconFlag size={18} />
               </ActionIcon>
@@ -171,21 +172,21 @@ export function StopwatchWidget() {
                 color="gray"
                 size="lg"
                 onClick={resetTimer}
-                aria-label={t('stopwatch.actions.reset')}
+                aria-label={t("stopwatch.actions.reset")}
               >
                 <IconPlayerStop size={18} />
               </ActionIcon>
             </>
           )}
 
-          {status === 'paused' && (
+          {status === "paused" && (
             <>
               <ActionIcon
                 variant="filled"
                 color="blue"
                 size="lg"
                 onClick={resumeTimer}
-                aria-label={t('stopwatch.actions.resume')}
+                aria-label={t("stopwatch.actions.resume")}
               >
                 <IconPlayerPlay size={18} />
               </ActionIcon>
@@ -194,7 +195,7 @@ export function StopwatchWidget() {
                 color="blue"
                 size="lg"
                 onClick={recordLap}
-                aria-label={t('stopwatch.actions.recordLap')}
+                aria-label={t("stopwatch.actions.recordLap")}
               >
                 <IconFlag size={18} />
               </ActionIcon>

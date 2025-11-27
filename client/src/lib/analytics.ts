@@ -1,20 +1,23 @@
 import ReactGA from "react-ga4";
 
-const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_ID;
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_ID;
+
+const canUseBrowserAnalytics = () =>
+  typeof window !== "undefined" && Boolean(GA_MEASUREMENT_ID);
 
 let isAnalyticsInitialized = false;
 
 export const initializeAnalytics = () => {
-  if (!GA_MEASUREMENT_ID || isAnalyticsInitialized) {
+  if (!canUseBrowserAnalytics() || isAnalyticsInitialized) {
     return;
   }
 
-  ReactGA.initialize([{ trackingId: GA_MEASUREMENT_ID }]);
+  ReactGA.initialize([{ trackingId: GA_MEASUREMENT_ID as string }]);
   isAnalyticsInitialized = true;
 };
 
 export const trackPageView = (path: string) => {
-  if (!GA_MEASUREMENT_ID) {
+  if (!canUseBrowserAnalytics()) {
     return;
   }
 
@@ -22,7 +25,7 @@ export const trackPageView = (path: string) => {
 };
 
 export const trackEvent = (event: TrackEventOptions) => {
-  if (!GA_MEASUREMENT_ID) {
+  if (!canUseBrowserAnalytics()) {
     return;
   }
 
@@ -46,7 +49,7 @@ export const trackTiming = ({
   value,
   label,
 }: TrackTimingOptions) => {
-  if (!GA_MEASUREMENT_ID) {
+  if (!canUseBrowserAnalytics()) {
     return;
   }
 
@@ -58,7 +61,8 @@ export const trackTiming = ({
   ReactGA.ga("send", "timing", category, variable, value);
 };
 
-export const isAnalyticsEnabled = () => Boolean(GA_MEASUREMENT_ID);
+export const isAnalyticsEnabled = () =>
+  Boolean(GA_MEASUREMENT_ID) && typeof window !== "undefined";
 
 type NamedEventOptions = {
   name: string;

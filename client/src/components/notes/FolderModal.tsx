@@ -1,10 +1,24 @@
-import { Modal, TextInput, ColorInput, Select, Button, Group, Stack } from '@mantine/core';
-import { useForm } from '@mantine/form';
-import { IconFolder } from '@tabler/icons-react';
-import { useEffect, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
-import type { Folder } from '@/types/folder';
-import { useCreateFolder, useUpdateFolder, useFolders } from '@/hooks/useFolders';
+"use client";
+
+import {
+  Modal,
+  TextInput,
+  ColorInput,
+  Select,
+  Button,
+  Group,
+  Stack,
+} from "@mantine/core";
+import { useForm } from "@mantine/form";
+import { IconFolder } from "@tabler/icons-react";
+import { useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import type { Folder } from "@/types/folder";
+import {
+  useCreateFolder,
+  useUpdateFolder,
+  useFolders,
+} from "@/hooks/useFolders";
 
 interface FolderModalProps {
   opened: boolean;
@@ -14,21 +28,26 @@ interface FolderModalProps {
 }
 
 const FOLDER_ICON_VALUES = [
-  { value: 'IconFolder', key: 'folderModal.iconOptions.default' },
-  { value: 'IconFolderOpen', key: 'folderModal.iconOptions.open' },
-  { value: 'IconBriefcase', key: 'folderModal.iconOptions.work' },
-  { value: 'IconBook', key: 'folderModal.iconOptions.study' },
-  { value: 'IconHeart', key: 'folderModal.iconOptions.personal' },
-  { value: 'IconStar', key: 'folderModal.iconOptions.important' },
-  { value: 'IconHome', key: 'folderModal.iconOptions.home' },
-  { value: 'IconCode', key: 'folderModal.iconOptions.code' },
+  { value: "IconFolder", key: "folderModal.iconOptions.default" },
+  { value: "IconFolderOpen", key: "folderModal.iconOptions.open" },
+  { value: "IconBriefcase", key: "folderModal.iconOptions.work" },
+  { value: "IconBook", key: "folderModal.iconOptions.study" },
+  { value: "IconHeart", key: "folderModal.iconOptions.personal" },
+  { value: "IconStar", key: "folderModal.iconOptions.important" },
+  { value: "IconHome", key: "folderModal.iconOptions.home" },
+  { value: "IconCode", key: "folderModal.iconOptions.code" },
 ];
 
-export function FolderModal({ opened, onClose, folder, parentId }: FolderModalProps) {
+export function FolderModal({
+  opened,
+  onClose,
+  folder,
+  parentId,
+}: FolderModalProps) {
   const { data: folders } = useFolders();
   const createFolder = useCreateFolder();
   const updateFolder = useUpdateFolder();
-  const { t } = useTranslation('notes');
+  const { t } = useTranslation("notes");
   const iconOptions = useMemo(
     () =>
       FOLDER_ICON_VALUES.map((option) => ({
@@ -40,33 +59,48 @@ export function FolderModal({ opened, onClose, folder, parentId }: FolderModalPr
 
   const form = useForm({
     initialValues: {
-      name: '',
-      color: '#228be6',
-      icon: 'IconFolder',
-      parentId: parentId || '',
+      name: "",
+      color: "#228be6",
+      icon: "IconFolder",
+      parentId: parentId || "",
     },
     validate: {
-      name: (value) =>
+      name: (value: string) =>
         value.trim().length === 0
-          ? t('folderModal.validation.nameRequired')
+          ? t("folderModal.validation.nameRequired")
           : null,
     },
   });
 
   useEffect(() => {
+    if (!opened) return;
+
     if (folder) {
       form.setValues({
         name: folder.name,
-        color: folder.color || '#228be6',
-        icon: folder.icon || 'IconFolder',
-        parentId: folder.parentId || '',
+        color: folder.color || "#228be6",
+        icon: folder.icon || "IconFolder",
+        parentId: folder.parentId || "",
       });
-    } else if (parentId) {
-      form.setFieldValue('parentId', parentId);
-    } else {
-      form.reset();
+      return;
     }
-  }, [folder, parentId, opened]);
+
+    form.reset();
+    if (parentId) {
+      form.setFieldValue("parentId", parentId);
+    }
+  }, [opened, folder, form, parentId]);
+
+  useEffect(() => {
+    if (!opened || folder) return;
+
+    const currentParentId = form.getValues().parentId || "";
+    const nextParentId = parentId || "";
+
+    if (currentParentId !== nextParentId) {
+      form.setFieldValue("parentId", nextParentId);
+    }
+  }, [opened, parentId, folder, form]);
 
   const handleSubmit = async (values: typeof form.values) => {
     try {
@@ -91,7 +125,7 @@ export function FolderModal({ opened, onClose, folder, parentId }: FolderModalPr
       form.reset();
       onClose();
     } catch (error) {
-      console.error('Failed to save folder:', error);
+      console.error("Failed to save folder:", error);
     }
   };
 
@@ -102,42 +136,44 @@ export function FolderModal({ opened, onClose, folder, parentId }: FolderModalPr
     // Exclude immediate children to prevent cycles
     if (folder && f.parentId === folder.id) return false;
     // Only allow root folders or first-level folders as parents
-    return !f.parentId || (f.parent && 'parentId' in f.parent && !f.parent.parentId);
+    return (
+      !f.parentId || (f.parent && "parentId" in f.parent && !f.parent.parentId)
+    );
   });
 
   return (
     <Modal
       opened={opened}
       onClose={onClose}
-      title={t(folder ? 'folderModal.title.edit' : 'folderModal.title.create')}
+      title={t(folder ? "folderModal.title.edit" : "folderModal.title.create")}
       size="md"
     >
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack gap="md">
           <TextInput
-            label={t('folderModal.fields.name.label')}
-            placeholder={t('folderModal.fields.name.placeholder')}
+            label={t("folderModal.fields.name.label")}
+            placeholder={t("folderModal.fields.name.placeholder")}
             required
             leftSection={<IconFolder size={16} />}
-            {...form.getInputProps('name')}
+            {...form.getInputProps("name")}
           />
 
           <Select
-            label={t('folderModal.fields.icon.label')}
-            placeholder={t('folderModal.fields.icon.placeholder')}
+            label={t("folderModal.fields.icon.label")}
+            placeholder={t("folderModal.fields.icon.placeholder")}
             data={iconOptions}
-            {...form.getInputProps('icon')}
+            {...form.getInputProps("icon")}
           />
 
           <ColorInput
-            label={t('folderModal.fields.color.label')}
-            placeholder={t('folderModal.fields.color.placeholder')}
-            {...form.getInputProps('color')}
+            label={t("folderModal.fields.color.label")}
+            placeholder={t("folderModal.fields.color.placeholder")}
+            {...form.getInputProps("color")}
           />
 
           <Select
-            label={t('folderModal.fields.parent.label')}
-            placeholder={t('folderModal.fields.parent.placeholder')}
+            label={t("folderModal.fields.parent.label")}
+            placeholder={t("folderModal.fields.parent.placeholder")}
             clearable
             data={
               availableFolders?.map((f) => ({
@@ -145,18 +181,18 @@ export function FolderModal({ opened, onClose, folder, parentId }: FolderModalPr
                 label: f.name,
               })) || []
             }
-            {...form.getInputProps('parentId')}
+            {...form.getInputProps("parentId")}
           />
 
           <Group justify="flex-end" mt="md">
             <Button variant="subtle" onClick={onClose}>
-              {t('actions.cancel')}
+              {t("actions.cancel")}
             </Button>
             <Button
               type="submit"
               loading={createFolder.isPending || updateFolder.isPending}
             >
-              {t(folder ? 'actions.update' : 'actions.create')}
+              {t(folder ? "actions.update" : "actions.create")}
             </Button>
           </Group>
         </Stack>

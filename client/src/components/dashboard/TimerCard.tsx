@@ -1,3 +1,5 @@
+"use client";
+
 import { Card, Stack, Group, Text, ThemeIcon } from "@mantine/core";
 import { IconHourglassEmpty } from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";

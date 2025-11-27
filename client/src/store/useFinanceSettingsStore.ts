@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 import type { FinanceSettings } from "@/types/userSettings";
 
 interface FinanceSettingsState {
@@ -22,6 +22,11 @@ const clampWeekday = (value: number) => {
   return Math.min(6, Math.max(0, Math.round(value)));
 };
 
+const storage =
+  typeof window === "undefined"
+    ? undefined
+    : createJSONStorage(() => window.localStorage);
+
 export const useFinanceSettingsStore = create<FinanceSettingsState>()(
   persist(
     (set) => ({
@@ -41,6 +46,7 @@ export const useFinanceSettingsStore = create<FinanceSettingsState>()(
     {
       name: "finance-settings",
       version: 1,
+      storage,
       partialize: (state) => ({
         payday: state.payday,
         currency: state.currency,

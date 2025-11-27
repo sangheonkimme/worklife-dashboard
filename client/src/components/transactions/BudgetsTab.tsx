@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from 'react';
 import {
   Stack,
@@ -147,7 +149,16 @@ export default function BudgetsTab() {
         <Group>
           <MonthPickerInput
             value={selectedMonth}
-            onChange={(value) => value && setSelectedMonth(value)}
+            onChange={(value) => {
+              if (value && typeof value === "object" && "getTime" in value) {
+                setSelectedMonth(value as Date);
+              } else if (typeof value === "string") {
+                const parsed = new Date(value);
+                if (!Number.isNaN(parsed.getTime())) {
+                  setSelectedMonth(parsed);
+                }
+              }
+            }}
             placeholder={t('budgetsTab.monthPlaceholder')}
             w={200}
           />

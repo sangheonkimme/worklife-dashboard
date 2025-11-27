@@ -1,12 +1,14 @@
-import { Card, Text, Stack, Group, ThemeIcon } from '@mantine/core';
-import { IconCalculator, IconArrowRight } from '@tabler/icons-react';
-import { useNavigate } from 'react-router-dom';
+"use client";
+
+import { Card, Text, Stack, Group, ThemeIcon } from "@mantine/core";
+import { IconCalculator, IconArrowRight } from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
 
 export function SalaryCalculatorCard() {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleClick = () => {
-    navigate('/salary');
+    router.push("/dashboard/salary");
   };
 
   return (
@@ -26,8 +28,8 @@ export function SalaryCalculatorCard() {
         e.currentTarget.style.boxShadow = 'var(--mantine-shadow-sm)';
       }}
     >
-      <Stack gap="md">
-        <Group justify="space-between">
+      <Stack gap="sm">
+        <Group justify="space-between" gap="xs">
           <ThemeIcon size="xl" variant="light" color="violet" radius="md">
             <IconCalculator size={24} stroke={1.5} />
           </ThemeIcon>
@@ -35,21 +37,21 @@ export function SalaryCalculatorCard() {
         </Group>
 
         <div>
-          <Text fw={600} size="lg">
+          <Text fw={600} size="lg" lh={1.3}>
             연봉 계산기
           </Text>
-          <Text size="sm" c="dimmed" mt={4}>
+          <Text size="sm" c="dimmed" mt={2} lh={1.4}>
             실수령액을 간편하게 계산해보세요
           </Text>
         </div>
 
-        <Group gap="xs" mt="xs">
-          <Text size="xs" c="dimmed">
+        <Group gap={6} mt="xs">
+          <Text size="xs" c="dimmed" lh={1.4}>
             • 2025년 기준 세율 적용
           </Text>
         </Group>
-        <Group gap="xs">
-          <Text size="xs" c="dimmed">
+        <Group gap={6}>
+          <Text size="xs" c="dimmed" lh={1.4}>
             • 4대 보험 및 소득세 자동 계산
           </Text>
         </Group>

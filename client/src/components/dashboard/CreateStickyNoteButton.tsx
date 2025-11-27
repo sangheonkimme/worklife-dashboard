@@ -1,3 +1,5 @@
+"use client";
+
 import { Card, ActionIcon, Text, Stack } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';

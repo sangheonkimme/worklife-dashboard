@@ -1,12 +1,25 @@
-import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
+import axios, {
+  type AxiosError,
+  type InternalAxiosRequestConfig,
+} from "axios";
 import NProgress from "nprogress";
-import "@/styles/nprogress.css";
+import {
+  clearAccessTokenCookie,
+  getClientAccessToken,
+} from "@/lib/session";
 
-NProgress.configure({ showSpinner: false, trickleSpeed: 100 });
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5001";
+const isBrowser = typeof window !== "undefined";
+
+if (isBrowser) {
+  NProgress.configure({ showSpinner: false, trickleSpeed: 100 });
+}
 
 let activeRequests = 0;
 
 const startProgress = () => {
+  if (!isBrowser) return;
   activeRequests += 1;
   if (activeRequests === 1) {
     NProgress.start();
@@ -14,29 +27,52 @@ const startProgress = () => {
 };
 
 const stopProgress = () => {
+  if (!isBrowser) return;
   activeRequests = Math.max(activeRequests - 1, 0);
   if (activeRequests === 0) {
     NProgress.done();
   }
 };
 
-// Axios 인스턴스 생성
+const redirectToLogin = () => {
+  if (!isBrowser) return;
+  window.location.href = "/login";
+};
+
+const requestAccessToken = async () => {
+  const response = await fetch("/api/auth/refresh", {
+    method: "POST",
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to refresh access token");
+  }
+
+  const payload = await response.json();
+  const token = payload?.accessToken ?? payload?.data?.accessToken;
+
+  if (!token) {
+    throw new Error("Access token missing from refresh response");
+  }
+
+  return token as string;
+};
+
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5001",
+  baseURL: API_BASE_URL,
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true, // 쿠키 전송을 위해 필요
+  withCredentials: true,
 });
 
-// 요청 인터셉터: 토큰 자동 추가
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     startProgress();
 
-    const token = localStorage.getItem("accessToken");
-
+    const token = getClientAccessToken();
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -49,7 +85,6 @@ api.interceptors.request.use(
   }
 );
 
-// 토큰 갱신 상태 관리
 let isRefreshing = false;
 let failedQueue: Array<{
   resolve: (value?: unknown) => void;
@@ -68,7 +103,6 @@ const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue = [];
 };
 
-// 응답 인터셉터: 에러 처리 및 토큰 갱신
 api.interceptors.response.use(
   (response) => {
     stopProgress();
@@ -76,73 +110,48 @@ api.interceptors.response.use(
   },
   async (error: AxiosError) => {
     stopProgress();
+
     const originalRequest = error.config as InternalAxiosRequestConfig & {
       _retry?: boolean;
     };
 
-    // 401 에러이고 재시도하지 않은 경우
     if (error.response?.status === 401 && !originalRequest._retry) {
-      // refresh 요청 자체가 실패한 경우 로그아웃
       if (originalRequest.url?.includes("/api/auth/refresh")) {
-        localStorage.removeItem("accessToken");
-        window.location.href = "/login";
+        void clearAccessTokenCookie();
+        redirectToLogin();
         return Promise.reject(error);
       }
 
       originalRequest._retry = true;
 
-      // 이미 토큰 갱신 중이면 대기
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
           .then((token) => {
-            if (originalRequest.headers) {
+            if (token && originalRequest.headers) {
               originalRequest.headers.Authorization = `Bearer ${token}`;
             }
             return api(originalRequest);
           })
-          .catch((err) => {
-            return Promise.reject(err);
-          });
+          .catch((queueError) => Promise.reject(queueError));
       }
 
       isRefreshing = true;
-
       startProgress();
       try {
-        // 리프레시 토큰으로 새 액세스 토큰 요청
-        const response = await axios.post(
-          `${import.meta.env.VITE_API_URL}/api/auth/refresh`,
-          {},
-          { withCredentials: true }
-        );
-
-        const { data } = response.data || {};
-        const accessToken = data?.accessToken;
-
-        if (!accessToken) {
-          throw new Error(
-            "Failed to retrieve access token from refresh response"
-          );
-        }
-        localStorage.setItem("accessToken", accessToken);
-
-        // 대기 중인 요청들 처리
+        const accessToken = await requestAccessToken();
         processQueue(null, accessToken);
 
-        // 원래 요청에 새 토큰 추가
         if (originalRequest.headers) {
           originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         }
 
-        // 원래 요청 재시도
         return api(originalRequest);
       } catch (refreshError) {
-        // 리프레시 토큰도 만료된 경우 로그아웃 처리
         processQueue(refreshError, null);
-        localStorage.removeItem("accessToken");
-        window.location.href = "/login";
+        void clearAccessTokenCookie();
+        redirectToLogin();
         return Promise.reject(refreshError);
       } finally {
         stopProgress();

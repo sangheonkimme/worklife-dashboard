@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from 'react';
 import { TextInput, ActionIcon, Kbd, Group } from '@mantine/core';
 import { IconSearch, IconX } from '@tabler/icons-react';
@@ -17,7 +19,7 @@ export function SearchBar({ value, onChange, placeholder }: SearchBarProps) {
 
   useEffect(() => {
     onChange(debouncedSearch);
-  }, [debouncedSearch]);
+  }, [debouncedSearch, onChange]);
 
   useEffect(() => {
     setSearchValue(value);

@@ -1,4 +1,6 @@
-import { Paper, Stack, Group, Text, CloseButton, Box } from '@mantine/core';
+"use client";
+
+import { Paper, Stack, Group, Text, CloseButton, Box } from "@mantine/core";
 import { useWidgetStore } from '@/store/useWidgetStore';
 import { getWidgetById } from './WidgetRegistry';
 import { useState, useEffect } from 'react';
@@ -11,12 +13,23 @@ export const WidgetSidePanel = () => {
   const { t } = useTranslation('widgets');
 
   useEffect(() => {
+    let timer: number | null = null;
+    let animationFrame: number | null = null;
+
     if (activeWidgetId) {
-      // Delay animation slightly to allow mount transition
-      setTimeout(() => setIsVisible(true), 10);
+      timer = window.setTimeout(() => setIsVisible(true), 10);
     } else {
-      setIsVisible(false);
+      animationFrame = window.requestAnimationFrame(() => setIsVisible(false));
     }
+
+    return () => {
+      if (timer !== null) {
+        window.clearTimeout(timer);
+      }
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+      }
+    };
   }, [activeWidgetId]);
 
   if (!activeWidgetId) {

@@ -1,3 +1,5 @@
+"use client";
+
 import { MultiSelect } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 import { useTags } from '@/hooks/useTags';

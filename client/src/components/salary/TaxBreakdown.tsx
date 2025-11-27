@@ -1,3 +1,5 @@
+"use client";
+
 import { Stack, Text, Card, Group, Divider, Tooltip, ActionIcon } from '@mantine/core';
 import { IconHelp } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';

@@ -1,15 +1,17 @@
-import { Stack, ActionIcon, Tooltip, Paper, Divider } from '@mantine/core';
-import { useWidgetStore } from '@/store/useWidgetStore';
-import { getEnabledWidgets } from './WidgetRegistry';
-import { PomodoroDockIcon } from './PomodoroDockIcon';
-import { StopwatchDockIcon } from './StopwatchDockIcon';
-import { useTranslation } from 'react-i18next';
+"use client";
+
+import { Stack, ActionIcon, Tooltip, Paper, Divider } from "@mantine/core";
+import { useWidgetStore } from "@/store/useWidgetStore";
+import { getEnabledWidgets } from "./WidgetRegistry";
+import { PomodoroDockIcon } from "./PomodoroDockIcon";
+import { StopwatchDockIcon } from "./StopwatchDockIcon";
+import { useTranslation } from "react-i18next";
 
 export const WidgetDock = () => {
   const { activeWidgetId, toggleWidget, preferences } = useWidgetStore();
   const widgets = getEnabledWidgets();
-  const isLeftDock = preferences.dockPosition === 'left';
-  const { t } = useTranslation('widgets');
+  const isLeftDock = preferences.dockPosition === "left";
+  const { t } = useTranslation("widgets");
 
   return (
     <Paper
@@ -17,14 +19,14 @@ export const WidgetDock = () => {
       radius="md"
       p="xs"
       style={{
-        position: 'fixed',
-        right: isLeftDock ? 'auto' : 16,
-        left: isLeftDock ? 16 : 'auto',
-        top: '50%',
-        transform: 'translateY(-50%)',
+        position: "fixed",
+        right: isLeftDock ? "auto" : 16,
+        left: isLeftDock ? 16 : "auto",
+        top: "50%",
+        transform: "translateY(-50%)",
         zIndex: 100,
-        backgroundColor: 'var(--mantine-color-body)',
-        border: '1px solid var(--mantine-color-default-border)',
+        backgroundColor: "var(--mantine-color-body)",
+        border: "1px solid var(--mantine-color-default-border)",
       }}
     >
       <Stack gap="xs">
@@ -38,16 +40,16 @@ export const WidgetDock = () => {
             <Tooltip
               key={widget.id}
               label={label}
-              position={isLeftDock ? 'right' : 'left'}
+              position={isLeftDock ? "right" : "left"}
               withArrow
             >
               <ActionIcon
                 size="xl"
-                variant={isActive ? 'filled' : 'light'}
+                variant={isActive ? "filled" : "light"}
                 color={widget.color}
                 onClick={() => toggleWidget(widget.id)}
                 style={{
-                  transition: 'all 0.2s ease',
+                  transition: "all 0.2s ease",
                 }}
               >
                 <Icon size={24} stroke={1.5} />

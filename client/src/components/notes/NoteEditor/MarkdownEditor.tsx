@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from 'react';
 import { Box, Textarea, Paper, SegmentedControl, Stack } from '@mantine/core';
 import ReactMarkdown from 'react-markdown';
@@ -36,7 +38,7 @@ export function MarkdownEditor({
     if (debouncedValue !== value) {
       onChange(debouncedValue);
     }
-  }, [debouncedValue]);
+  }, [debouncedValue, onChange, value]);
 
   const handleChange = (newValue: string) => {
     setLocalValue(newValue);

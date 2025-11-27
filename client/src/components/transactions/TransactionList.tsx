@@ -1,3 +1,5 @@
+"use client";
+
 import { Table, Badge, ActionIcon, Group, Text, Paper, Stack, Pagination, Center } from '@mantine/core';
 import { IconEdit, IconTrash } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';

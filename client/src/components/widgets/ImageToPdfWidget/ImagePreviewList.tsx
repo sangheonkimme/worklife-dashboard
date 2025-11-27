@@ -1,3 +1,5 @@
+"use client";
+
 import { SimpleGrid, Text, Stack, Button, Group } from "@mantine/core";
 import { IconTrash } from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";

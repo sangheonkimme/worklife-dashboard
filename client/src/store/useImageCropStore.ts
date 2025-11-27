@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 import type {
   AspectPresetId,
   CropHistoryItem,
@@ -25,6 +25,11 @@ const DEFAULT_SETTINGS: ImageCropSettings = {
   quality: 0.92,
   transparentBackground: true,
 };
+
+const storage =
+  typeof window === "undefined"
+    ? undefined
+    : createJSONStorage(() => window.localStorage);
 
 export const useImageCropStore = create<ImageCropState>()(
   persist(
@@ -66,6 +71,7 @@ export const useImageCropStore = create<ImageCropState>()(
     {
       name: "image-crop-store",
       version: 1,
+      storage,
       partialize: (state) => ({
         settings: state.settings,
         history: state.history,

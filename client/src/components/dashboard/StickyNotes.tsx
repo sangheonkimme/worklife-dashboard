@@ -1,3 +1,5 @@
+"use client";
+
 import { Box, Title, Grid, Text } from "@mantine/core";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { notifications } from "@mantine/notifications";

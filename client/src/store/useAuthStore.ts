@@ -1,5 +1,6 @@
-import { create } from 'zustand';
-import type { User } from '../types';
+import { create } from "zustand";
+import type { User } from "@/types";
+import { getClientAccessToken } from "@/lib/session";
 
 interface AuthState {
   user: User | null;
@@ -9,9 +10,14 @@ interface AuthState {
   updateUser: (userData: Partial<User>) => void;
 }
 
+const hasDocument = typeof document !== "undefined";
+const initialAuthenticated = hasDocument
+  ? Boolean(getClientAccessToken())
+  : false;
+
 export const useAuthStore = create<AuthState>()((set) => ({
   user: null,
-  isAuthenticated: Boolean(localStorage.getItem('accessToken')),
+  isAuthenticated: initialAuthenticated,
   setUser: (user) => set({ user, isAuthenticated: true }),
   clearUser: () => set({ user: null, isAuthenticated: false }),
   updateUser: (userData) =>

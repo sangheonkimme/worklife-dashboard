@@ -1,3 +1,5 @@
+"use client";
+
 import { useForm } from '@mantine/form';
 import {
   Stack,
@@ -13,7 +15,7 @@ import { IconCash, IconShoppingCart } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { categoryApi } from '@/services/api/transactionApi';
-import type { CategoryType, CreateTransactionDto } from '@/types/transaction';
+import type { CategoryType, CreateTransactionDto, SpendingType } from '@/types/transaction';
 
 interface TransactionFormProps {
   initialValues?: Partial<CreateTransactionDto>;
@@ -36,6 +38,10 @@ export default function TransactionForm({
       categoryId: initialValues?.categoryId || '',
       date: initialValues?.date || new Date().toISOString(),
       description: initialValues?.description || '',
+      spendingType: initialValues?.spendingType || 'VARIABLE',
+      source: initialValues?.source || 'MANUAL',
+      subscriptionId: initialValues?.subscriptionId,
+      externalId: initialValues?.externalId,
     },
     validate: {
       amount: (value) => (value > 0 ? null : t('transactionForm.validation.amount')),
@@ -90,6 +96,17 @@ export default function TransactionForm({
           fullWidth
         />
 
+        <SegmentedControl
+          mt="xs"
+          data={[
+            { value: 'VARIABLE', label: '변동비' },
+            { value: 'FIXED', label: '고정비' },
+          ]}
+          value={form.values.spendingType as SpendingType}
+          onChange={(value) => form.setFieldValue('spendingType', value as SpendingType)}
+          fullWidth
+        />
+
         <NumberInput
           label={t('transactionForm.labels.amount')}
           placeholder={t('transactionForm.placeholders.amount')}
@@ -113,8 +130,16 @@ export default function TransactionForm({
           placeholder={t('transactionForm.placeholders.date')}
           required
           value={form.values.date ? new Date(form.values.date) : null}
-          onChange={(date) => {
-            form.setFieldValue('date', date?.toISOString() || new Date().toISOString());
+          onChange={(value) => {
+            let nextDate: Date | null = null;
+            if (value) {
+              nextDate =
+                typeof value === 'string' ? new Date(value) : (value as Date);
+            }
+            form.setFieldValue(
+              'date',
+              nextDate?.toISOString() || new Date().toISOString()
+            );
           }}
         />
 

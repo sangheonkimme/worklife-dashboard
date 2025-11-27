@@ -1,3 +1,5 @@
+"use client";
+
 import { Stack, Select, Group, Button, Badge, Text } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
 import { IconFilter, IconX, IconCalendar } from '@tabler/icons-react';
@@ -86,7 +88,15 @@ export function SearchFilters({
         clearable
         leftSection={<IconCalendar size={16} />}
         value={dateFrom}
-        onChange={onDateFromChange}
+        onChange={(value) => {
+          if (!value) {
+            onDateFromChange(null);
+            return;
+          }
+          onDateFromChange(
+            typeof value === 'string' ? new Date(value) : (value as Date)
+          );
+        }}
       />
 
       <DatePickerInput
@@ -95,7 +105,15 @@ export function SearchFilters({
         clearable
         leftSection={<IconCalendar size={16} />}
         value={dateTo}
-        onChange={onDateToChange}
+        onChange={(value) => {
+          if (!value) {
+            onDateToChange(null);
+            return;
+          }
+          onDateToChange(
+            typeof value === 'string' ? new Date(value) : (value as Date)
+          );
+        }}
         minDate={dateFrom || undefined}
       />
 

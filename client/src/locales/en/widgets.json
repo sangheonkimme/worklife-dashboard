@@ -202,6 +202,8 @@
   },
   "imageToPdf": {
     "title": "Image to PDF",
+    "subtitle": "Merge your images into a clean, shareable PDF.",
+    "cta": "Use the full-screen tool for higher quality and easier reordering.",
     "notifications": {
       "uploadSuccess": "{{count}} images uploaded.",
       "clearSuccess": "All images have been removed.",
@@ -255,6 +257,7 @@
   "imageCrop": {
     "title": "Image cropper",
     "subtitle": "Import, crop, and export images without leaving the dashboard.",
+    "cta": "Open the full editor to fine-tune crop sizes and formats.",
     "dropzone": {
       "title": "Drop an image or click to upload",
       "replaceTitle": "Drop or click to replace the current image",

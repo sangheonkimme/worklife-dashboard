@@ -1,23 +1,26 @@
+"use client";
+
 import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
 import { notifications } from "@mantine/notifications";
 import { useTranslation } from "react-i18next";
-import { authApi } from "../services/api/authApi";
-import { useAuthStore } from "../store/useAuthStore";
-import type { LoginCredentials, RegisterData } from "../types";
+import { useRouter } from "next/navigation";
+import { authApi } from "@/services/api/authApi";
+import { useAuthStore } from "@/store/useAuthStore";
+import type { LoginCredentials, RegisterData, User } from "@/types";
+import { clearAccessTokenCookie, persistAccessToken } from "@/lib/session";
 
 export const useAuth = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const queryClient = useQueryClient();
-  const { user, setUser, clearUser } = useAuthStore();
+  const { user, setUser, clearUser, isAuthenticated } = useAuthStore();
   const { t } = useTranslation("auth");
 
   // 현재 사용자 정보 조회
   const { data: currentUser, isLoading, error } = useQuery({
     queryKey: ["auth", "me"],
     queryFn: authApi.me,
-    enabled: !!localStorage.getItem("accessToken"),
+    enabled: isAuthenticated,
     retry: false,
     retryOnMount: false,
     refetchOnWindowFocus: false,
@@ -25,27 +28,26 @@ export const useAuth = () => {
     staleTime: Infinity,
   });
 
-  // API 에러 처리
   useEffect(() => {
-    if (error) {
-      // 네트워크 에러인지 확인
-      const isNetworkError = !window.navigator.onLine || error.message.includes("Network Error");
+    if (!error) return;
 
-      notifications.show({
-        title: t("notifications.errorTitle"),
-        message: isNetworkError
-          ? t("notifications.networkError")
-          : t("notifications.fetchError"),
-        color: "red",
-        autoClose: 5000,
-      });
+    const isNetworkError =
+      typeof window !== "undefined" &&
+      (!window.navigator.onLine || error.message.includes("Network Error"));
 
-      // 에러 발생 시 로그인 페이지로 이동
-      localStorage.removeItem("accessToken");
-      clearUser();
-      navigate("/login");
-    }
-  }, [error, clearUser, navigate]);
+    notifications.show({
+      title: t("notifications.errorTitle"),
+      message: isNetworkError
+        ? t("notifications.networkError")
+        : t("notifications.fetchError"),
+      color: "red",
+      autoClose: 5000,
+    });
+
+    void clearAccessTokenCookie();
+    clearUser();
+    router.push("/login");
+  }, [error, clearUser, router, t]);
 
   // 리프레시 후에도 Zustand에 사용자 정보를 채워 넣어 인증 상태를 복원
   useEffect(() => {
@@ -57,44 +59,44 @@ export const useAuth = () => {
   // 로그인 mutation
   const loginMutation = useMutation({
     mutationFn: authApi.login,
-    onSuccess: (data) => {
-      localStorage.setItem("accessToken", data.accessToken);
+    onSuccess: async (data, variables) => {
+      await persistAccessToken(data.accessToken, variables.rememberMe);
       setUser(data.user);
       queryClient.invalidateQueries({ queryKey: ["auth"] });
-      navigate("/dashboard");
+      router.push("/dashboard");
     },
   });
 
   // 회원가입 mutation
   const registerMutation = useMutation({
     mutationFn: authApi.register,
-    onSuccess: (data) => {
-      localStorage.setItem("accessToken", data.accessToken);
+    onSuccess: async (data) => {
+      await persistAccessToken(data.accessToken);
       setUser(data.user);
       queryClient.invalidateQueries({ queryKey: ["auth"] });
-      navigate("/dashboard");
+      router.push("/dashboard");
     },
   });
 
   // 로그아웃 mutation
   const logoutMutation = useMutation({
     mutationFn: authApi.logout,
-    onSuccess: () => {
-      localStorage.removeItem("accessToken");
+    onSuccess: async () => {
+      await clearAccessTokenCookie();
       clearUser();
       queryClient.clear();
-      navigate("/login");
+      router.push("/login");
     },
   });
 
   // Google 로그인 mutation
   const googleLoginMutation = useMutation({
     mutationFn: authApi.googleLogin,
-    onSuccess: (data) => {
-      localStorage.setItem("accessToken", data.accessToken);
+    onSuccess: async (data) => {
+      await persistAccessToken(data.accessToken);
       setUser(data.user);
       queryClient.invalidateQueries({ queryKey: ["auth"] });
-      navigate("/dashboard");
+      router.push("/dashboard");
     },
   });
 
@@ -119,10 +121,8 @@ export const useAuth = () => {
   };
 
   // Redux 또는 서버에서 가져온 사용자 중 하나라도 있으면 인증된 것으로 간주
-  const effectiveUser = user || currentUser || null;
-  const effectiveIsAuthenticated = Boolean(
-    effectiveUser || localStorage.getItem("accessToken")
-  );
+  const effectiveUser: User | null = user || currentUser || null;
+  const effectiveIsAuthenticated = Boolean(effectiveUser) || isAuthenticated;
 
   return {
     user: effectiveUser,

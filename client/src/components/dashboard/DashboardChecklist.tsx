@@ -1,4 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+"use client";
+
+import { useMemo, useState } from "react";
 import {
   ActionIcon,
   Box,
@@ -48,10 +50,6 @@ function ChecklistItemRow({
 }: ChecklistItemRowProps) {
   const { t } = useTranslation("dashboard");
   const [value, setValue] = useState(item.content);
-
-  useEffect(() => {
-    setValue(item.content);
-  }, [item.content]);
 
   const handleBlur = () => {
     const trimmed = value.trim();
@@ -487,7 +485,7 @@ export function DashboardChecklist() {
 
             {data?.activeItems.map((item) => (
               <ChecklistItemRow
-                key={item.id}
+                key={`${item.id}-${item.updatedAt}`}
                 item={item}
                 onToggle={handleToggle}
                 onUpdate={handleUpdate}
@@ -542,7 +540,7 @@ export function DashboardChecklist() {
                   <Stack gap="xs" mt="xs">
                     {data.completedItems.map((item) => (
                       <ChecklistItemRow
-                        key={item.id}
+                        key={`${item.id}-${item.updatedAt}`}
                         item={item}
                         onToggle={handleToggle}
                         onUpdate={handleUpdate}

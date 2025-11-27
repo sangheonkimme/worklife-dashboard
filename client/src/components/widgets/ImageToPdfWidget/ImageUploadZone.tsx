@@ -1,3 +1,5 @@
+"use client";
+
 import { Stack, Text, rem } from "@mantine/core";
 import {
   Dropzone,

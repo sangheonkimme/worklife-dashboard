@@ -1,5 +1,8 @@
+"use client";
+
 import { Paper, Group, Button, TextInput, MultiSelect, Select } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
+import type { DatesRangeValue } from '@mantine/dates';
 import { IconSearch, IconFilterOff } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -28,12 +31,16 @@ export default function TransactionFilter({ filters, onFiltersChange, onReset }:
     }),
   }));
 
-  const handleDateRangeChange = (dates: [Date | null, Date | null]) => {
+  const handleDateRangeChange = (dates: DatesRangeValue) => {
+    const normalize = (value: Date | string | null) => {
+      if (!value) return null;
+      return typeof value === 'string' ? new Date(value) : value;
+    };
     const [start, end] = dates;
     onFiltersChange({
       ...filters,
-      startDate: start?.toISOString(),
-      endDate: end?.toISOString(),
+      startDate: normalize(start)?.toISOString(),
+      endDate: normalize(end)?.toISOString(),
     });
   };
 

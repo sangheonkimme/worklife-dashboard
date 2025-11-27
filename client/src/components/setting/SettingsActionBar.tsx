@@ -1,3 +1,5 @@
+"use client";
+
 import { Affix, Button, Group, Paper, Text, rem } from "@mantine/core";
 import { IconRefresh } from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";

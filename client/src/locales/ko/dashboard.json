@@ -40,5 +40,11 @@
       "clearErrorTitle": "삭제 실패",
       "clearErrorMessage": "완료 항목을 삭제할 수 없습니다."
     }
+  },
+  "guestCta": {
+    "title": "로그인 없이 대시보드 도구 사용",
+    "description": "이미지 자르기, PDF 변환, 타이머 같은 빠른 도구는 계정 없이도 바로 사용할 수 있어요. 스티커 메모와 체크리스트를 저장하려면 로그인하세요.",
+    "login": "로그인",
+    "signup": "회원가입"
   }
 }

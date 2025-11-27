@@ -1,6 +1,8 @@
-import { Modal } from '@mantine/core';
-import { useWidgetStore } from '@/store/useWidgetStore';
-import { getWidgetById } from './WidgetRegistry';
+"use client";
+
+import { Modal } from "@mantine/core";
+import { useWidgetStore } from "@/store/useWidgetStore";
+import { getWidgetById } from "./WidgetRegistry";
 
 export const WidgetModal = () => {
   const { activeWidgetId, closeWidget } = useWidgetStore();
@@ -22,14 +24,14 @@ export const WidgetModal = () => {
       opened={!!activeWidgetId}
       onClose={closeWidget}
       title={widgetConfig.name}
-      size={widgetConfig.modalSize || 'lg'}
+      size={widgetConfig.modalSize || "lg"}
       centered
       overlayProps={{
         backgroundOpacity: 0.55,
         blur: 3,
       }}
       transitionProps={{
-        transition: 'slide-up',
+        transition: "slide-up",
         duration: 200,
       }}
     >

@@ -1,3 +1,5 @@
+"use client";
+
 import { Stack, Select, SegmentedControl, Text } from "@mantine/core";
 import { useTranslation } from "react-i18next";
 import type { PdfOptions } from "@/types/widget";

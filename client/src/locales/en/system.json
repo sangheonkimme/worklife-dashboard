@@ -29,6 +29,24 @@
         "pageTitle": "Dashboard",
         "pageDescription": "View your frequently used tools at a glance."
       },
+      "subscriptions": {
+        "label": "Subscriptions",
+        "description": "Recurring & fixed costs",
+        "pageTitle": "Subscriptions",
+        "pageDescription": "Track recurring payments and fixed expenses."
+      },
+      "imageCrop": {
+        "label": "Image cropper",
+        "description": "Crop & export images",
+        "pageTitle": "Image cropper",
+        "pageDescription": "Crop, resize, and export images quickly."
+      },
+      "imageToPdf": {
+        "label": "Image to PDF",
+        "description": "Combine images to PDF",
+        "pageTitle": "Image to PDF",
+        "pageDescription": "Convert multiple images into a single PDF."
+      },
       "salary": {
         "label": "Salary calculator",
         "description": "Net pay calculator",

@@ -1,3 +1,5 @@
+"use client";
+
 import { Stack, Title, Text } from "@mantine/core";
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";

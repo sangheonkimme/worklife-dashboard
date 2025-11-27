@@ -1,4 +1,6 @@
 export type CategoryType = 'INCOME' | 'EXPENSE';
+export type SpendingType = 'FIXED' | 'VARIABLE';
+export type TransactionSource = 'MANUAL' | 'SUBSCRIPTION';
 
 export interface Category {
   id: string;
@@ -16,6 +18,10 @@ export interface Transaction {
   description?: string;
   date: string;
   type: CategoryType;
+  spendingType?: SpendingType;
+  source?: TransactionSource;
+  subscriptionId?: string | null;
+  externalId?: string | null;
   categoryId: string;
   category: Category;
   userId: string;
@@ -29,6 +35,10 @@ export interface CreateTransactionDto {
   date: string;
   type: CategoryType;
   categoryId: string;
+  spendingType?: SpendingType;
+  source?: TransactionSource;
+  subscriptionId?: string | null;
+  externalId?: string | null;
 }
 
 export interface UpdateTransactionDto {
@@ -37,6 +47,10 @@ export interface UpdateTransactionDto {
   date?: string;
   type?: CategoryType;
   categoryId?: string;
+  spendingType?: SpendingType;
+  source?: TransactionSource;
+  subscriptionId?: string | null;
+  externalId?: string | null;
 }
 
 export interface TransactionFilters {
@@ -79,6 +93,12 @@ export interface TransactionStatistics {
     expense: number;
     net: number;
   }>;
+}
+
+export interface TransactionStatisticsResponse {
+  summary: TransactionStatistics["summary"];
+  byCategory: TransactionStatistics["byCategory"];
+  timeSeries: TransactionStatistics["timeSeries"];
 }
 
 export interface Budget {

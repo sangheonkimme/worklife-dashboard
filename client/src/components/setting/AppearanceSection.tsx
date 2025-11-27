@@ -1,3 +1,5 @@
+"use client";
+
 import { Divider, SegmentedControl, SimpleGrid, Stack, Switch, Text } from "@mantine/core";
 import { useTranslation } from "react-i18next";
 import type { WidgetDockPosition } from "@/types/userSettings";

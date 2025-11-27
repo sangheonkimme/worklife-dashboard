@@ -1,3 +1,5 @@
+"use client";
+
 import { useMemo } from "react";
 import {
   Stack,
@@ -57,7 +59,16 @@ export default function StatisticsTab({
         <MonthPickerInput
           label={t("statisticsTab.monthPicker.label")}
           value={selectedMonth}
-          onChange={(value) => value && onMonthChange(value)}
+          onChange={(value) => {
+            if (value && typeof value === "object" && "getTime" in value) {
+              onMonthChange(value as Date);
+            } else if (typeof value === "string") {
+              const parsed = new Date(value);
+              if (!Number.isNaN(parsed.getTime())) {
+                onMonthChange(parsed);
+              }
+            }
+          }}
           placeholder={t("statisticsTab.monthPicker.placeholder")}
           w={200}
           size="md"

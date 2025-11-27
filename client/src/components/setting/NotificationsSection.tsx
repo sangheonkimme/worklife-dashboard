@@ -1,3 +1,5 @@
+"use client";
+
 import { Stack, Switch } from "@mantine/core";
 import { useTranslation } from "react-i18next";
 import { SectionCard } from "./SectionCard";

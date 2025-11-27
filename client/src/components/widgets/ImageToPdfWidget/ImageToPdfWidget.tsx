@@ -1,4 +1,6 @@
-import { useState, useCallback, useEffect } from "react";
+"use client";
+
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Stack, Button, Divider, LoadingOverlay, Box } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useTranslation } from "react-i18next";
@@ -19,6 +21,7 @@ export const ImageToPdfWidget = () => {
   const [images, setImages] = useState<ImageFile[]>([]);
   const [pdfOptions, setPdfOptions] = useState<PdfOptions>(DEFAULT_PDF_OPTIONS);
   const [isGenerating, setIsGenerating] = useState(false);
+  const imagePreviewsRef = useRef<ImageFile[]>([]);
 
   // 이미지 추가
   const handleDrop = useCallback(
@@ -42,7 +45,7 @@ export const ImageToPdfWidget = () => {
         color: "blue",
       });
     },
-    [images.length]
+    [images.length, t]
   );
 
   // 이미지 삭제
@@ -65,7 +68,7 @@ export const ImageToPdfWidget = () => {
       message: t("imageToPdf.notifications.clearSuccess"),
       color: "gray",
     });
-  }, [images]);
+  }, [images, t]);
 
   // PDF 생성
   const handleGeneratePdf = async () => {
@@ -116,8 +119,14 @@ export const ImageToPdfWidget = () => {
 
   // 컴포넌트 언마운트 시 메모리 정리
   useEffect(() => {
+    imagePreviewsRef.current = images;
+  }, [images]);
+
+  useEffect(() => {
     return () => {
-      images.forEach((img) => URL.revokeObjectURL(img.preview));
+      imagePreviewsRef.current.forEach((img) =>
+        URL.revokeObjectURL(img.preview)
+      );
     };
   }, []);
 
@@ -143,7 +152,7 @@ export const ImageToPdfWidget = () => {
 
         <PdfOptionsPanel options={pdfOptions} onChange={setPdfOptions} />
 
-       <Button
+        <Button
           leftSection={<IconFileTypePdf size={20} />}
           rightSection={<IconDownload size={20} />}
           onClick={handleGeneratePdf}

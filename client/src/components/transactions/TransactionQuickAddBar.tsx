@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useRef } from 'react';
 import {
   Paper,
@@ -146,12 +148,17 @@ export default function TransactionQuickAddBar({
         <DatePickerInput
           placeholder={t('transactionForm.placeholders.date')}
           value={form.values.date ? new Date(form.values.date) : null}
-          onChange={(date) =>
+          onChange={(value) => {
+            let nextDate: Date | null = null;
+            if (value) {
+              nextDate =
+                typeof value === 'string' ? new Date(value) : (value as Date);
+            }
             form.setFieldValue(
               'date',
-              date?.toISOString() || new Date().toISOString()
-            )
-          }
+              nextDate?.toISOString() || new Date().toISOString()
+            );
+          }}
           required
           style={{ minWidth: 150 }}
         />

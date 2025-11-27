@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from 'react';
 import { Stack, Button, Modal, Group, Text } from '@mantine/core';
 import { IconSettings } from '@tabler/icons-react';
