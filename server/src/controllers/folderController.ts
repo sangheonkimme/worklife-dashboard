@@ -114,11 +114,7 @@ export const folderController = {
         return res.status(404).json({ message: error.message });
       }
 
-      if (
-        error.message.includes('자기 자신') ||
-        error.message.includes('순환 참조') ||
-        error.message.includes('최대 3단계')
-      ) {
+      if (error.message.includes('1 depth')) {
         return res.status(400).json({ message: error.message });
       }
 

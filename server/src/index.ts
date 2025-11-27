@@ -23,6 +23,7 @@ import pomodoroRoutes from "./routes/pomodoroRoutes";
 import dashboardChecklistRoutes from "./routes/dashboardChecklistRoutes";
 import userSettingsRoutes from "./routes/userSettingsRoutes";
 import subscriptionRoutes from "./routes/subscriptionRoutes";
+import syncRoutes from "./routes/syncRoutes";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./docs/swagger";
 import path from "path";
@@ -103,6 +104,7 @@ app.use("/api/pomodoro", pomodoroRoutes);
 app.use("/api/dashboard-checklist", dashboardChecklistRoutes);
 app.use("/api/user-settings", userSettingsRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
+app.use("/api/sync", syncRoutes);
 // app.use('/api/salary', salaryRoutes);
 
 // 404 핸들러

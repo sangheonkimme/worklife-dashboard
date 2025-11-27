@@ -6,7 +6,7 @@ export const createFolderSchema = z.object({
     name: z.string().min(1, '폴더 이름은 필수입니다').max(100, '폴더 이름은 100자 이하여야 합니다'),
     color: z.string().optional(),
     icon: z.string().optional(),
-    parentId: z.string().optional(),
+    parentId: z.any().optional().transform(() => undefined),
   }),
 });
 
@@ -19,7 +19,7 @@ export const updateFolderSchema = z.object({
     name: z.string().min(1, '폴더 이름은 필수입니다').max(100, '폴더 이름은 100자 이하여야 합니다').optional(),
     color: z.string().optional(),
     icon: z.string().optional(),
-    parentId: z.string().nullable().optional(),
+    parentId: z.any().optional().transform(() => undefined),
   }),
 });
 
@@ -29,7 +29,7 @@ export const moveFolderSchema = z.object({
     id: z.string(),
   }),
   body: z.object({
-    parentId: z.string().nullable(), // null이면 루트로 이동
+    parentId: z.any().optional().transform(() => null), // 이동은 루트 외 불가
   }),
 });
 
