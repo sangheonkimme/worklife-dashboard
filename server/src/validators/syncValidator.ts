@@ -5,7 +5,8 @@ const isISODate = (value: string) => !Number.isNaN(Date.parse(value));
 export const getSyncSchema = z.object({
   query: z.object({
     since: z
-      .string({ required_error: 'since 쿼리 파라미터가 필요합니다' })
+      .string()
+      .nonempty('since 쿼리 파라미터가 필요합니다')
       .refine(isISODate, '유효한 ISO 날짜 문자열이어야 합니다'),
     limit: z
       .string()

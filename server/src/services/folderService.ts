@@ -16,7 +16,7 @@ export const folderService = {
   /**
    * 폴더 목록 조회 (트리 구조)
    */
-  async getFolders(userId: string, includeChildren: boolean = true) {
+  async getFolders(userId: string, _includeChildren: boolean = true) {
     const folders = await prisma.folder.findMany({
       where: {
         userId,
