@@ -13,10 +13,7 @@ import "@mantine/dates/styles.css";
 import "@mantine/notifications/styles.css";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { createQueryClient } from "@/lib/queryClient";
-import {
-  worklifeCssVariablesResolver,
-  worklifeTheme,
-} from "@/theme";
+import { worklifeCssVariablesResolver, worklifeTheme } from "@/theme";
 
 interface AppProvidersProps {
   children: ReactNode;

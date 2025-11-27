@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import "./globals.css";
 import { AppProviders } from "./providers";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import "./globals.css";
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL || "https://www.worklife-dashboard.com";
@@ -36,6 +37,7 @@ export default function RootLayout({
     <html lang="ko">
       <body>
         <AppProviders>{children}</AppProviders>
+        <SpeedInsights />
       </body>
     </html>
   );
