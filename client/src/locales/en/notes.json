@@ -59,16 +59,16 @@
     "all": "All notes",
     "loading": "Loading...",
     "empty": "No folders",
-    "addChild": "Add subfolder",
+    "add": "Add folder",
     "menu": {
+      "open": "Open menu",
       "edit": "Edit",
       "delete": "Delete"
     },
     "deleteConfirm": {
       "title": "Delete folder",
       "message": "Do you want to delete the folder \"{{name}}\"?",
-      "noteWarning": "This folder has {{count}} notes. They will be moved to No folder.",
-      "childWarning": "Folders with subfolders cannot be deleted."
+      "noteWarning": "This folder has {{count}} notes. They will be moved to No folder."
     }
   },
   "folderModal": {
@@ -88,10 +88,6 @@
       "color": {
         "label": "Color",
         "placeholder": "Pick a color"
-      },
-      "parent": {
-        "label": "Parent folder",
-        "placeholder": "Select parent folder (optional)"
       }
     },
     "iconOptions": {

@@ -59,16 +59,16 @@
     "all": "모든 메모",
     "loading": "로딩 중...",
     "empty": "폴더가 없습니다",
-    "addChild": "하위 폴더 추가",
+    "add": "폴더 추가",
     "menu": {
+      "open": "메뉴 열기",
       "edit": "수정",
       "delete": "삭제"
     },
     "deleteConfirm": {
       "title": "폴더 삭제",
       "message": "\"{{name}}\" 폴더를 삭제하시겠습니까?",
-      "noteWarning": "이 폴더에 {{count}}개의 메모가 있습니다. 메모는 폴더 없음으로 이동됩니다.",
-      "childWarning": "하위 폴더가 있는 폴더는 삭제할 수 없습니다."
+      "noteWarning": "이 폴더에 {{count}}개의 메모가 있습니다. 메모는 폴더 없음으로 이동됩니다."
     }
   },
   "folderModal": {
@@ -88,10 +88,6 @@
       "color": {
         "label": "색상",
         "placeholder": "색상을 선택하세요"
-      },
-      "parent": {
-        "label": "상위 폴더",
-        "placeholder": "상위 폴더 선택 (선택사항)"
       }
     },
     "iconOptions": {

@@ -1,16 +1,12 @@
 import api from '@/lib/axios';
-import type { Folder, CreateFolderDto, UpdateFolderDto, MoveFolderDto } from '@/types/folder';
+import type { Folder, CreateFolderDto, UpdateFolderDto } from '@/types/folder';
 
 export const folderApi = {
   /**
    * 폴더 목록 조회
    */
-  getFolders: (includeChildren: boolean = true): Promise<Folder[]> => {
-    return api
-      .get('/api/folders', {
-        params: { includeChildren },
-      })
-      .then((res) => res.data);
+  getFolders: (): Promise<Folder[]> => {
+    return api.get('/api/folders').then((res) => res.data);
   },
 
   /**
@@ -37,9 +33,7 @@ export const folderApi = {
   /**
    * 폴더 이동
    */
-  moveFolder: (id: string, data: MoveFolderDto): Promise<Folder> => {
-    return api.post(`/api/folders/${id}/move`, data).then((res) => res.data);
-  },
+  // 이동 기능은 1-depth 제한으로 비활성화
 
   /**
    * 폴더 삭제

@@ -1,30 +1,17 @@
 "use client";
 
-import {
-  Modal,
-  TextInput,
-  ColorInput,
-  Select,
-  Button,
-  Group,
-  Stack,
-} from "@mantine/core";
+import { Modal, TextInput, ColorInput, Button, Group, Stack, Select } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconFolder } from "@tabler/icons-react";
 import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { Folder } from "@/types/folder";
-import {
-  useCreateFolder,
-  useUpdateFolder,
-  useFolders,
-} from "@/hooks/useFolders";
+import { useCreateFolder, useUpdateFolder } from "@/hooks/useFolders";
 
 interface FolderModalProps {
   opened: boolean;
   onClose: () => void;
   folder?: Folder | null;
-  parentId?: string;
 }
 
 const FOLDER_ICON_VALUES = [
@@ -42,9 +29,7 @@ export function FolderModal({
   opened,
   onClose,
   folder,
-  parentId,
 }: FolderModalProps) {
-  const { data: folders } = useFolders();
   const createFolder = useCreateFolder();
   const updateFolder = useUpdateFolder();
   const { t } = useTranslation("notes");
@@ -62,7 +47,6 @@ export function FolderModal({
       name: "",
       color: "#228be6",
       icon: "IconFolder",
-      parentId: parentId || "",
     },
     validate: {
       name: (value: string) =>
@@ -80,27 +64,12 @@ export function FolderModal({
         name: folder.name,
         color: folder.color || "#228be6",
         icon: folder.icon || "IconFolder",
-        parentId: folder.parentId || "",
       });
       return;
     }
 
     form.reset();
-    if (parentId) {
-      form.setFieldValue("parentId", parentId);
-    }
-  }, [opened, folder, form, parentId]);
-
-  useEffect(() => {
-    if (!opened || folder) return;
-
-    const currentParentId = form.getValues().parentId || "";
-    const nextParentId = parentId || "";
-
-    if (currentParentId !== nextParentId) {
-      form.setFieldValue("parentId", nextParentId);
-    }
-  }, [opened, parentId, folder, form]);
+  }, [opened, folder, form]);
 
   const handleSubmit = async (values: typeof form.values) => {
     try {
@@ -111,7 +80,6 @@ export function FolderModal({
             name: values.name,
             color: values.color,
             icon: values.icon,
-            parentId: values.parentId || null,
           },
         });
       } else {
@@ -119,7 +87,6 @@ export function FolderModal({
           name: values.name,
           color: values.color,
           icon: values.icon,
-          parentId: values.parentId || undefined,
         });
       }
       form.reset();
@@ -128,18 +95,6 @@ export function FolderModal({
       console.error("Failed to save folder:", error);
     }
   };
-
-  // Allow selecting only valid parent folders (max depth enforced)
-  const availableFolders = folders?.filter((f) => {
-    // Exclude the current folder
-    if (folder && f.id === folder.id) return false;
-    // Exclude immediate children to prevent cycles
-    if (folder && f.parentId === folder.id) return false;
-    // Only allow root folders or first-level folders as parents
-    return (
-      !f.parentId || (f.parent && "parentId" in f.parent && !f.parent.parentId)
-    );
-  });
 
   return (
     <Modal
@@ -169,19 +124,6 @@ export function FolderModal({
             label={t("folderModal.fields.color.label")}
             placeholder={t("folderModal.fields.color.placeholder")}
             {...form.getInputProps("color")}
-          />
-
-          <Select
-            label={t("folderModal.fields.parent.label")}
-            placeholder={t("folderModal.fields.parent.placeholder")}
-            clearable
-            data={
-              availableFolders?.map((f) => ({
-                value: f.id,
-                label: f.name,
-              })) || []
-            }
-            {...form.getInputProps("parentId")}
           />
 
           <Group justify="flex-end" mt="md">

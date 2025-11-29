@@ -15,7 +15,6 @@ export interface Folder {
   name: string;
   color?: string;
   icon?: string;
-  parentId?: string;
   userId: string;
   createdAt: string;
   updatedAt: string;
@@ -159,7 +158,6 @@ export interface CreateFolderDto {
   name: string;
   color?: string;
   icon?: string;
-  parentId?: string;
 }
 
 // 폴더 수정 DTO
@@ -167,7 +165,6 @@ export interface UpdateFolderDto {
   name?: string;
   color?: string;
   icon?: string;
-  parentId?: string | null;
 }
 
 // 태그 생성 DTO

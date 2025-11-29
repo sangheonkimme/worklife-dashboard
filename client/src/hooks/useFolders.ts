@@ -3,15 +3,14 @@ import { folderApi } from "@/services/api/folderApi";
 import type {
   CreateFolderDto,
   UpdateFolderDto,
-  MoveFolderDto,
 } from "@/types/folder";
 import { notifications } from "@mantine/notifications";
 import { getApiErrorMessage } from "@/utils/error";
 
-export const useFolders = (includeChildren: boolean = true) => {
+export const useFolders = () => {
   return useQuery({
-    queryKey: ["folders", includeChildren],
-    queryFn: () => folderApi.getFolders(includeChildren),
+    queryKey: ["folders"],
+    queryFn: () => folderApi.getFolders(),
   });
 };
 
@@ -64,30 +63,6 @@ export const useUpdateFolder = () => {
       notifications.show({
         title: "오류",
         message: getApiErrorMessage(error, "폴더 수정에 실패했습니다"),
-        color: "red",
-      });
-    },
-  });
-};
-
-export const useMoveFolder = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: MoveFolderDto }) =>
-      folderApi.moveFolder(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["folders"] });
-      notifications.show({
-        title: "성공",
-        message: "폴더가 이동되었습니다",
-        color: "green",
-      });
-    },
-    onError: (error: unknown) => {
-      notifications.show({
-        title: "오류",
-        message: getApiErrorMessage(error, "폴더 이동에 실패했습니다"),
         color: "red",
       });
     },
