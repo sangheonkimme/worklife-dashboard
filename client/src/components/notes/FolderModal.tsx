@@ -56,20 +56,34 @@ export function FolderModal({
     },
   });
 
+  // 폴더 생성/수정 시 값이 실제로 달라질 때만 폼 값을 갱신해 무한 루프 방지
   useEffect(() => {
     if (!opened) return;
 
     if (folder) {
-      form.setValues({
+      const nextValues = {
         name: folder.name,
         color: folder.color || "#228be6",
         icon: folder.icon || "IconFolder",
-      });
+      };
+      if (
+        form.values.name !== nextValues.name ||
+        form.values.color !== nextValues.color ||
+        form.values.icon !== nextValues.icon
+      ) {
+        form.setValues(nextValues);
+      }
       return;
     }
 
-    form.reset();
-  }, [opened, folder, form]);
+    const isDefault =
+      form.values.name === "" &&
+      form.values.color === "#228be6" &&
+      form.values.icon === "IconFolder";
+    if (!isDefault) {
+      form.reset();
+    }
+  }, [opened, folder?.id, folder?.name, folder?.color, folder?.icon]); // form 인스턴스 제외
 
   const handleSubmit = async (values: typeof form.values) => {
     try {

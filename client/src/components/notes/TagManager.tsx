@@ -32,11 +32,16 @@ export function TagManager({ opened, onClose, tag }: TagManagerProps) {
     },
   });
 
+  // 새 태그 생성 시에만 초기화; 이미 초기값이면 reset을 반복 호출하지 않는다.
   useEffect(() => {
     if (!opened || tag) return;
-    form.reset();
-  }, [opened, tag, form]);
+    const { name, color } = form.values;
+    if (name !== '' || color !== '#228be6') {
+      form.reset();
+    }
+  }, [opened, tag]); // form 인스턴스는 제외해 불필요한 재호출을 방지
 
+  // 수정 모드일 때만 값 동기화; 변경 시에만 setValues 호출
   useEffect(() => {
     if (!opened || !tag) return;
 
@@ -48,7 +53,7 @@ export function TagManager({ opened, onClose, tag }: TagManagerProps) {
         color: nextColor,
       });
     }
-  }, [opened, tag, form]);
+  }, [opened, tag?.id, tag?.name, tag?.color]); // form 인스턴스 제외
 
   const handleSubmit = async (values: typeof form.values) => {
     try {

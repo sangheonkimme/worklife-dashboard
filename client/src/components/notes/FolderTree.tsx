@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type KeyboardEvent } from "react";
 import {
   Text,
   ActionIcon,
@@ -74,6 +74,19 @@ export function FolderTree({ selectedFolderId, onSelectFolder }: FolderTreeProps
     setEditingFolder(null);
   };
 
+  const handleSelectFolder = (folderId?: string) => {
+    onSelectFolder(folderId);
+  };
+
+  const handleKeySelect =
+    (folderId?: string) =>
+    (event: KeyboardEvent<HTMLDivElement>) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        handleSelectFolder(folderId);
+      }
+    };
+
   if (isLoading) {
     return <Text size="sm">{t("folderTree.loading")}</Text>;
   }
@@ -93,7 +106,11 @@ export function FolderTree({ selectedFolderId, onSelectFolder }: FolderTreeProps
         <Paper withBorder p="xs" radius="md">
           <Stack gap="xs">
             <UnstyledButton
-              onClick={() => onSelectFolder(undefined)}
+              component="div"
+              role="button"
+              tabIndex={0}
+              onClick={() => handleSelectFolder(undefined)}
+              onKeyDown={handleKeySelect(undefined)}
               style={{
                 width: "100%",
                 padding: "8px 10px",
@@ -114,8 +131,12 @@ export function FolderTree({ selectedFolderId, onSelectFolder }: FolderTreeProps
               const isSelected = selectedFolderId === folder.id;
               return (
                 <UnstyledButton
+                  component="div"
+                  role="button"
+                  tabIndex={0}
                   key={folder.id}
-                  onClick={() => onSelectFolder(folder.id)}
+                  onClick={() => handleSelectFolder(folder.id)}
+                  onKeyDown={handleKeySelect(folder.id)}
                   style={{
                     width: "100%",
                     padding: "8px 10px",
