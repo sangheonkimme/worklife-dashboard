@@ -149,6 +149,47 @@ async function main() {
 
   console.log(`✅ 템플릿 생성 완료: ${templates.length}개`);
 
+  // 기본 폴더 생성
+  console.log('📁 기본 폴더 생성 중...');
+  const defaultFolders = [
+    { name: '개인' },
+    { name: '학업' },
+    { name: '업무' },
+    { name: '기타' },
+  ];
+
+  const users = await prisma.user.findMany();
+
+  if (users.length === 0) {
+    console.log('   - 생성할 사용자가 없어 기본 폴더 생성을 건너뜁니다.');
+  } else {
+    let createdFolders = 0;
+
+    for (const user of users) {
+      for (const folder of defaultFolders) {
+        const exists = await prisma.folder.findFirst({
+          where: {
+            userId: user.id,
+            name: folder.name,
+            deletedAt: null,
+          },
+        });
+
+        if (!exists) {
+          await prisma.folder.create({
+            data: {
+              ...folder,
+              userId: user.id,
+            },
+          });
+          createdFolders += 1;
+        }
+      }
+    }
+
+    console.log(`✅ 기본 폴더 생성 완료: ${createdFolders}개 추가 (대상 사용자 ${users.length}명)`);
+  }
+
   console.log('\n✨ 모든 시드 데이터 생성이 완료되었습니다!');
 }
 

@@ -12,6 +12,8 @@ export interface UpdateFolderData {
   icon?: string;
 }
 
+const DEFAULT_FOLDER_NAME = '기타';
+
 export const folderService = {
   /**
    * 폴더 목록 조회 (트리 구조)
@@ -118,35 +120,59 @@ export const folderService = {
    * 폴더 삭제
    */
   async deleteFolder(folderId: string, userId: string) {
-    // 폴더 존재 확인
-    const folder = await prisma.folder.findFirst({
-      where: {
-        id: folderId,
-        userId,
-        deletedAt: null,
-      },
+    const result = await prisma.$transaction(async (tx) => {
+      const folder = await tx.folder.findFirst({
+        where: {
+          id: folderId,
+          userId,
+          deletedAt: null,
+        },
+      });
+
+      if (!folder) {
+        throw new Error('폴더를 찾을 수 없습니다');
+      }
+
+      // 삭제되는 폴더의 노트를 옮길 기본 폴더 확보
+      let fallbackFolder = await tx.folder.findFirst({
+        where: {
+          userId,
+          name: DEFAULT_FOLDER_NAME,
+          deletedAt: null,
+          NOT: { id: folderId },
+        },
+      });
+
+      if (!fallbackFolder) {
+        fallbackFolder = await tx.folder.create({
+          data: {
+            name: DEFAULT_FOLDER_NAME,
+            userId,
+          },
+        });
+      }
+
+      const movedNotes = await tx.note.updateMany({
+        where: { folderId, userId },
+        data: { folderId: fallbackFolder.id },
+      });
+
+      await tx.folder.update({
+        where: {
+          id: folderId,
+        },
+        data: {
+          deletedAt: new Date(),
+        },
+      });
+
+      return {
+        success: true,
+        fallbackFolderId: fallbackFolder.id,
+        movedNoteCount: movedNotes.count,
+      };
     });
 
-    if (!folder) {
-      throw new Error('폴더를 찾을 수 없습니다');
-    }
-
-    // 폴더에 속한 노트의 폴더 참조 제거
-    await prisma.note.updateMany({
-      where: { folderId, userId },
-      data: { folderId: null },
-    });
-
-    // 폴더 소프트 삭제
-    await prisma.folder.update({
-      where: {
-        id: folderId,
-      },
-      data: {
-        deletedAt: new Date(),
-      },
-    });
-
-    return { success: true };
+    return result;
   },
 };
