@@ -18,7 +18,6 @@ export const createNoteSchema = z.object({
     isFavorite: z.boolean().optional().default(false),
     isArchived: z.boolean().optional().default(false),
     folderId: z.string().optional(),
-    tagIds: z.array(z.string()).optional(),
   }),
 });
 
@@ -37,7 +36,6 @@ export const updateNoteSchema = z.object({
     isFavorite: z.boolean().optional(),
     isArchived: z.boolean().optional(),
     folderId: z.string().optional().nullable(),
-    tagIds: z.array(z.string()).optional(),
   }),
 });
 
@@ -48,7 +46,6 @@ export const getNotesSchema = z.object({
     limit: z.string().optional().transform((val) => (val ? parseInt(val, 10) : 20)),
     type: noteTypeEnum.optional(),
     folderId: z.string().optional(),
-    tagId: z.string().optional(),
     isPinned: z.string().optional().transform((val) => val === 'true'),
     isFavorite: z.string().optional().transform((val) => val === 'true'),
     isArchived: z.string().optional().transform((val) => val === 'true'),

@@ -1,12 +1,10 @@
 import type { NoteType } from './note';
-import type { Tag } from './tag';
 import type { Folder } from './folder';
 
 export interface SearchOptions {
   q: string;
   type?: NoteType;
   folderId?: string;
-  tagIds?: string[];
   dateFrom?: string;
   dateTo?: string;
   isPinned?: boolean;
@@ -17,7 +15,6 @@ export interface SearchOptions {
 }
 
 export interface SearchSuggestions {
-  tags: Tag[];
   folders: Folder[];
   notes: Array<{
     id: string;

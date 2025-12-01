@@ -15,45 +15,6 @@
   "searchBar": {
     "placeholder": "메모 검색..."
   },
-  "tagInput": {
-    "label": "태그",
-    "placeholder": "태그 선택",
-    "createPlaceholder": "태그 선택 또는 생성"
-  },
-  "tagManager": {
-    "title": {
-      "create": "새 태그",
-      "edit": "태그 수정"
-    },
-    "fields": {
-      "name": {
-        "label": "태그 이름",
-        "placeholder": "태그 이름을 입력하세요"
-      },
-      "color": {
-        "label": "색상",
-        "placeholder": "색상을 선택하세요"
-      }
-    },
-    "validation": {
-      "nameRequired": "태그 이름을 입력해주세요."
-    }
-  },
-  "tagList": {
-    "title": "태그",
-    "all": "모든 태그",
-    "loading": "로딩 중...",
-    "empty": "태그가 없습니다",
-    "menu": {
-      "edit": "수정",
-      "delete": "삭제"
-    },
-    "deleteConfirm": {
-      "title": "태그 삭제",
-      "message": "\"{{name}}\" 태그를 삭제하시겠습니까?",
-      "usageWarning": "{{count}}개의 메모에서 이 태그가 제거됩니다."
-    }
-  },
   "folderTree": {
     "title": "폴더",
     "all": "모든 메모",
@@ -259,8 +220,7 @@
           "checklistLabel": "체크리스트",
           "checklistItemsLabel": "체크리스트 항목",
           "checklistPlaceholder": "체크리스트 항목",
-          "addChecklistItem": "항목 추가",
-          "tagsPlaceholder": "태그 선택 또는 생성"
+          "addChecklistItem": "항목 추가"
         },
         "visibility": {
           "label": "공개 설정",

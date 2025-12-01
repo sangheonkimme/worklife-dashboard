@@ -7,7 +7,6 @@ export const searchNotesSchema = z.object({
     q: z.string().min(1, '검색어는 필수입니다'),
     type: z.nativeEnum(NoteType).optional(),
     folderId: z.string().optional(),
-    tagIds: z.string().optional().transform(val => val ? val.split(',') : undefined),
     dateFrom: z.string().optional().transform(val => val ? new Date(val) : undefined),
     dateTo: z.string().optional().transform(val => val ? new Date(val) : undefined),
     isPinned: z.string().optional().transform(val => val === 'true'),

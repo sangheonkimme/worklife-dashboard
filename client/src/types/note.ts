@@ -20,16 +20,6 @@ export interface Folder {
   updatedAt: string;
 }
 
-// 태그 인터페이스
-export interface Tag {
-  id: string;
-  name: string;
-  color?: string;
-  userId: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
 // 체크리스트 항목 인터페이스
 export interface ChecklistItem {
   id: string;
@@ -87,7 +77,6 @@ export interface Note {
   userId: string;
   createdAt: string;
   updatedAt: string;
-  tags?: Tag[];
   checklistItems?: ChecklistItem[];
   attachments?: Attachment[];
   noteTransactions?: Array<{
@@ -110,7 +99,6 @@ export interface CreateNoteDto {
   isFavorite?: boolean;
   isArchived?: boolean;
   folderId?: string;
-  tagIds?: string[];
 }
 
 // 메모 수정 DTO
@@ -124,7 +112,6 @@ export interface UpdateNoteDto {
   isFavorite?: boolean;
   isArchived?: boolean;
   folderId?: string | null;
-  tagIds?: string[];
 }
 
 // 메모 필터
@@ -133,7 +120,6 @@ export interface NoteFilters {
   limit?: number;
   type?: NoteType;
   folderId?: string;
-  tagId?: string;
   isPinned?: boolean;
   isFavorite?: boolean;
   isArchived?: boolean;
@@ -165,16 +151,4 @@ export interface UpdateFolderDto {
   name?: string;
   color?: string;
   icon?: string;
-}
-
-// 태그 생성 DTO
-export interface CreateTagDto {
-  name: string;
-  color?: string;
-}
-
-// 태그 수정 DTO
-export interface UpdateTagDto {
-  name?: string;
-  color?: string;
 }

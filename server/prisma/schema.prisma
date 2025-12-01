@@ -30,7 +30,6 @@ model User {
   salaryCalculations      SalaryCalculation[]
   notes                   Note[]
   folders                 Folder[]
-  tags                    Tag[]
   templates               NoteTemplate[]
   stickyNotes             StickyNote[]
   pomodoroSessions        PomodoroSession[]
@@ -244,23 +243,6 @@ model Folder {
   @@map("folders")
 }
 
-// 태그 모델
-model Tag {
-  id        String   @id @default(cuid())
-  name      String
-  color     String?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  noteTags NoteTag[]
-
-  @@unique([userId, name])
-  @@index([userId])
-  @@map("tags")
-}
-
 // 메모 타입 enum
 enum NoteType {
   TEXT
@@ -297,7 +279,6 @@ model Note {
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 
-  noteTags         NoteTag[]
   checklistItems   ChecklistItem[]
   attachments      Attachment[]
   noteTransactions NoteTransaction[]
@@ -309,21 +290,6 @@ model Note {
   @@index([folderId])
   @@index([deletedAt])
   @@map("notes")
-}
-
-// 메모-태그 연결 테이블 (다대다)
-model NoteTag {
-  id        String   @id @default(cuid())
-  noteId    String
-  note      Note     @relation(fields: [noteId], references: [id], onDelete: Cascade)
-  tagId     String
-  tag       Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-
-  @@unique([noteId, tagId])
-  @@index([noteId])
-  @@index([tagId])
-  @@map("note_tags")
 }
 
 // 체크리스트 항목 모델

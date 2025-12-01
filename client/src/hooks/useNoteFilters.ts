@@ -3,7 +3,6 @@ import type { NoteFilters } from '@/types/note';
 
 export interface FilterState extends NoteFilters {
   folderId?: string;
-  tagId?: string;
   isPinned?: boolean;
   isFavorite?: boolean;
   isArchived?: boolean;
@@ -33,14 +32,6 @@ export const useNoteFilters = (initialFilters: FilterState = {}) => {
   const setFolderFilter = useCallback(
     (folderId?: string) => {
       updateFilter('folderId', folderId);
-    },
-    [updateFilter]
-  );
-
-  // 태그 필터
-  const setTagFilter = useCallback(
-    (tagId?: string) => {
-      updateFilter('tagId', tagId);
     },
     [updateFilter]
   );
@@ -88,7 +79,6 @@ export const useNoteFilters = (initialFilters: FilterState = {}) => {
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (filters.folderId) count++;
-    if (filters.tagId) count++;
     if (filters.isPinned) count++;
     if (filters.isFavorite) count++;
     if (filters.isArchived) count++;
@@ -106,7 +96,6 @@ export const useNoteFilters = (initialFilters: FilterState = {}) => {
     updateFilter,
     resetFilters,
     setFolderFilter,
-    setTagFilter,
     setSearchFilter,
     setStatusFilter,
     setPage,

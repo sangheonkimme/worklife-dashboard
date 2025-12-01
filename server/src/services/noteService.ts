@@ -18,7 +18,6 @@ export interface CreateNoteDto {
   isFavorite?: boolean;
   isArchived?: boolean;
   folderId?: string;
-  tagIds?: string[];
 }
 
 // 메모 수정 DTO
@@ -32,7 +31,6 @@ export interface UpdateNoteDto {
   isFavorite?: boolean;
   isArchived?: boolean;
   folderId?: string | null;
-  tagIds?: string[];
 }
 
 // 메모 조회 필터
@@ -41,7 +39,6 @@ export interface NoteFilters {
   limit?: number;
   type?: NoteType;
   folderId?: string;
-  tagId?: string;
   isPinned?: boolean;
   isFavorite?: boolean;
   isArchived?: boolean;
@@ -58,7 +55,6 @@ export const noteService = {
       limit = 20,
       type,
       folderId,
-      tagId,
       isPinned,
       isFavorite,
       isArchived,
@@ -78,13 +74,6 @@ export const noteService = {
       ...(isPinned !== undefined && { isPinned }),
       ...(isFavorite !== undefined && { isFavorite }),
       ...(isArchived !== undefined && { isArchived }),
-      ...(tagId && {
-        noteTags: {
-          some: {
-            tagId,
-          },
-        },
-      }),
       ...(search && {
         OR: [
           {
@@ -121,17 +110,6 @@ export const noteService = {
               icon: true,
             },
           },
-          noteTags: {
-            include: {
-              tag: {
-                select: {
-                  id: true,
-                  name: true,
-                  color: true,
-                },
-              },
-            },
-          },
           checklistItems: {
             select: {
               id: true,
@@ -162,15 +140,8 @@ export const noteService = {
       prisma.note.count({ where }),
     ]);
 
-    // noteTags를 tags로 변환
-    const notesWithTags = notes.map((note) => ({
-      ...note,
-      tags: note.noteTags.map((nt) => nt.tag),
-      noteTags: undefined,
-    }));
-
     return {
-      notes: notesWithTags,
+      notes,
       pagination: {
         page,
         limit,
@@ -195,17 +166,6 @@ export const noteService = {
             name: true,
             color: true,
             icon: true,
-          },
-        },
-        noteTags: {
-          include: {
-            tag: {
-              select: {
-                id: true,
-                name: true,
-                color: true,
-              },
-            },
           },
         },
         checklistItems: {
@@ -246,20 +206,11 @@ export const noteService = {
       return null;
     }
 
-    // noteTags를 tags로 변환
-    const noteWithTags = {
-      ...note,
-      tags: note.noteTags.map((nt) => nt.tag),
-      noteTags: undefined,
-    };
-
-    return noteWithTags;
+    return note;
   },
 
   // 메모 생성
   async createNote(userId: string, data: CreateNoteDto) {
-    const { tagIds, ...noteData } = data;
-
     // 폴더 유효성 검증
     if (data.folderId) {
       const folder = await prisma.folder.findFirst({
@@ -276,30 +227,22 @@ export const noteService = {
 
     // PUBLIC 메모인 경우 공개 URL 생성
     const publishedUrl =
-      noteData.visibility === 'PUBLIC' ? generatePublishedUrl() : undefined;
+      data.visibility === 'PUBLIC' ? generatePublishedUrl() : undefined;
 
     // 메모 생성
     const note = await prisma.note.create({
       data: {
-        title: noteData.title,
-        content: noteData.content || '',
-        type: noteData.type || 'TEXT',
-        visibility: noteData.visibility || 'PRIVATE',
-        password: noteData.password,
+        title: data.title,
+        content: data.content || '',
+        type: data.type || 'TEXT',
+        visibility: data.visibility || 'PRIVATE',
+        password: data.password,
         publishedUrl,
-        isPinned: noteData.isPinned || false,
-        isFavorite: noteData.isFavorite || false,
-        isArchived: noteData.isArchived || false,
-        folderId: noteData.folderId,
+        isPinned: data.isPinned || false,
+        isFavorite: data.isFavorite || false,
+        isArchived: data.isArchived || false,
+        folderId: data.folderId,
         userId,
-        ...(tagIds &&
-          tagIds.length > 0 && {
-            noteTags: {
-              create: tagIds.map((tagId) => ({
-                tagId,
-              })),
-            },
-          }),
       },
       include: {
         folder: {
@@ -310,28 +253,10 @@ export const noteService = {
             icon: true,
           },
         },
-        noteTags: {
-          include: {
-            tag: {
-              select: {
-                id: true,
-                name: true,
-                color: true,
-              },
-            },
-          },
-        },
       },
     });
 
-    // noteTags를 tags로 변환
-    const noteWithTags = {
-      ...note,
-      tags: note.noteTags.map((nt) => nt.tag),
-      noteTags: undefined,
-    };
-
-    return noteWithTags;
+    return note;
   },
 
   // 메모 수정
@@ -359,25 +284,7 @@ export const noteService = {
       }
     }
 
-    const { tagIds, ...noteData } = data;
-
-    // 태그 업데이트가 필요한 경우
-    if (tagIds !== undefined) {
-      // 기존 태그 연결 삭제
-      await prisma.noteTag.deleteMany({
-        where: { noteId: id },
-      });
-
-      // 새로운 태그 연결 생성
-      if (tagIds.length > 0) {
-        await prisma.noteTag.createMany({
-          data: tagIds.map((tagId) => ({
-            noteId: id,
-            tagId,
-          })),
-        });
-      }
-    }
+    const noteData = data;
 
     // visibility가 PUBLIC으로 변경되었고 publishedUrl이 없으면 생성
     let publishedUrlUpdate = {};
@@ -413,28 +320,10 @@ export const noteService = {
             icon: true,
           },
         },
-        noteTags: {
-          include: {
-            tag: {
-              select: {
-                id: true,
-                name: true,
-                color: true,
-              },
-            },
-          },
-        },
       },
     });
 
-    // noteTags를 tags로 변환
-    const noteWithTags = {
-      ...note,
-      tags: note.noteTags.map((nt) => nt.tag),
-      noteTags: undefined,
-    };
-
-    return noteWithTags;
+    return note;
   },
 
   // 메모 삭제 (소프트 삭제)
@@ -480,17 +369,6 @@ export const noteService = {
               icon: true,
             },
           },
-          noteTags: {
-            include: {
-              tag: {
-                select: {
-                  id: true,
-                  name: true,
-                  color: true,
-                },
-              },
-            },
-          },
         },
         orderBy: {
           deletedAt: 'desc',
@@ -501,14 +379,8 @@ export const noteService = {
       prisma.note.count({ where }),
     ]);
 
-    const notesWithTags = notes.map((note) => ({
-      ...note,
-      tags: note.noteTags.map((nt) => nt.tag),
-      noteTags: undefined,
-    }));
-
     return {
-      notes: notesWithTags,
+      notes,
       pagination: {
         page,
         limit,

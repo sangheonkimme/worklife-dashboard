@@ -5,7 +5,6 @@ export interface SearchOptions {
   query: string;
   type?: NoteType;
   folderId?: string;
-  tagIds?: string[];
   dateFrom?: Date;
   dateTo?: Date;
   isPinned?: boolean;
@@ -24,7 +23,6 @@ export const searchService = {
       query,
       type,
       folderId,
-      tagIds,
       dateFrom,
       dateTo,
       isPinned,
@@ -61,15 +59,6 @@ export const searchService = {
       ...(type && { type }),
       // 폴더 필터
       ...(folderId && { folderId }),
-      // 태그 필터 (여러 태그 AND 조건)
-      ...(tagIds &&
-        tagIds.length > 0 && {
-          AND: tagIds.map((tagId) => ({
-            noteTags: {
-              some: { tagId },
-            },
-          })),
-        }),
       // 날짜 범위 필터
       ...(dateFrom && {
         createdAt: {
@@ -98,17 +87,6 @@ export const searchService = {
               name: true,
               color: true,
               icon: true,
-            },
-          },
-          noteTags: {
-            include: {
-              tag: {
-                select: {
-                  id: true,
-                  name: true,
-                  color: true,
-                },
-              },
             },
           },
           checklistItems: {
@@ -144,15 +122,8 @@ export const searchService = {
       prisma.note.count({ where }),
     ]);
 
-    // noteTags를 tags로 변환
-    const notesWithTags = notes.map((note) => ({
-      ...note,
-      tags: note.noteTags.map((nt) => nt.tag),
-      noteTags: undefined,
-    }));
-
     return {
-      notes: notesWithTags,
+      notes,
       pagination: {
         page,
         limit,
@@ -182,26 +153,9 @@ export const searchService = {
   },
 
   /**
-   * 검색 제안 (태그 기반)
+   * 검색 제안 (폴더 기반)
    */
   async getSearchSuggestions(userId: string, query: string, limit: number = 5) {
-    // 태그 이름으로 제안
-    const tagSuggestions = await prisma.tag.findMany({
-      where: {
-        userId,
-        name: {
-          contains: query,
-          mode: 'insensitive',
-        },
-      },
-      take: limit,
-      select: {
-        id: true,
-        name: true,
-        color: true,
-      },
-    });
-
     // 폴더 이름으로 제안
     const folderSuggestions = await prisma.folder.findMany({
       where: {
@@ -239,7 +193,6 @@ export const searchService = {
     });
 
     return {
-      tags: tagSuggestions,
       folders: folderSuggestions,
       notes: noteSuggestions,
     };

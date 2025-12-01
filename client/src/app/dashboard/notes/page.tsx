@@ -20,7 +20,6 @@ import {
   Textarea,
   Box,
   Drawer,
-  Divider,
   Select,
   PasswordInput,
   Tabs,
@@ -49,10 +48,8 @@ import type { Note, CreateNoteDto, NoteType, NoteVisibility } from '@/types/note
 import { useDisclosure } from '@mantine/hooks';
 import { useNoteFilters } from '@/hooks/useNoteFilters';
 import { FolderTree } from '@/components/notes/FolderTree';
-import { TagList } from '@/components/notes/TagList';
 import { SearchBar } from '@/components/notes/SearchBar';
 import { SearchFilters } from '@/components/notes/SearchFilters';
-import { TagInput } from '@/components/notes/TagInput';
 import { QuickNote } from '@/components/notes/QuickNote';
 import { formatDate } from '@/utils/format';
 import { useTranslation } from 'react-i18next';
@@ -94,7 +91,6 @@ export default function NotesPage() {
     filters,
     setSearchFilter,
     setFolderFilter,
-    setTagFilter,
     updateFilter,
     resetFilters,
     hasActiveFilters,
@@ -122,7 +118,6 @@ export default function NotesPage() {
     content: '',
     type: 'TEXT',
     visibility: 'PRIVATE',
-    tagIds: [],
   });
   const [tempChecklistItems, setTempChecklistItems] = useState<string[]>([]);
 
@@ -135,7 +130,6 @@ export default function NotesPage() {
         type: note.type,
         visibility: note.visibility,
         password: note.password,
-        tagIds: note.tags?.map((t) => t.id) || [],
         folderId: note.folderId || undefined,
       });
     } else {
@@ -145,7 +139,6 @@ export default function NotesPage() {
         content: '',
         type: 'TEXT',
         visibility: 'PRIVATE',
-        tagIds: [],
         folderId: filters.folderId,
       });
     }
@@ -184,7 +177,7 @@ export default function NotesPage() {
         {
           onSuccess: () => {
             closeNoteModal();
-            setFormData({ title: '', content: '', type: 'TEXT', visibility: 'PRIVATE', tagIds: [] });
+            setFormData({ title: '', content: '', type: 'TEXT', visibility: 'PRIVATE' });
             setEditingNote(null);
             setTempChecklistItems([]);
           },
@@ -194,7 +187,7 @@ export default function NotesPage() {
       createNoteMutation.mutate(submitData, {
         onSuccess: () => {
           closeNoteModal();
-          setFormData({ title: '', content: '', type: 'TEXT', visibility: 'PRIVATE', tagIds: [] });
+          setFormData({ title: '', content: '', type: 'TEXT', visibility: 'PRIVATE' });
           setTempChecklistItems([]);
         },
       });
@@ -229,10 +222,6 @@ export default function NotesPage() {
                   selectedFolderId={filters.folderId}
                   onSelectFolder={setFolderFilter}
                 />
-              </Paper>
-
-              <Paper p="md" withBorder>
-                <TagList selectedTagId={filters.tagId} onSelectTag={setTagFilter} />
               </Paper>
 
               <Paper p="md" withBorder>
@@ -357,11 +346,6 @@ export default function NotesPage() {
                               <Badge size="xs" variant="light">
                                 {t(`page.noteTypes.${note.type}`, { defaultValue: note.type })}
                               </Badge>
-                              {note.tags?.map((tag) => (
-                                <Badge key={tag.id} size="xs" color={tag.color || 'gray'}>
-                                  {tag.name}
-                                </Badge>
-                              ))}
                             </Group>
 
                             <Group justify="space-between" mt="auto">
@@ -404,12 +388,6 @@ export default function NotesPage() {
         <Stack gap="lg">
           <Paper p="md" withBorder>
             <FolderTree selectedFolderId={filters.folderId} onSelectFolder={setFolderFilter} />
-          </Paper>
-
-          <Divider />
-
-          <Paper p="md" withBorder>
-            <TagList selectedTagId={filters.tagId} onSelectTag={setTagFilter} />
           </Paper>
         </Stack>
       </Drawer>
@@ -566,11 +544,6 @@ export default function NotesPage() {
                 </Box>
               )}
 
-              <TagInput
-                value={formData.tagIds || []}
-                onChange={(tagIds) => setFormData({ ...formData, tagIds })}
-                placeholder={t('page.modals.note.form.tagsPlaceholder')}
-              />
             </Stack>
           </Tabs.Panel>
 

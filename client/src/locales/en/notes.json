@@ -15,45 +15,6 @@
   "searchBar": {
     "placeholder": "Search notes..."
   },
-  "tagInput": {
-    "label": "Tags",
-    "placeholder": "Select tags",
-    "createPlaceholder": "Select or create tags"
-  },
-  "tagManager": {
-    "title": {
-      "create": "New tag",
-      "edit": "Edit tag"
-    },
-    "fields": {
-      "name": {
-        "label": "Tag name",
-        "placeholder": "Enter tag name"
-      },
-      "color": {
-        "label": "Color",
-        "placeholder": "Pick a color"
-      }
-    },
-    "validation": {
-      "nameRequired": "Please enter a tag name."
-    }
-  },
-  "tagList": {
-    "title": "Tags",
-    "all": "All tags",
-    "loading": "Loading...",
-    "empty": "No tags",
-    "menu": {
-      "edit": "Edit",
-      "delete": "Delete"
-    },
-    "deleteConfirm": {
-      "title": "Delete tag",
-      "message": "Do you want to delete the tag \"{{name}}\"?",
-      "usageWarning": "{{count}} notes will lose this tag."
-    }
-  },
   "folderTree": {
     "title": "Folders",
     "all": "All notes",
@@ -259,8 +220,7 @@
           "checklistLabel": "Checklist",
           "checklistItemsLabel": "Checklist items",
           "checklistPlaceholder": "Checklist item",
-          "addChecklistItem": "Add item",
-          "tagsPlaceholder": "Select or create tags"
+          "addChecklistItem": "Add item"
         },
         "visibility": {
           "label": "Visibility",
