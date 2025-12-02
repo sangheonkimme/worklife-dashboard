@@ -15,10 +15,11 @@ export const noteKeys = {
 };
 
 // 메모 목록 조회 훅
-export function useNotes(filters?: NoteFilters) {
+export function useNotes(filters?: NoteFilters, enabled = true) {
   return useQuery({
     queryKey: noteKeys.list(filters),
     queryFn: () => noteApi.getNotes(filters),
+    enabled,
   });
 }
 

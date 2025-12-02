@@ -18,9 +18,9 @@
     "nav": {
       "heading": "Menu",
       "transactions": {
-        "label": "Finance dashboard",
+        "label": "Finance",
         "description": "Budgets · transactions · stats",
-        "pageTitle": "Finance dashboard",
+        "pageTitle": "Finance",
         "pageDescription": "Manage budgets, transactions, and analytics in one place."
       },
       "dashboard": {
@@ -77,7 +77,8 @@
       "danger": "Danger zone",
       "profile": "Profile",
       "settings": "Settings",
-      "logout": "Log out"
+      "logout": "Log out",
+      "login": "Log in"
     },
     "footer": "© 2024 WorkLife Dashboard",
     "alerts": {

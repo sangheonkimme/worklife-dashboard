@@ -46,6 +46,8 @@ import {
 } from "@/utils/paydayCycle";
 import { formatCurrency, formatDate } from "@/utils/format";
 import { useTranslation } from "react-i18next";
+import { AuthRequiredWrapper } from "@/components/auth/AuthRequiredWrapper";
+import { useAuth } from "@/hooks/useAuth";
 
 const chartColors = [
   "#FF6B6B",
@@ -64,6 +66,7 @@ const calculateDiffPercent = (current: number, previous?: number | null) => {
 
 
 const TransactionsPageClient = () => {
+  const { isAuthenticated } = useAuth();
   const { t } = useTranslation(["finance", "common"]);
   const [activeTab, setActiveTab] = useState<string | null>("transactions");
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
@@ -108,6 +111,7 @@ const TransactionsPageClient = () => {
     queryKey: ["dashboard-statistics", cycleStartISO, cycleEndISO, payday],
     queryFn: () =>
       transactionApi.getStatistics(cycleStartISO, cycleEndISO, "category"),
+    enabled: isAuthenticated,
   });
 
   const { data: previousStatistics } = useQuery({
@@ -124,6 +128,7 @@ const TransactionsPageClient = () => {
         prevCycleEndISO,
         "category"
       ),
+    enabled: isAuthenticated,
   });
 
   const { data: recentTransactionsData, isLoading: isRecentLoading } = useQuery(
@@ -136,6 +141,7 @@ const TransactionsPageClient = () => {
           sortBy: "date",
           sortOrder: "desc",
         }),
+      enabled: isAuthenticated,
     }
   );
 
@@ -204,8 +210,9 @@ const TransactionsPageClient = () => {
   ];
 
   return (
-    <Container size="xl" py="xl">
-      <Stack gap="xl">
+    <AuthRequiredWrapper>
+      <Container size="xl" py="xl">
+        <Stack gap="xl">
         <Group justify="space-between" align="flex-start">
           <div>
             <Title order={2}>{t("dashboard.title")}</Title>
@@ -490,6 +497,7 @@ const TransactionsPageClient = () => {
         </Affix>
       )}
     </Container>
+    </AuthRequiredWrapper>
   );
 };
 

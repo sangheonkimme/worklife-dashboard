@@ -31,23 +31,28 @@ export const useAuth = () => {
   useEffect(() => {
     if (!error) return;
 
-    const isNetworkError =
-      typeof window !== "undefined" &&
-      (!window.navigator.onLine || error.message.includes("Network Error"));
+    // 401 Unauthorized 에러가 아닌 경우에만 알림 표시
+    const is401Error = error.message?.includes("401");
 
-    notifications.show({
-      title: t("notifications.errorTitle"),
-      message: isNetworkError
-        ? t("notifications.networkError")
-        : t("notifications.fetchError"),
-      color: "red",
-      autoClose: 5000,
-    });
+    if (!is401Error) {
+      const isNetworkError =
+        typeof window !== "undefined" &&
+        (!window.navigator.onLine || error.message.includes("Network Error"));
 
+      notifications.show({
+        title: t("notifications.errorTitle"),
+        message: isNetworkError
+          ? t("notifications.networkError")
+          : t("notifications.fetchError"),
+        color: "red",
+        autoClose: 5000,
+      });
+    }
+
+    // 인증 에러가 발생하면 토큰만 제거하고 로그인 페이지로 리다이렉트하지 않음
     void clearAccessTokenCookie();
     clearUser();
-    router.push("/login");
-  }, [error, clearUser, router, t]);
+  }, [error, clearUser, t]);
 
   // 리프레시 후에도 Zustand에 사용자 정보를 채워 넣어 인증 상태를 복원
   useEffect(() => {

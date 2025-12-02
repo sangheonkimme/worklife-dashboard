@@ -53,6 +53,8 @@ import { SearchFilters } from '@/components/notes/SearchFilters';
 import { QuickNote } from '@/components/notes/QuickNote';
 import { formatDate } from '@/utils/format';
 import { useTranslation } from 'react-i18next';
+import { AuthRequiredWrapper } from '@/components/auth/AuthRequiredWrapper';
+import { useAuth } from '@/hooks/useAuth';
 
 const MarkdownEditor = dynamic(
   () =>
@@ -87,6 +89,7 @@ const TemplateModal = dynamic(
 );
 
 export default function NotesPage() {
+  const { isAuthenticated } = useAuth();
   const {
     filters,
     setSearchFilter,
@@ -96,7 +99,7 @@ export default function NotesPage() {
     hasActiveFilters,
   } = useNoteFilters();
 
-  const { data, isLoading } = useNotes(filters);
+  const { data, isLoading } = useNotes(filters, isAuthenticated);
   const createNoteMutation = useCreateNote();
   const updateNoteMutation = useUpdateNote();
   const deleteNoteMutation = useDeleteNote();
@@ -209,8 +212,9 @@ export default function NotesPage() {
   };
 
   return (
-    <>
-      <Container size="xl" py="xl">
+    <AuthRequiredWrapper>
+      <>
+        <Container size="xl" py="xl">
         <Grid>
           {/* 사이드바 (데스크톱) */}
           <Grid.Col span={{ base: 12, md: 3 }} visibleFrom="md">
@@ -648,5 +652,6 @@ export default function NotesPage() {
       {/* 빠른 메모 플로팅 위젯 */}
       <QuickNote />
     </>
+    </AuthRequiredWrapper>
   );
 }

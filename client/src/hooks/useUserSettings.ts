@@ -32,7 +32,7 @@ export const useUserSettings = () => {
   const error = useUserSettingsStore((state) => state.error);
 
   const isTokenAvailable = useMemo(() => {
-    if (typeof window === "undefined") return true;
+    if (typeof window === "undefined") return false;
     return Boolean(getClientAccessToken());
   }, []);
 

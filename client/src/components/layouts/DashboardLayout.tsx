@@ -86,16 +86,16 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   };
   const baseNavItems = [
     {
-      key: "transactions",
-      icon: IconWallet,
-      path: "/dashboard/transactions",
-      aliasPaths: ["/dashboard/expense"] as readonly string[],
-    },
-    {
       key: "dashboard",
       icon: IconHome,
       path: "/dashboard",
       aliasPaths: [] as readonly string[],
+    },
+    {
+      key: "transactions",
+      icon: IconWallet,
+      path: "/dashboard/transactions",
+      aliasPaths: ["/dashboard/expense"] as readonly string[],
     },
     {
       key: "subscriptions",
@@ -222,42 +222,48 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <IconBell size={18} />
             </ActionIcon>
 
-            <Menu shadow="md" width={200}>
-              <Menu.Target>
-                <ActionIcon variant="default" size="lg" radius="xl">
-                  <Avatar size="sm" radius="xl" color="blue">
-                    {user?.name?.charAt(0).toUpperCase() || "U"}
-                  </Avatar>
-                </ActionIcon>
-              </Menu.Target>
+            {user ? (
+              <Menu shadow="md" width={200}>
+                <Menu.Target>
+                  <ActionIcon variant="default" size="lg" radius="xl">
+                    <Avatar size="sm" radius="xl" color="blue">
+                      {user?.name?.charAt(0).toUpperCase() || "U"}
+                    </Avatar>
+                  </ActionIcon>
+                </Menu.Target>
 
-              <Menu.Dropdown>
-                <Menu.Label>{t('layout.menu.account')}</Menu.Label>
-                <Menu.Item
-                  leftSection={<IconUser size={14} />}
-                  onClick={() => router.push("/dashboard/profile")}
-                >
-                  {t("layout.menu.profile")}
-                </Menu.Item>
-                <Menu.Item
-                  leftSection={<IconSettings size={14} />}
-                  onClick={() => router.push("/dashboard/settings")}
-                >
-                  {t("layout.menu.settings")}
-                </Menu.Item>
+                <Menu.Dropdown>
+                  <Menu.Label>{t("layout.menu.account")}</Menu.Label>
+                  <Menu.Item
+                    leftSection={<IconUser size={14} />}
+                    onClick={() => router.push("/dashboard/profile")}
+                  >
+                    {t("layout.menu.profile")}
+                  </Menu.Item>
+                  <Menu.Item
+                    leftSection={<IconSettings size={14} />}
+                    onClick={() => router.push("/dashboard/settings")}
+                  >
+                    {t("layout.menu.settings")}
+                  </Menu.Item>
 
-                <Menu.Divider />
+                  <Menu.Divider />
 
-                <Menu.Label>{t('layout.menu.danger')}</Menu.Label>
-                <Menu.Item
-                  color="red"
-                  leftSection={<IconLogout size={14} />}
-                  onClick={handleLogout}
-                >
-                  {t('layout.menu.logout')}
-                </Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
+                  <Menu.Label>{t("layout.menu.danger")}</Menu.Label>
+                  <Menu.Item
+                    color="red"
+                    leftSection={<IconLogout size={14} />}
+                    onClick={handleLogout}
+                  >
+                    {t("layout.menu.logout")}
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
+            ) : (
+              <Button component={Link} href="/login" variant="light" size="sm">
+                {t("layout.menu.login")}
+              </Button>
+            )}
           </Group>
         </Group>
       </AppShell.Header>
@@ -308,7 +314,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       </AppShell.Navbar>
 
       <AppShell.Main>
-        {settingsStatus === "error" && (
+        {user && settingsStatus === "error" && (
           <Alert
             color="red"
             icon={<IconAlertTriangle size={18} />}

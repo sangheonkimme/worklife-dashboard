@@ -3,10 +3,12 @@
 import { Stack, Title, Text, Group } from "@mantine/core";
 import { SubscriptionSummaryCard } from "@/components/subscriptions/SubscriptionSummaryCard";
 import { SubscriptionTable } from "@/components/subscriptions/SubscriptionTable";
+import { AuthRequiredWrapper } from "@/components/auth/AuthRequiredWrapper";
 
 const SubscriptionsPage = () => {
   return (
-    <Stack gap="lg">
+    <AuthRequiredWrapper>
+      <Stack gap="lg">
       <Group justify="space-between" align="flex-end">
         <div>
           <Title order={2}>정기구독 관리</Title>
@@ -18,6 +20,7 @@ const SubscriptionsPage = () => {
       <SubscriptionSummaryCard />
       <SubscriptionTable />
     </Stack>
+    </AuthRequiredWrapper>
   );
 };
 

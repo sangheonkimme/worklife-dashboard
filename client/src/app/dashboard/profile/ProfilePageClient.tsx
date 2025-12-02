@@ -28,6 +28,7 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { authApi } from "@/services/api/authApi";
+import { AuthRequiredWrapper } from "@/components/auth/AuthRequiredWrapper";
 import { formatDate } from "@/utils/format";
 import { getApiErrorMessage } from "@/utils/error";
 import type { UpdateProfilePayload } from "@/types";
@@ -147,8 +148,9 @@ const ProfilePageClient = () => {
   }
 
   return (
-    <Container size="sm" py="xl">
-      <Stack gap="lg">
+    <AuthRequiredWrapper>
+      <Container size="sm" py="xl">
+        <Stack gap="lg">
         <div>
           <Title order={2}>{t('page.title')}</Title>
           <Text c="dimmed" size="sm">
@@ -316,6 +318,7 @@ const ProfilePageClient = () => {
         </Paper>
       </Stack>
     </Container>
+    </AuthRequiredWrapper>
   );
 };
 

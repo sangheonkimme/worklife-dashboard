@@ -32,6 +32,7 @@ import {
   minutesToMilliseconds,
   minutesToSeconds,
 } from "@/components/setting/utils";
+import { AuthRequiredWrapper } from "@/components/auth/AuthRequiredWrapper";
 
 const FALLBACK_TIMEZONES = [
   "Asia/Seoul",
@@ -335,31 +336,34 @@ const SettingsPageClient = () => {
 
   if (isLoading) {
     return (
-      <Container size="xl" py="xl">
-        <Stack gap="lg">
-          <PageHeader
-            title={t("settings:page.title")}
-            description={t("settings:page.description")}
-          />
-          <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <Card key={index} radius="md" withBorder shadow="sm" padding="lg">
-                <Skeleton height={24} width="40%" mb="md" />
-                <Stack gap="sm">
-                  <Skeleton height={20} radius="sm" />
-                  <Skeleton height={20} radius="sm" />
-                  <Skeleton height={20} radius="sm" />
-                </Stack>
-              </Card>
-            ))}
-          </SimpleGrid>
-        </Stack>
-      </Container>
+      <AuthRequiredWrapper>
+        <Container size="xl" py="xl">
+          <Stack gap="lg">
+            <PageHeader
+              title={t("settings:page.title")}
+              description={t("settings:page.description")}
+            />
+            <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <Card key={index} radius="md" withBorder shadow="sm" padding="lg">
+                  <Skeleton height={24} width="40%" mb="md" />
+                  <Stack gap="sm">
+                    <Skeleton height={20} radius="sm" />
+                    <Skeleton height={20} radius="sm" />
+                    <Skeleton height={20} radius="sm" />
+                  </Stack>
+                </Card>
+              ))}
+            </SimpleGrid>
+          </Stack>
+        </Container>
+      </AuthRequiredWrapper>
     );
   }
 
   return (
-    <Container size="xl" py="xl" id="settings-page">
+    <AuthRequiredWrapper>
+      <Container size="xl" py="xl" id="settings-page">
       <Stack gap="lg">
         <PageHeader
           title={t("settings:page.title")}
@@ -418,6 +422,7 @@ const SettingsPageClient = () => {
         formId="user-settings-form"
       />
     </Container>
+    </AuthRequiredWrapper>
   );
 };
 

@@ -265,6 +265,8 @@ const SortableWidget = ({
 const DashboardPage = () => {
   const { isAuthenticated } = useAuth();
   const { t } = useTranslation("dashboard");
+  const [mounted, setMounted] = useState(false);
+
   const availableWidgets = useMemo(
     () => (isAuthenticated ? DASHBOARD_WIDGETS : PUBLIC_WIDGETS),
     [isAuthenticated]
@@ -280,6 +282,10 @@ const DashboardPage = () => {
   const [widgetOrder, setWidgetOrder] = useState<string[]>(() =>
     availableWidgets.map(({ id }) => id)
   );
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     // keep widget order in sync with available widgets (auth toggles)
@@ -365,34 +371,60 @@ const DashboardPage = () => {
         </Card>
       )}
       <div>
-        <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-          <SortableContext items={widgetOrder} strategy={rectSortingStrategy}>
-            <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
-              {widgetOrder.map((widgetId) => {
-                const widget = widgetMeta[widgetId];
+        {mounted ? (
+          <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+            <SortableContext items={widgetOrder} strategy={rectSortingStrategy}>
+              <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
+                {widgetOrder.map((widgetId) => {
+                  const widget = widgetMeta[widgetId];
 
-                if (!widget) {
-                  return null;
-                }
+                  if (!widget) {
+                    return null;
+                  }
 
-                const { Component: WidgetComponent, maxHeight } = widget;
+                  const { Component: WidgetComponent, maxHeight } = widget;
 
-                return (
-                  <SortableWidget key={widgetId} id={widgetId}>
-                    <div
-                      style={{
-                        maxHeight,
-                        overflowY: maxHeight ? "auto" : undefined,
-                      }}
-                    >
-                      <WidgetComponent />
-                    </div>
-                  </SortableWidget>
-                );
-              })}
-            </SimpleGrid>
-          </SortableContext>
-        </DndContext>
+                  return (
+                    <SortableWidget key={widgetId} id={widgetId}>
+                      <div
+                        style={{
+                          maxHeight,
+                          overflowY: maxHeight ? "auto" : undefined,
+                        }}
+                      >
+                        <WidgetComponent />
+                      </div>
+                    </SortableWidget>
+                  );
+                })}
+              </SimpleGrid>
+            </SortableContext>
+          </DndContext>
+        ) : (
+          <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
+            {widgetOrder.map((widgetId) => {
+              const widget = widgetMeta[widgetId];
+
+              if (!widget) {
+                return null;
+              }
+
+              const { Component: WidgetComponent, maxHeight } = widget;
+
+              return (
+                <div
+                  key={widgetId}
+                  style={{
+                    maxHeight,
+                    overflowY: maxHeight ? "auto" : undefined,
+                  }}
+                >
+                  <WidgetComponent />
+                </div>
+              );
+            })}
+          </SimpleGrid>
+        )}
       </div>
     </Stack>
   );
