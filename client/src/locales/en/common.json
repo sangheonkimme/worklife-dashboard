@@ -25,5 +25,101 @@
   },
   "errors": {
     "settingsFetchTitle": "Failed to load settings"
+  },
+  "landing": {
+    "header": {
+      "dashboard": "Dashboard",
+      "logout": "Logout",
+      "login": "Login",
+      "explore": "Explore"
+    },
+    "hero": {
+      "badge": "Work-Life OS",
+      "title1": "Manage your life like an OS",
+      "title2": "One Dashboard to Rule Them All",
+      "description": "A Work-Life OS where tasks, calendar, routines, study, work, notes, and focus timer sync automatically every day. Start for free now.",
+      "gotoDashboard": "Go to Dashboard",
+      "settings": "Settings"
+    },
+    "stats": {
+      "focusTime": "Focus Time Increase",
+      "routineRate": "Routine Retention",
+      "free": "All Features Free"
+    },
+    "features": {
+      "badge": "Core Features",
+      "title": "From Routines to Projects, Like an OS",
+      "description": "Routine → Focus → Log → Review flows seamlessly",
+      "dashboard": {
+        "title": "Unified Dashboard",
+        "description": "Manage tasks, calendar, and routines at a glance"
+      },
+      "notes": {
+        "title": "Note Management",
+        "description": "Quickly organize lectures, meetings, and study notes with tags and search"
+      },
+      "timer": {
+        "title": "Focus Timer",
+        "description": "Stay focused with Pomodoro timer and auto-generate logs"
+      },
+      "files": {
+        "title": "File Management",
+        "description": "Manage and share PDFs, images, and templates in one place"
+      },
+      "finance": {
+        "title": "Finance Management",
+        "description": "Track subscriptions, salary, and expenses with automatic reminders"
+      }
+    },
+    "workflows": {
+      "badge": "Workflows",
+      "title": "Flow Engine That Organizes Your Day",
+      "description": "From Morning Sync to Evening Review, flows are designed automatically",
+      "morningSync": {
+        "title": "Morning Sync",
+        "description": "Auto-arrange morning routines"
+      },
+      "studySession": {
+        "title": "Study Session",
+        "description": "Time blocks + auto-link notes"
+      },
+      "workSprint": {
+        "title": "Work Sprint",
+        "description": "Execute sprint goals with reminders"
+      },
+      "eveningReview": {
+        "title": "Evening Review",
+        "description": "Daily review and tomorrow's plan"
+      },
+      "autoLogging": {
+        "title": "Auto Logging",
+        "description": "Auto-save timeline"
+      },
+      "driveSync": {
+        "title": "Drive Sync",
+        "description": "Auto Google Drive integration"
+      }
+    },
+    "testimonials": {
+      "badge": "Testimonials",
+      "title": "Real User Transformations",
+      "quote1": {
+        "text": "When the focus timer ends, logs are automatically saved to notes, making reviews easier. My day flows as a single timeline.",
+        "author": "Haneul Kim / UX Designer"
+      },
+      "quote2": {
+        "text": "Lectures, assignments, and intern work were all mixed up, but with Worklife Dashboard, just a morning Sync auto-arranges my routines. I can see my focus time weekly.",
+        "author": "Jiwoo Park / Student & Intern"
+      }
+    },
+    "cta": {
+      "title": "Record today's moments and prepare for tomorrow's growth",
+      "description": "Start your own Work-Life OS with Worklife Dashboard now.\nAll features are free to use."
+    },
+    "footer": {
+      "terms": "Terms of Service",
+      "privacy": "Privacy Policy",
+      "contact": "Contact Us"
+    }
   }
 }

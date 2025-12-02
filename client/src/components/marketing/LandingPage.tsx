@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import NextLink from "next/link";
 import {
   Anchor,
@@ -36,64 +37,46 @@ import {
   IconTrendingUp,
   IconCheck,
 } from "@tabler/icons-react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader } from "@mantine/core";
+import { applyLanguageByIP } from "@/lib/i18n";
 
-const features = [
-  {
-    title: "통합 대시보드",
-    description: "할 일, 캘린더, 루틴을 한눈에 관리하는 통합 대시보드",
-    icon: IconChartHistogram,
-    color: "worklife-navy",
-  },
-  {
-    title: "노트 관리",
-    description: "강의, 회의, 스터디 메모를 태그와 검색으로 빠르게 관리",
-    icon: IconUsersGroup,
-    color: "worklife-navy",
-  },
-  {
-    title: "포커스 타이머",
-    description: "포모도로 타이머로 집중하고 자동으로 기록 생성",
-    icon: IconFocus2,
-    color: "worklife-navy",
-  },
-  {
-    title: "파일 관리",
-    description: "PDF, 이미지, 템플릿을 한곳에서 관리하고 공유",
-    icon: IconCloud,
-    color: "worklife-navy",
-  },
-  {
-    title: "재무 관리",
-    description: "구독, 급여, 지출을 자동으로 추적하고 리마인드",
-    icon: IconCreditCardPay,
-    color: "worklife-navy",
-  },
-];
+const featureKeys = [
+  { key: "dashboard", icon: IconChartHistogram },
+  { key: "notes", icon: IconUsersGroup },
+  { key: "timer", icon: IconFocus2 },
+  { key: "files", icon: IconCloud },
+  { key: "finance", icon: IconCreditCardPay },
+] as const;
 
-const workflows = [
-  { title: "Morning Sync", description: "기상 후 루틴 자동 정렬", icon: IconChecklist },
-  { title: "Study Session", description: "타임블록 + 노트 자동 연결", icon: IconBrain },
-  { title: "Work Sprint", description: "스프린트 목표 실행 및 리마인드", icon: IconTargetArrow },
-  { title: "Evening Review", description: "하루 회고 및 내일 계획", icon: IconCalendarTime },
-  { title: "Auto Logging", description: "타임라인 자동 저장", icon: IconPlayerPlay },
-  { title: "Drive Sync", description: "구글 드라이브 자동 연동", icon: IconCloud },
-];
+const workflowKeys = [
+  { key: "morningSync", icon: IconChecklist },
+  { key: "studySession", icon: IconBrain },
+  { key: "workSprint", icon: IconTargetArrow },
+  { key: "eveningReview", icon: IconCalendarTime },
+  { key: "autoLogging", icon: IconPlayerPlay },
+  { key: "driveSync", icon: IconCloud },
+] as const;
 
-const stats = [
-  { value: "+38%", label: "집중 시간 상승", icon: IconTrendingUp },
-  { value: "85%", label: "루틴 유지율", icon: IconCheck },
-  { value: "무료", label: "모든 기능 이용", icon: IconSparkles },
-];
+const statKeys = [
+  { value: "+38%", labelKey: "focusTime", icon: IconTrendingUp },
+  { value: "85%", labelKey: "routineRate", icon: IconCheck },
+] as const;
 
 export const LandingPage = () => {
   const theme = useMantineTheme();
   const { colorScheme } = useMantineColorScheme();
   const isDark = colorScheme === "dark";
-  const { user, isAuthenticated, isLoading, logout, isLoginLoading, isRegisterLoading, isGoogleLoginLoading } = useAuth();
+  const { isAuthenticated, isLoading, logout, isLoginLoading, isRegisterLoading, isGoogleLoginLoading } = useAuth();
+  const { t } = useTranslation("common");
 
   const isAuthMutating = isLoginLoading || isRegisterLoading || isGoogleLoginLoading;
+
+  // 첫 방문자 IP 기반 언어 감지
+  useEffect(() => {
+    void applyLanguageByIP();
+  }, []);
 
   return (
     <Box
@@ -142,7 +125,7 @@ export const LandingPage = () => {
               ) : isAuthenticated ? (
                 <>
                   <Button component={NextLink} href="/dashboard" variant="subtle" radius="md">
-                    대시보드
+                    {t("landing.header.dashboard")}
                   </Button>
                   <Button
                     variant="light"
@@ -150,13 +133,13 @@ export const LandingPage = () => {
                     onClick={() => void logout()}
                     loading={isAuthMutating}
                   >
-                    로그아웃
+                    {t("landing.header.logout")}
                   </Button>
                 </>
               ) : (
                 <>
                   <Button component={NextLink} href="/login" variant="subtle" radius="md">
-                    로그인
+                    {t("landing.header.login")}
                   </Button>
                   <Button
                     component={NextLink}
@@ -164,7 +147,7 @@ export const LandingPage = () => {
                     radius="md"
                     color="worklife-navy"
                   >
-                    둘러보기
+                    {t("landing.header.explore")}
                   </Button>
                 </>
               )}
@@ -178,7 +161,7 @@ export const LandingPage = () => {
         <Container size="lg">
           <Stack align="center" gap="xl">
             <Badge size="lg" radius="md" variant="light" color="worklife-navy">
-              Work-Life OS
+              {t("landing.hero.badge")}
             </Badge>
 
             <Stack align="center" gap="md" maw={800}>
@@ -191,20 +174,19 @@ export const LandingPage = () => {
                   fontWeight: 800,
                 }}
               >
-                일상을 OS처럼 관리하는
+                {t("landing.hero.title1")}
                 <br />
                 <Text
                   component="span"
                   c="worklife-navy.7"
                   fw={700}
                 >
-                  단 하나의 대시보드
+                  {t("landing.hero.title2")}
                 </Text>
               </Title>
 
               <Text fz="lg" c="dimmed" ta="center" maw={600}>
-                할 일, 캘린더, 루틴, 공부, 업무, 노트, 포커스 타이머가 매일 자동으로 동기화되는
-                Work-Life OS. 지금 바로 무료로 시작하세요.
+                {t("landing.hero.description")}
               </Text>
             </Stack>
 
@@ -219,7 +201,7 @@ export const LandingPage = () => {
                     color="worklife-navy"
                     rightSection={<IconArrowRight size={18} />}
                   >
-                    대시보드 바로가기
+                    {t("landing.hero.gotoDashboard")}
                   </Button>
                   <Button
                     size="lg"
@@ -228,7 +210,7 @@ export const LandingPage = () => {
                     component={NextLink}
                     href="/settings"
                   >
-                    설정
+                    {t("landing.hero.settings")}
                   </Button>
                 </>
               ) : (
@@ -241,7 +223,7 @@ export const LandingPage = () => {
                     color="worklife-navy"
                     rightSection={<IconArrowRight size={18} />}
                   >
-                    둘러보기
+                    {t("landing.header.explore")}
                   </Button>
                   <Button
                     size="lg"
@@ -250,7 +232,7 @@ export const LandingPage = () => {
                     component={NextLink}
                     href="/login"
                   >
-                    로그인
+                    {t("landing.header.login")}
                   </Button>
                 </>
               )}
@@ -258,19 +240,31 @@ export const LandingPage = () => {
 
             {/* Stats */}
             <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="xl" mt="xl" w="100%">
-              {stats.map(({ value, label, icon: Icon }) => (
-                <Card key={label} p="xl" radius="md" withBorder>
+              {statKeys.map(({ value, labelKey, icon: Icon }) => (
+                <Card key={labelKey} p="xl" radius="md" withBorder>
                   <Stack align="center" gap="sm">
                     <Icon size={32} stroke={1.5} color={theme.colors["worklife-navy"][6]} />
                     <Text fw={700} fz={28}>
                       {value}
                     </Text>
                     <Text fz="sm" c="dimmed" ta="center">
-                      {label}
+                      {t(`landing.stats.${labelKey}`)}
                     </Text>
                   </Stack>
                 </Card>
               ))}
+              {/* "무료" stat - special case */}
+              <Card p="xl" radius="md" withBorder>
+                <Stack align="center" gap="sm">
+                  <IconSparkles size={32} stroke={1.5} color={theme.colors["worklife-navy"][6]} />
+                  <Text fw={700} fz={28}>
+                    {t("landing.stats.free")}
+                  </Text>
+                  <Text fz="sm" c="dimmed" ta="center">
+                    {t("landing.stats.free")}
+                  </Text>
+                </Stack>
+              </Card>
             </SimpleGrid>
           </Stack>
         </Container>
@@ -282,39 +276,39 @@ export const LandingPage = () => {
           <Stack align="center" gap="xl">
             <Stack align="center" gap="sm" maw={700}>
               <Badge variant="light" color="worklife-navy">
-                핵심 기능
+                {t("landing.features.badge")}
               </Badge>
               <Title order={2} ta="center">
-                일상을 OS처럼, 루틴부터 프로젝트까지
+                {t("landing.features.title")}
               </Title>
               <Text c="dimmed" ta="center">
-                루틴 → 포커스 → 기록 → 회고 흐름이 자동으로 이어집니다
+                {t("landing.features.description")}
               </Text>
             </Stack>
 
             <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="lg" w="100%">
-              {features.map(({ title, description, icon: Icon, color }) => (
-                <Card key={title} p="xl" radius="md" withBorder>
+              {featureKeys.map(({ key, icon: Icon }) => (
+                <Card key={key} p="xl" radius="md" withBorder>
                   <Stack gap="md">
                     <Box
                       style={{
                         width: 48,
                         height: 48,
                         borderRadius: theme.radius.md,
-                        background: `${theme.colors[color][isDark ? 8 : 1]}`,
+                        background: `${theme.colors["worklife-navy"][isDark ? 8 : 1]}`,
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
                       }}
                     >
-                      <Icon size={24} color={theme.colors[color][6]} />
+                      <Icon size={24} color={theme.colors["worklife-navy"][6]} />
                     </Box>
                     <Stack gap="xs">
                       <Text fw={600} fz="lg">
-                        {title}
+                        {t(`landing.features.${key}.title`)}
                       </Text>
                       <Text fz="sm" c="dimmed">
-                        {description}
+                        {t(`landing.features.${key}.description`)}
                       </Text>
                     </Stack>
                   </Stack>
@@ -331,19 +325,19 @@ export const LandingPage = () => {
           <Stack align="center" gap="xl">
             <Stack align="center" gap="sm" maw={700}>
               <Badge variant="light" color="worklife-navy">
-                워크플로우
+                {t("landing.workflows.badge")}
               </Badge>
               <Title order={2} ta="center">
-                하루를 자동으로 정렬하는 Flow Engine
+                {t("landing.workflows.title")}
               </Title>
               <Text c="dimmed" ta="center">
-                아침 Sync부터 저녁 회고까지 흐름을 자동으로 설계합니다
+                {t("landing.workflows.description")}
               </Text>
             </Stack>
 
             <SimpleGrid cols={{ base: 2, sm: 3, md: 6 }} spacing="md" w="100%">
-              {workflows.map(({ title, description, icon: Icon }) => (
-                <Card key={title} p="md" radius="md" withBorder style={{ textAlign: "center" }}>
+              {workflowKeys.map(({ key, icon: Icon }) => (
+                <Card key={key} p="md" radius="md" withBorder style={{ textAlign: "center" }}>
                   <Stack gap="sm" align="center">
                     <Center
                       style={{
@@ -357,10 +351,10 @@ export const LandingPage = () => {
                     </Center>
                     <Stack gap={4}>
                       <Text fw={600} fz="sm">
-                        {title}
+                        {t(`landing.workflows.${key}.title`)}
                       </Text>
                       <Text fz="xs" c="dimmed">
-                        {description}
+                        {t(`landing.workflows.${key}.description`)}
                       </Text>
                     </Stack>
                   </Stack>
@@ -377,10 +371,10 @@ export const LandingPage = () => {
           <Stack align="center" gap="xl">
             <Stack align="center" gap="sm" maw={700}>
               <Badge variant="light" color="worklife-navy">
-                사용자 후기
+                {t("landing.testimonials.badge")}
               </Badge>
               <Title order={2} ta="center">
-                실제 사용자들의 변화
+                {t("landing.testimonials.title")}
               </Title>
             </Stack>
 
@@ -389,12 +383,11 @@ export const LandingPage = () => {
                 <Card p="xl" radius="md" withBorder h="100%">
                   <Stack gap="md">
                     <Text fz="lg" fw={500} style={{ lineHeight: 1.6 }}>
-                      "포커스 타이머가 끝나면 자동으로 노트에 로그가 쌓여서 회고가 쉬워졌어요. 하루
-                      흐름이 하나의 타임라인으로 정리됩니다."
+                      &ldquo;{t("landing.testimonials.quote1.text")}&rdquo;
                     </Text>
                     <Divider />
                     <Text fz="sm" c="dimmed">
-                      김하늘 / UX 디자이너
+                      {t("landing.testimonials.quote1.author")}
                     </Text>
                   </Stack>
                 </Card>
@@ -403,12 +396,11 @@ export const LandingPage = () => {
                 <Card p="xl" radius="md" withBorder h="100%">
                   <Stack gap="md">
                     <Text fz="lg" fw={500} style={{ lineHeight: 1.6 }}>
-                      "강의, 과제, 인턴 업무가 섞여 있었는데, Worklife Dashboard에서 아침에 Sync만 하면 루틴이
-                      자동으로 배치돼요. 집중 시간이 주간 단위로 보입니다."
+                      &ldquo;{t("landing.testimonials.quote2.text")}&rdquo;
                     </Text>
                     <Divider />
                     <Text fz="sm" c="dimmed">
-                      박지우 / 대학생 & 인턴
+                      {t("landing.testimonials.quote2.author")}
                     </Text>
                   </Stack>
                 </Card>
@@ -434,12 +426,10 @@ export const LandingPage = () => {
             <Stack align="center" gap="xl">
               <Stack align="center" gap="md" maw={600}>
                 <Title order={2} c={isDark ? "gray.0" : "white"} ta="center">
-                  오늘의 순간을 기록하고 내일의 성장을 준비하세요
+                  {t("landing.cta.title")}
                 </Title>
-                <Text c={isDark ? "gray.0" : "white"} fz="lg" ta="center">
-                  지금 Worklife Dashboard로 나만의 Work-Life OS를 시작해보세요.
-                  <br />
-                  무료로 모든 기능을 이용할 수 있습니다.
+                <Text c={isDark ? "gray.0" : "white"} fz="lg" ta="center" style={{ whiteSpace: "pre-line" }}>
+                  {t("landing.cta.description")}
                 </Text>
               </Stack>
               <Group gap="md">
@@ -452,10 +442,10 @@ export const LandingPage = () => {
                   c="dark"
                   rightSection={<IconArrowRight size={18} />}
                 >
-                  둘러보기
+                  {t("landing.header.explore")}
                 </Button>
                 <Button size="lg" radius="md" variant="outline" c="white" component={NextLink} href="/login">
-                  로그인
+                  {t("landing.header.login")}
                 </Button>
               </Group>
             </Stack>
@@ -478,13 +468,13 @@ export const LandingPage = () => {
             </Text>
             <Group gap="lg" fz="sm">
               <Anchor component={NextLink} href="/terms" c="dimmed" underline="never">
-                이용약관
+                {t("landing.footer.terms")}
               </Anchor>
               <Anchor component={NextLink} href="/privacy" c="dimmed" underline="never">
-                개인정보 처리방침
+                {t("landing.footer.privacy")}
               </Anchor>
               <Anchor component={NextLink} href="/contact" c="dimmed" underline="never">
-                문의하기
+                {t("landing.footer.contact")}
               </Anchor>
             </Group>
           </Group>

@@ -109,6 +109,31 @@ export const applyLanguagePreference = (
   return resolved;
 };
 
+/**
+ * IP 기반 언어 감지 후 적용 (첫 방문자 전용)
+ * localStorage에 언어 설정이 없을 때만 IP 기반으로 감지합니다.
+ */
+export const applyLanguageByIP = async (): Promise<void> => {
+  // 이미 언어 설정이 있으면 건너뜀
+  if (typeof localStorage !== "undefined") {
+    const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+    if (stored && SUPPORTED_LANGUAGES.includes(stored as SupportedLanguage)) {
+      return;
+    }
+  }
+
+  try {
+    // 동적 import로 geoService 로드
+    const { detectLanguageByIP } = await import("@/services/geoService");
+    const detectedLanguage = await detectLanguageByIP();
+
+    applyLanguagePreference(detectedLanguage);
+  } catch (error) {
+    // IP 감지 실패 시 브라우저 언어로 폴백
+    console.warn("IP 기반 언어 감지 실패, 브라우저 언어 사용:", error);
+  }
+};
+
 if (!i18n.isInitialized) {
   const initialLanguage = detectInitialLanguage();
 

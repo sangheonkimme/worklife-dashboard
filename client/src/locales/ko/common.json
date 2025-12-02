@@ -25,5 +25,101 @@
   },
   "labels": {
     "unclassified": "미분류"
+  },
+  "landing": {
+    "header": {
+      "dashboard": "대시보드",
+      "logout": "로그아웃",
+      "login": "로그인",
+      "explore": "둘러보기"
+    },
+    "hero": {
+      "badge": "Work-Life OS",
+      "title1": "일상을 OS처럼 관리하는",
+      "title2": "단 하나의 대시보드",
+      "description": "할 일, 캘린더, 루틴, 공부, 업무, 노트, 포커스 타이머가 매일 자동으로 동기화되는 Work-Life OS. 지금 바로 무료로 시작하세요.",
+      "gotoDashboard": "대시보드 바로가기",
+      "settings": "설정"
+    },
+    "stats": {
+      "focusTime": "집중 시간 상승",
+      "routineRate": "루틴 유지율",
+      "free": "모든 기능 이용"
+    },
+    "features": {
+      "badge": "핵심 기능",
+      "title": "일상을 OS처럼, 루틴부터 프로젝트까지",
+      "description": "루틴 → 포커스 → 기록 → 회고 흐름이 자동으로 이어집니다",
+      "dashboard": {
+        "title": "통합 대시보드",
+        "description": "할 일, 캘린더, 루틴을 한눈에 관리하는 통합 대시보드"
+      },
+      "notes": {
+        "title": "노트 관리",
+        "description": "강의, 회의, 스터디 메모를 태그와 검색으로 빠르게 관리"
+      },
+      "timer": {
+        "title": "포커스 타이머",
+        "description": "포모도로 타이머로 집중하고 자동으로 기록 생성"
+      },
+      "files": {
+        "title": "파일 관리",
+        "description": "PDF, 이미지, 템플릿을 한곳에서 관리하고 공유"
+      },
+      "finance": {
+        "title": "재무 관리",
+        "description": "구독, 급여, 지출을 자동으로 추적하고 리마인드"
+      }
+    },
+    "workflows": {
+      "badge": "워크플로우",
+      "title": "하루를 자동으로 정렬하는 Flow Engine",
+      "description": "아침 Sync부터 저녁 회고까지 흐름을 자동으로 설계합니다",
+      "morningSync": {
+        "title": "Morning Sync",
+        "description": "기상 후 루틴 자동 정렬"
+      },
+      "studySession": {
+        "title": "Study Session",
+        "description": "타임블록 + 노트 자동 연결"
+      },
+      "workSprint": {
+        "title": "Work Sprint",
+        "description": "스프린트 목표 실행 및 리마인드"
+      },
+      "eveningReview": {
+        "title": "Evening Review",
+        "description": "하루 회고 및 내일 계획"
+      },
+      "autoLogging": {
+        "title": "Auto Logging",
+        "description": "타임라인 자동 저장"
+      },
+      "driveSync": {
+        "title": "Drive Sync",
+        "description": "구글 드라이브 자동 연동"
+      }
+    },
+    "testimonials": {
+      "badge": "사용자 후기",
+      "title": "실제 사용자들의 변화",
+      "quote1": {
+        "text": "포커스 타이머가 끝나면 자동으로 노트에 로그가 쌓여서 회고가 쉬워졌어요. 하루 흐름이 하나의 타임라인으로 정리됩니다.",
+        "author": "김하늘 / UX 디자이너"
+      },
+      "quote2": {
+        "text": "강의, 과제, 인턴 업무가 섞여 있었는데, Worklife Dashboard에서 아침에 Sync만 하면 루틴이 자동으로 배치돼요. 집중 시간이 주간 단위로 보입니다.",
+        "author": "박지우 / 대학생 & 인턴"
+      }
+    },
+    "cta": {
+      "title": "오늘의 순간을 기록하고 내일의 성장을 준비하세요",
+      "description": "지금 Worklife Dashboard로 나만의 Work-Life OS를 시작해보세요.\n무료로 모든 기능을 이용할 수 있습니다."
+    },
+    "footer": {
+      "terms": "이용약관",
+      "privacy": "개인정보 처리방침",
+      "contact": "문의하기"
+    }
   }
 }
