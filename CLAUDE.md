@@ -4,23 +4,31 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 프로젝트 개요
 
-WorkLife Dashboard는 React 프론트엔드와 Express 백엔드를 갖춘 풀스택 개인 생산성 및 재무 관리 애플리케이션으로, 다음 기능을 제공합니다:
+WorkLife Dashboard는 Next.js 프론트엔드와 Express 백엔드를 갖춘 풀스택 개인 생산성 및 재무 관리 애플리케이션으로, 다음 기능을 제공합니다:
 
 - 수입/지출 추적 및 예산 관리
 - 급여 공제 계산
 - 메모 및 노트 관리 (마크다운 지원, 태그, 첨부파일)
 - 대시보드 생산성 위젯 (스티커 메모, 포모도로, 체크리스트 등)
+- 구독 관리 및 캐시플로우 캘린더
+- 다국어 지원 (한국어/영어)
 
 ## 최신 변경사항 메모
 
-- 2025-11-09: `/settings` 페이지가 추가되어 사용자별 월급일/통화/테마/타이머 기본값을 서버와 동기화합니다. `client/src/pages/SettingsPage.tsx`는 `react-hook-form` 기반이며, 저장/되돌리기 스티키 바와 섹션별 dirty 배지가 있으므로 신규 설정 항목을 추가할 때 이 컴포넌트를 확장하세요.
+- **2025-11-27: Vite → Next.js 16 (App Router) 마이그레이션 완료**
+  - 클라이언트가 Next.js 16 + App Router로 전환되었습니다
+  - 페이지는 `client/src/app/` 디렉토리 구조 사용
+  - Server Components와 Client Components 분리 (`"use client"` 지시어)
+  - Route Handlers (`/api/*`) 로 서버 측 API 프록시 구현
+  - SSR/Prefetch 전략으로 사용자 데이터 사전 로드 (상세: docs/14_client-next-ssr-prefetch-strategy.md)
+- 2025-11-09: `/settings` 페이지가 추가되어 사용자별 월급일/통화/테마/타이머 기본값을 서버와 동기화합니다. `client/src/app/dashboard/settings/SettingsPageClient.tsx` 는 `react-hook-form` 기반이며, 저장/되돌리기 스티키 바와 섹션별 dirty 배지가 있으므로 신규 설정 항목을 추가할 때 이 컴포넌트를 확장하세요.
 - 2025-11-07: TransactionsPage에서 `useFinanceSettingsStore` 값을 객체로 한 번에 구조분해하면서 React 19가 `getSnapshot` 결과가 매 렌더마다 바뀐다고 판단하여 무한 렌더링 경고(`Maximum update depth exceeded`)가 발생한 이슈를 수정했습니다. `payday`와 `setPayday`를 각각 별도 selector로 호출하도록 변경해 동일 스냅샷을 재활용하며, 월급일 선택/통계 계산 로직은 그대로 유지됩니다. 동일 패턴이 필요하면 `useFinanceSettingsStore((state) => state.someValue)`처럼 각 값별 selector 또는 `useShallow`를 사용해주세요.
 
 ## 프로젝트 구조
 
-```
+```text
 worklife-dashboard/
-├── client/     # React 프론트엔드 (Vite + TypeScript + Mantine)
+├── client/     # Next.js 16 프론트엔드 (App Router + TypeScript + Mantine)
 ├── server/     # Express 백엔드 (TypeScript + Prisma + PostgreSQL)
 ├── docs/       # 문서
 └── prompts/    # 개발 프롬프트
@@ -34,8 +42,8 @@ worklife-dashboard/
 cd client
 npm install              # 의존성 설치
 npm run dev              # 개발 서버 시작 (http://localhost:3000)
-npm run build            # 프로덕션 빌드 (TypeScript + Vite)
-npm run preview          # 프로덕션 빌드 미리보기
+npm run build            # 프로덕션 빌드 (Next.js)
+npm start                # 프로덕션 서버 실행
 npm run lint             # ESLint 실행
 ```
 
@@ -101,30 +109,44 @@ cd client && npm run dev          # 별도 터미널에서 클라이언트 실�
 
 **주요 기술:**
 
+- Next.js 16 with App Router
 - React 19 with TypeScript
-- Vite 빌드 도구
-- Mantine v7 UI 컴포넌트 라이브러리
-- React Router v7 라우팅
+- Mantine v8 UI 컴포넌트 라이브러리
+- Server Components와 Client Components 분리
 - Axios HTTP 요청 (자동 토큰 주입 및 리프레시)
 - Google OAuth 통합 (@react-oauth/google)
-- 모든 페이지는 React.lazy()로 lazy loading 적용
+- i18next 다국어 지원 (한국어/영어)
 
 **디렉토리 구조:**
 
-```
+```text
 client/src/
-├── components/       # 재사용 가능한 컴포넌트 (common/, layout/)
-├── pages/           # 페이지 컴포넌트
-├── hooks/           # 커스텀 훅 (useAuth 등)
-├── lib/             # 라이브러리 설정
-│   ├── axios.ts     # 인터셉터가 있는 Axios 인스턴스
-│   └── queryClient.ts # TanStack Query 설정
-├── services/        # API 서비스 함수
-│   └── api/         # API 모듈 (authApi.ts 등)
-├── store/           # Zustand 스토어
-│   ├── useUiStore.ts    # UI 상태 스토어 (사이드바, 테마, 로딩)
-│   └── useAuthStore.ts  # 인증 상태 스토어 (사용자, 인증 여부)
-└── types/           # TypeScript 타입 정의
+├── app/                  # Next.js App Router 페이지
+│   ├── api/             # Route Handlers (서버 사이드 API 프록시)
+│   ├── dashboard/       # 대시보드 관련 페이지
+│   ├── tools/           # 도구 페이지 (이미지 크롭, PDF 변환 등)
+│   ├── layout.tsx       # 루트 레이아웃
+│   ├── page.tsx         # 홈페이지
+│   └── providers.tsx    # React Query, Mantine 등 Provider 설정
+├── components/          # 재사용 가능한 컴포넌트
+│   ├── common/          # 공통 컴포넌트
+│   ├── layout/          # 레이아웃 컴포넌트
+│   └── dashboard/       # 대시보드 위젯
+├── hooks/               # 커스텀 훅
+├── lib/                 # 라이브러리 설정
+│   ├── axios.ts         # 인터셉터가 있는 Axios 인스턴스
+│   ├── queryClient.ts   # TanStack Query 설정
+│   ├── i18n.ts          # 다국어 설정
+│   └── server/          # 서버 전용 유틸리티
+│       ├── auth.ts      # 서버 사이드 인증
+│       └── fetchWithAuth.ts  # 인증 헤더 포함 fetch 유틸리티
+├── services/            # API 서비스 함수
+│   └── api/             # API 모듈 (authApi.ts 등)
+├── store/               # Zustand 스토어
+│   ├── useUiStore.ts         # UI 상태 스토어
+│   ├── useAuthStore.ts       # 인증 상태 스토어
+│   └── useWidgetStore.ts     # 위젯 상태 스토어
+└── types/               # TypeScript 타입 정의
 ```
 
 **인증 흐름:**
@@ -134,6 +156,18 @@ client/src/
 - Axios 인터셉터를 통해 401 에러 시 자동 토큰 갱신
 - 토큰 갱신 실패 시 자동으로 /login 페이지로 리다이렉트
 - `useAuth` 훅 제공: `user`, `login`, `register`, `logout`, `isAuthenticated`
+- **Next.js 통합**: Route Handlers(`/api/*`)에서 `cookies()` 를 통해 서버 사이드 인증 처리
+
+**Next.js App Router 패턴:**
+
+- **Server Components**: 기본적으로 서버에서 렌더링, SEO 최적화 및 초기 로드 성능 향상
+- **Client Components**: `"use client"` 지시어로 표시, 상태 관리 및 인터랙션 처리
+- **Route Handlers**: `/api/` 디렉토리에서 서버 사이드 API 엔드포인트 정의
+  - 기존 Express API를 프록시하여 Next.js에서 호출
+  - `cookies()`로 HttpOnly 쿠키 기반 인증 처리
+- **SSR/Prefetch**: Server Component에서 TanStack Query의 `prefetchQuery`로 데이터 사전 로드
+  - `dehydrate`로 클라이언트에 초기 데이터 전달
+  - 클라이언트에서 `useQuery`로 동일한 쿼리 키로 hydrate된 데이터 사용
 
 ### 서버 아키텍처
 
@@ -148,7 +182,7 @@ client/src/
 
 **디렉토리 구조:**
 
-```
+```text
 server/src/
 ├── controllers/     # 요청 핸들러 (비즈니스 로직)
 ├── routes/          # Express 라우트 정의
@@ -221,16 +255,17 @@ server/src/
 - **마이그레이션 필수**: 체크리스트 작업을 시작하거나 리뷰할 때 `cd server && npm run db:migrate -- --name add_dashboard_checklist_items`로 스키마를 최신 상태로 맞춰주세요. Prisma Client가 필요하면 `npm run db:generate`.
 - **프론트엔드 위젯**: `client/src/components/dashboard/DashboardChecklist.tsx`가 우측 고정 카드이며, TanStack Query 키 `dashboardChecklist`를 사용합니다. 새 항목 입력은 Enter 또는 + 버튼으로 실행됩니다.
 - **스티커 메모 제한**: `StickyNote` 위젯은 최대 3개까지만 생성됩니다. `server/src/services/stickyNoteService.ts`에서 서버 측 제한을, `client/src/components/dashboard/StickyNotes.tsx`에서 UI 제한과 안내 문구를 확인하세요. 위치 인덱스는 0~2만 허용하므로 하드코딩 범위를 변경할 때 백/프론트를 동시에 수정해야 합니다.
-
-9. 컴포넌트에서 TanStack Query 훅 사용
+- 컴포넌트에서 TanStack Query 훅 사용
 
 **클라이언트 전용 기능:**
 
 1. `client/src/types/`에 타입 추가
 2. 서버 상태의 경우: TanStack Query 사용
 3. UI 상태의 경우: `client/src/store/`에 Zustand 스토어 생성
-4. `client/src/pages/` 또는 `client/src/components/`에 페이지/컴포넌트 생성
-5. `client/src/App.tsx`에 라우트 추가
+4. `client/src/app/` 또는 `client/src/components/`에 페이지/컴포넌트 생성
+   - 페이지는 `client/src/app/[route]/page.tsx` 형식으로 생성
+   - 인터랙션이 필요한 컴포넌트는 `"use client"` 지시어 추가
+5. 필요 시 `client/src/app/api/`에 Route Handler 추가
 
 ### 데이터베이스 변경
 
@@ -246,16 +281,18 @@ npm run db:migrate     # ⚠️ 2단계: 데이터베이스에 변경사항 적�
 
 ### 환경 변수
 
-**클라이언트** (.env):
+**클라이언트** (.env.local):
 
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:5001
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-google-oauth-client-id  # Google OAuth 사용 시
 ```
-VITE_API_URL=http://localhost:5001
-VITE_GOOGLE_CLIENT_ID=your-google-oauth-client-id  # Google OAuth 사용 시
-```
+
+**중요**: Next.js에서 클라이언트 사이드에서 접근 가능한 환경 변수는 반드시 `NEXT_PUBLIC_` 접두사를 사용해야 합니다.
 
 **서버** (.env):
 
-```
+```bash
 DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/worklife_dashboard"
 JWT_SECRET="your-secret-key"
 JWT_REFRESH_SECRET="your-refresh-secret"
@@ -366,7 +403,12 @@ export const exampleService = {
 - **Prisma 워크플로우**: 스키마 변경 후 반드시 `npm run db:generate` → `npm run db:migrate` 순서로 실행
 - **개발 모드 자동 새로고침**:
   - 서버: Nodemon이 `server/src/` 변경사항을 감시하고 자동 재시작
-  - 클라이언트: Vite HMR이 즉각적인 핫 리로드 제공
+  - 클라이언트: Next.js Fast Refresh가 즉각적인 핫 리로드 제공
 - **테스트**: 서버는 Jest + ts-jest 사용, `__tests__/` 디렉토리에 테스트 파일 위치
 - **토큰 리프레시**: Axios 인터셉터가 401 에러 발생 시 자동으로 토큰 갱신 시도, 동시 요청은 큐에 대기
 - **Docker 개발**: `npm run docker:dev`로 서버와 PostgreSQL을 한 번에 시작 가능 (권장)
+- **Next.js 주의사항**:
+  - Server Components에서는 `useState`, `useEffect` 등 React Hooks 사용 불가
+  - 클라이언트 상태가 필요한 컴포넌트는 `"use client"` 지시어 필수
+  - 환경 변수는 `NEXT_PUBLIC_` 접두사로 클라이언트 노출 가능
+  - Route Handlers는 `/api/` 경로에 위치하며 서버 사이드 로직 처리
