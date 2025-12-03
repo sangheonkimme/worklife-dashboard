@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
+import { useTranslation } from "react-i18next";
 import { notifications } from "@mantine/notifications";
 import { IconInfoCircle, IconLock } from "@tabler/icons-react";
 import {
@@ -30,18 +31,19 @@ export const AuthRequiredWrapper = ({
 }: AuthRequiredWrapperProps) => {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
+  const { t } = useTranslation("auth");
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated && showNotification) {
       notifications.show({
-        title: "로그인이 필요합니다",
-        message: "이 페이지의 모든 기능을 사용하려면 로그인이 필요합니다.",
+        title: t("loginRequired.title"),
+        message: t("loginRequired.description"),
         color: "blue",
         icon: <IconInfoCircle size={18} />,
         autoClose: 5000,
       });
     }
-  }, [isLoading, isAuthenticated, showNotification]);
+  }, [isLoading, isAuthenticated, showNotification, t]);
 
   // Show loading state
   if (isLoading) {
@@ -60,15 +62,17 @@ export const AuthRequiredWrapper = ({
           <Stack align="center" gap="lg">
             <IconLock size={64} stroke={1.5} style={{ opacity: 0.5 }} />
             <Stack align="center" gap="sm">
-              <Title order={2}>로그인이 필요합니다</Title>
+              <Title order={2}>{t("loginRequired.title")}</Title>
               <Text c="dimmed" ta="center" size="sm">
-                이 페이지는 로그인 후 이용할 수 있습니다.
+                {t("loginRequired.description")}
               </Text>
             </Stack>
             <Group gap="sm">
-              <Button onClick={() => router.push("/login")}>로그인</Button>
-              <Button variant="light" onClick={() => router.push("/signup")}>
-                회원가입
+              <Button onClick={() => router.push("/login")}>
+                {t("loginRequired.loginButton")}
+              </Button>
+              <Button variant="light" onClick={() => router.push("/register")}>
+                {t("loginRequired.signupButton")}
               </Button>
             </Group>
           </Stack>
