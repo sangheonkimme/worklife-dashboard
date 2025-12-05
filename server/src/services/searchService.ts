@@ -86,7 +86,6 @@ export const searchService = {
               id: true,
               name: true,
               color: true,
-              icon: true,
             },
           },
           checklistItems: {
@@ -170,7 +169,6 @@ export const searchService = {
         id: true,
         name: true,
         color: true,
-        icon: true,
       },
     });
 

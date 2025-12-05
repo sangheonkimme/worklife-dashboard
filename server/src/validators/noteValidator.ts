@@ -6,18 +6,27 @@ const noteTypeEnum = z.enum(['TEXT', 'CHECKLIST', 'MARKDOWN', 'QUICK']);
 // 공개 설정 enum
 const noteVisibilityEnum = z.enum(['PRIVATE', 'PUBLIC', 'PROTECTED']);
 
+// 체크리스트 항목 스키마
+const checklistItemSchema = z.object({
+  content: z.string(),
+  isCompleted: z.boolean().default(false),
+  order: z.number().optional(),
+});
+
 // 메모 생성 스키마
 export const createNoteSchema = z.object({
   body: z.object({
     title: z.string().min(1, '제목을 입력해주세요').max(255, '제목은 255자 이하여야 합니다'),
-    content: z.string().default(''),
+    content: z.string().optional().default(''),
     type: noteTypeEnum.optional().default('TEXT'),
     visibility: noteVisibilityEnum.optional().default('PRIVATE'),
     password: z.string().optional(),
     isPinned: z.boolean().optional().default(false),
     isFavorite: z.boolean().optional().default(false),
     isArchived: z.boolean().optional().default(false),
-    folderId: z.string().optional(),
+    folderId: z.string().optional().nullable(),
+    checklistItems: z.array(checklistItemSchema).optional(),
+    updatedAt: z.string().optional(), // Flutter 앱 동기화용
   }),
 });
 
@@ -36,6 +45,8 @@ export const updateNoteSchema = z.object({
     isFavorite: z.boolean().optional(),
     isArchived: z.boolean().optional(),
     folderId: z.string().optional().nullable(),
+    checklistItems: z.array(checklistItemSchema).optional(),
+    updatedAt: z.string().optional(), // Flutter 앱 동기화용
   }),
 });
 

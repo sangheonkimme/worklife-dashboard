@@ -1,236 +1,172 @@
 import { prisma } from '../lib/prisma';
-import { Prisma } from '@prisma/client';
 
 export interface SyncQuery {
-  since: Date;
-  limit: number;
+  since?: string; // ISO8601 timestamp
+  limit?: number;
 }
 
-export interface SyncResult<TFolder, TNote> {
-  folders: {
-    created: TFolder[];
-    updated: TFolder[];
-    deleted: TFolder[];
-  };
-  notes: {
-    created: TNote[];
-    updated: TNote[];
-    deleted: TNote[];
-  };
-  latestTimestamp: string | null;
-  hasMore: boolean;
+// Flutter 앱 동기화 API 응답 형식
+export interface SyncResponse {
+  notes: SyncNote[];
+  deletedNoteIds: string[];
+  folders: SyncFolder[];
+  deletedFolderIds: string[];
+  lastSyncedAt: string;
+}
+
+export interface SyncNote {
+  id: string;
+  folderId: string | null;
+  title: string;
+  content: string | null;
+  type: string;
+  visibility: string;
+  password: string | null;
+  isPinned: boolean;
+  isFavorite: boolean;
+  isArchived: boolean;
+  publishedUrl: string | null;
+  deviceRevision: number;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  checklistItems: { content: string; isCompleted: boolean; order: number | null }[];
+  attachments: { id: string; url: string; type: string; name: string | null; size: number | null; createdAt: string }[];
+}
+
+export interface SyncFolder {
+  id: string;
+  name: string;
+  color: string | null;
+  parentId: string | null;
+  sortOrder: number | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
 }
 
 export const syncService = {
-  async getChangesSince(userId: string, params: SyncQuery): Promise<
-    SyncResult<
-      Prisma.FolderGetPayload<{
-        select: {
-          id: true;
-          name: true;
-          color: true;
-          icon: true;
-          createdAt: true;
-          updatedAt: true;
-          deletedAt: true;
-        };
-      }>,
-      Prisma.NoteGetPayload<{
-        select: {
-          id: true;
-          folderId: true;
-          title: true;
-          content: true;
-          type: true;
-          visibility: true;
-          isPinned: true;
-          isFavorite: true;
-          isArchived: true;
-          createdAt: true;
-          updatedAt: true;
-          deletedAt: true;
-          checklistItems: {
-            select: {
-              id: true;
-              content: true;
-              isCompleted: true;
-              order: true;
-              createdAt: true;
-              updatedAt: true;
-            };
-            orderBy: {
-              order: 'asc';
-            };
-          };
-          attachments: {
-            select: {
-              id: true;
-              fileName: true;
-              fileSize: true;
-              mimeType: true;
-              type: true;
-              url: true;
-              thumbnailUrl: true;
-              createdAt: true;
-            };
-          };
-        };
-      }>
-    >
-  > {
-    const limit = Math.min(Math.max(params.limit, 1), 1000);
+  /**
+   * Flutter 앱 동기화 데이터 조회
+   * since 이후 변경된 노트/폴더와 삭제된 ID 목록 반환
+   */
+  async getSyncData(userId: string, params: SyncQuery = {}): Promise<SyncResponse> {
+    const { since, limit = 200 } = params;
+    const sinceDate = since ? new Date(since) : new Date(0);
+    const limitNum = Math.min(Math.max(limit, 1), 1000);
 
-    const [folders, notes] = await Promise.all([
-      prisma.folder.findMany({
-        where: {
-          userId,
-          OR: [
-            { updatedAt: { gt: params.since } },
-            { deletedAt: { gt: params.since } },
-          ],
-        },
-        orderBy: [{ updatedAt: 'asc' }, { id: 'asc' }],
-        take: limit + 1,
-        select: {
-          id: true,
-          name: true,
-          color: true,
-          icon: true,
-          createdAt: true,
-          updatedAt: true,
-          deletedAt: true,
-        },
-      }),
-      prisma.note.findMany({
-        where: {
-          userId,
-          OR: [
-            { updatedAt: { gt: params.since } },
-            { deletedAt: { gt: params.since } },
-          ],
-        },
-        orderBy: [{ updatedAt: 'asc' }, { id: 'asc' }],
-        take: limit + 1,
-        select: {
-          id: true,
-          folderId: true,
-          title: true,
-          content: true,
-          type: true,
-          visibility: true,
-          isPinned: true,
-          isFavorite: true,
-          isArchived: true,
-          createdAt: true,
-          updatedAt: true,
-          deletedAt: true,
-          checklistItems: {
-            select: {
-              id: true,
-              content: true,
-              isCompleted: true,
-              order: true,
-              createdAt: true,
-              updatedAt: true,
-            },
-            orderBy: {
-              order: 'asc',
-            },
+    // 변경된 노트 조회 (삭제되지 않은 것)
+    const notes = await prisma.note.findMany({
+      where: {
+        userId,
+        updatedAt: { gte: sinceDate },
+        deletedAt: null,
+      },
+      include: {
+        checklistItems: {
+          select: {
+            content: true,
+            isCompleted: true,
+            order: true,
           },
-          attachments: {
-            select: {
-              id: true,
-              fileName: true,
-              fileSize: true,
-              mimeType: true,
-              type: true,
-              url: true,
-              thumbnailUrl: true,
-              createdAt: true,
-            },
+          orderBy: { order: 'asc' },
+        },
+        attachments: {
+          select: {
+            id: true,
+            url: true,
+            mimeType: true,
+            fileName: true,
+            fileSize: true,
+            createdAt: true,
           },
         },
-      }),
-    ]);
-
-    const folderHasMore = folders.length > limit;
-    const noteHasMore = notes.length > limit;
-
-    const trim = <T>(items: T[]): T[] => (items.length > limit ? items.slice(0, limit) : items);
-
-    const trimmedFolders = trim(folders);
-    const trimmedNotes = trim(notes);
-
-    const folderBuckets = {
-      created: [] as typeof trimmedFolders,
-      updated: [] as typeof trimmedFolders,
-      deleted: [] as typeof trimmedFolders,
-    };
-
-    trimmedFolders.forEach((folder) => {
-      if (folder.deletedAt) {
-        folderBuckets.deleted.push(folder);
-      } else if (folder.createdAt > params.since) {
-        folderBuckets.created.push(folder);
-      } else {
-        folderBuckets.updated.push(folder);
-      }
+      },
+      orderBy: { updatedAt: 'desc' },
+      take: limitNum,
     });
 
-    const noteBuckets = {
-      created: [] as typeof trimmedNotes,
-      updated: [] as typeof trimmedNotes,
-      deleted: [] as typeof trimmedNotes,
-    };
+    // 삭제된 노트 ID 조회 (since 이후 삭제된 것)
+    const deletedNotes = await prisma.note.findMany({
+      where: {
+        userId,
+        deletedAt: { not: null, gte: sinceDate },
+      },
+      select: { id: true },
+    });
+    const deletedNoteIds = deletedNotes.map((n) => n.id);
 
-    trimmedNotes.forEach((note) => {
-      if (note.deletedAt) {
-        noteBuckets.deleted.push(note);
-      } else if (note.createdAt > params.since) {
-        noteBuckets.created.push(note);
-      } else {
-        noteBuckets.updated.push(note);
-      }
+    // 변경된 폴더 조회 (삭제되지 않은 것)
+    const folders = await prisma.folder.findMany({
+      where: {
+        userId,
+        updatedAt: { gte: sinceDate },
+        deletedAt: null,
+      },
+      orderBy: { updatedAt: 'desc' },
+      take: limitNum,
     });
 
-    const latestTimestamp = [
-      ...trimmedFolders.map((f) => f.deletedAt || f.updatedAt),
-      ...trimmedNotes.map((n) => n.deletedAt || n.updatedAt),
-    ]
-      .filter(Boolean)
-      .sort((a, b) => (a!.getTime() > b!.getTime() ? -1 : 1))[0];
+    // 삭제된 폴더 ID 조회 (since 이후 삭제된 것)
+    const deletedFolders = await prisma.folder.findMany({
+      where: {
+        userId,
+        deletedAt: { not: null, gte: sinceDate },
+      },
+      select: { id: true },
+    });
+    const deletedFolderIds = deletedFolders.map((f) => f.id);
+
+    // Flutter 스펙에 맞게 노트 변환
+    const formattedNotes: SyncNote[] = notes.map((note) => ({
+      id: note.id,
+      folderId: note.folderId,
+      title: note.title,
+      content: note.content,
+      type: note.type,
+      visibility: note.visibility,
+      password: note.password,
+      isPinned: note.isPinned,
+      isFavorite: note.isFavorite,
+      isArchived: note.isArchived,
+      publishedUrl: note.publishedUrl,
+      deviceRevision: note.deviceRevision,
+      createdAt: note.createdAt.toISOString(),
+      updatedAt: note.updatedAt.toISOString(),
+      deletedAt: note.deletedAt?.toISOString() ?? null,
+      checklistItems: note.checklistItems.map((item) => ({
+        content: item.content,
+        isCompleted: item.isCompleted,
+        order: item.order,
+      })),
+      attachments: note.attachments.map((att) => ({
+        id: att.id,
+        url: att.url,
+        type: att.mimeType,
+        name: att.fileName,
+        size: att.fileSize,
+        createdAt: att.createdAt.toISOString(),
+      })),
+    }));
+
+    // Flutter 스펙에 맞게 폴더 변환
+    const formattedFolders: SyncFolder[] = folders.map((folder) => ({
+      id: folder.id,
+      name: folder.name,
+      color: folder.color,
+      parentId: null, // 1 depth만 지원
+      sortOrder: folder.sortOrder,
+      createdAt: folder.createdAt.toISOString(),
+      updatedAt: folder.updatedAt.toISOString(),
+      deletedAt: folder.deletedAt?.toISOString() ?? null,
+    }));
 
     return {
-      folders: folderBuckets,
-      notes: noteBuckets,
-      latestTimestamp: latestTimestamp ? latestTimestamp.toISOString() : null,
-      hasMore: folderHasMore || noteHasMore,
+      notes: formattedNotes,
+      deletedNoteIds,
+      folders: formattedFolders,
+      deletedFolderIds,
+      lastSyncedAt: new Date().toISOString(),
     };
-  },
-
-  async getLatestTimestamp(userId: string): Promise<string | null> {
-    const [latestFolder, latestNote] = await Promise.all([
-      prisma.folder.findFirst({
-        where: { userId },
-        orderBy: [{ updatedAt: 'desc' }],
-        select: { updatedAt: true, deletedAt: true },
-      }),
-      prisma.note.findFirst({
-        where: { userId },
-        orderBy: [{ updatedAt: 'desc' }],
-        select: { updatedAt: true, deletedAt: true },
-      }),
-    ]);
-
-    const timestamps: Date[] = [];
-    if (latestFolder?.updatedAt) timestamps.push(latestFolder.updatedAt);
-    if (latestFolder?.deletedAt) timestamps.push(latestFolder.deletedAt);
-    if (latestNote?.updatedAt) timestamps.push(latestNote.updatedAt);
-    if (latestNote?.deletedAt) timestamps.push(latestNote.deletedAt);
-
-    if (timestamps.length === 0) return null;
-
-    const latest = timestamps.sort((a, b) => (a.getTime() > b.getTime() ? -1 : 1))[0];
-    return latest.toISOString();
   },
 };

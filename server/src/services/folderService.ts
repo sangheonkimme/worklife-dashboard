@@ -2,23 +2,23 @@ import { prisma } from '../lib/prisma';
 
 export interface CreateFolderData {
   name: string;
-  color?: string;
-  icon?: string;
+  color?: string | null;
+  sortOrder?: number;
 }
 
 export interface UpdateFolderData {
   name?: string;
-  color?: string;
-  icon?: string;
+  color?: string | null;
+  sortOrder?: number;
 }
 
 const DEFAULT_FOLDER_NAME = '기타';
 
 export const folderService = {
   /**
-   * 폴더 목록 조회 (트리 구조)
+   * 폴더 목록 조회
    */
-  async getFolders(userId: string, _includeChildren: boolean = true) {
+  async getFolders(userId: string) {
     const folders = await prisma.folder.findMany({
       where: {
         userId,
@@ -32,6 +32,7 @@ export const folderService = {
         },
       },
       orderBy: [
+        { sortOrder: 'asc' },
         { createdAt: 'asc' },
       ],
     });
@@ -104,16 +105,6 @@ export const folderService = {
     });
 
     return folder;
-  },
-
-  /**
-   * 폴더 이동
-   */
-  async moveFolder(folderId: string, parentId: string | null, userId: string) {
-    if (parentId !== null) {
-      throw new Error('폴더는 1 depth만 지원합니다');
-    }
-    return this.updateFolder(folderId, {}, userId);
   },
 
   /**

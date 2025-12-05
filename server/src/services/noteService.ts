@@ -7,6 +7,13 @@ function generatePublishedUrl(): string {
   return crypto.randomBytes(16).toString('hex');
 }
 
+// 체크리스트 항목 DTO
+export interface ChecklistItemDto {
+  content: string;
+  isCompleted?: boolean;
+  order?: number;
+}
+
 // 메모 생성 DTO
 export interface CreateNoteDto {
   title: string;
@@ -17,7 +24,8 @@ export interface CreateNoteDto {
   isPinned?: boolean;
   isFavorite?: boolean;
   isArchived?: boolean;
-  folderId?: string;
+  folderId?: string | null;
+  checklistItems?: ChecklistItemDto[];
 }
 
 // 메모 수정 DTO
@@ -31,6 +39,7 @@ export interface UpdateNoteDto {
   isFavorite?: boolean;
   isArchived?: boolean;
   folderId?: string | null;
+  checklistItems?: ChecklistItemDto[];
 }
 
 // 메모 조회 필터
@@ -107,7 +116,6 @@ export const noteService = {
               id: true,
               name: true,
               color: true,
-              icon: true,
             },
           },
           checklistItems: {
@@ -165,7 +173,6 @@ export const noteService = {
             id: true,
             name: true,
             color: true,
-            icon: true,
           },
         },
         checklistItems: {
@@ -229,7 +236,7 @@ export const noteService = {
     const publishedUrl =
       data.visibility === 'PUBLIC' ? generatePublishedUrl() : undefined;
 
-    // 메모 생성
+    // 메모 생성 (checklistItems 포함)
     const note = await prisma.note.create({
       data: {
         title: data.title,
@@ -243,6 +250,18 @@ export const noteService = {
         isArchived: data.isArchived || false,
         folderId: data.folderId,
         userId,
+        // checklistItems가 있으면 함께 생성
+        ...(data.checklistItems && data.checklistItems.length > 0
+          ? {
+              checklistItems: {
+                create: data.checklistItems.map((item, index) => ({
+                  content: item.content,
+                  isCompleted: item.isCompleted || false,
+                  order: item.order ?? index,
+                })),
+              },
+            }
+          : {}),
       },
       include: {
         folder: {
@@ -250,7 +269,24 @@ export const noteService = {
             id: true,
             name: true,
             color: true,
-            icon: true,
+          },
+        },
+        checklistItems: {
+          select: {
+            content: true,
+            isCompleted: true,
+            order: true,
+          },
+          orderBy: { order: 'asc' },
+        },
+        attachments: {
+          select: {
+            id: true,
+            url: true,
+            mimeType: true,
+            fileName: true,
+            fileSize: true,
+            createdAt: true,
           },
         },
       },
@@ -296,7 +332,78 @@ export const noteService = {
       publishedUrlUpdate = { publishedUrl: null };
     }
 
-    // 메모 업데이트
+    // checklistItems가 제공된 경우 트랜잭션으로 처리
+    if (data.checklistItems !== undefined) {
+      const checklistItems = data.checklistItems;
+      const result = await prisma.$transaction(async (tx) => {
+        // 기존 checklistItems 삭제
+        await tx.checklistItem.deleteMany({
+          where: { noteId: id },
+        });
+
+        // 메모 업데이트 + 새 checklistItems 생성
+        const updatedNote = await tx.note.update({
+          where: { id },
+          data: {
+            ...(noteData.title !== undefined && { title: noteData.title }),
+            ...(noteData.content !== undefined && { content: noteData.content }),
+            ...(noteData.type && { type: noteData.type }),
+            ...(noteData.visibility && { visibility: noteData.visibility }),
+            ...(noteData.password !== undefined && { password: noteData.password }),
+            ...(noteData.isPinned !== undefined && { isPinned: noteData.isPinned }),
+            ...(noteData.isFavorite !== undefined && { isFavorite: noteData.isFavorite }),
+            ...(noteData.isArchived !== undefined && { isArchived: noteData.isArchived }),
+            ...(noteData.folderId !== undefined && { folderId: noteData.folderId }),
+            ...publishedUrlUpdate,
+            deviceRevision: { increment: 1 },
+            ...(checklistItems.length > 0
+              ? {
+                  checklistItems: {
+                    create: checklistItems.map((item, index) => ({
+                      content: item.content,
+                      isCompleted: item.isCompleted || false,
+                      order: item.order ?? index,
+                    })),
+                  },
+                }
+              : {}),
+          },
+          include: {
+            folder: {
+              select: {
+                id: true,
+                name: true,
+                color: true,
+              },
+            },
+            checklistItems: {
+              select: {
+                content: true,
+                isCompleted: true,
+                order: true,
+              },
+              orderBy: { order: 'asc' },
+            },
+            attachments: {
+              select: {
+                id: true,
+                url: true,
+                mimeType: true,
+                fileName: true,
+                fileSize: true,
+                createdAt: true,
+              },
+            },
+          },
+        });
+
+        return updatedNote;
+      });
+
+      return result;
+    }
+
+    // checklistItems가 없는 경우 기본 업데이트
     const note = await prisma.note.update({
       where: { id },
       data: {
@@ -310,6 +417,7 @@ export const noteService = {
         ...(noteData.isArchived !== undefined && { isArchived: noteData.isArchived }),
         ...(noteData.folderId !== undefined && { folderId: noteData.folderId }),
         ...publishedUrlUpdate,
+        deviceRevision: { increment: 1 },
       },
       include: {
         folder: {
@@ -317,7 +425,24 @@ export const noteService = {
             id: true,
             name: true,
             color: true,
-            icon: true,
+          },
+        },
+        checklistItems: {
+          select: {
+            content: true,
+            isCompleted: true,
+            order: true,
+          },
+          orderBy: { order: 'asc' },
+        },
+        attachments: {
+          select: {
+            id: true,
+            url: true,
+            mimeType: true,
+            fileName: true,
+            fileSize: true,
+            createdAt: true,
           },
         },
       },
@@ -366,7 +491,6 @@ export const noteService = {
               id: true,
               name: true,
               color: true,
-              icon: true,
             },
           },
         },

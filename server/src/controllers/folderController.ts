@@ -9,9 +9,8 @@ export const folderController = {
   async getFolders(req: AuthRequest, res: Response): Promise<any> {
     try {
       const userId = req.user!.userId;
-      const includeChildren = req.query.includeChildren === 'true';
 
-      const folders = await folderService.getFolders(userId, includeChildren);
+      const folders = await folderService.getFolders(userId);
 
       res.json(folders);
     } catch (error) {
@@ -92,33 +91,6 @@ export const folderController = {
       }
 
       res.status(500).json({ message: '폴더 수정에 실패했습니다' });
-    }
-  },
-
-  /**
-   * POST /api/folders/:id/move - 폴더 이동
-   */
-  async moveFolder(req: AuthRequest, res: Response): Promise<any> {
-    try {
-      const userId = req.user!.userId;
-      const { id } = req.params;
-      const { parentId } = req.body;
-
-      const folder = await folderService.moveFolder(id, parentId, userId);
-
-      res.json(folder);
-    } catch (error: any) {
-      console.error('폴더 이동 실패:', error);
-
-      if (error.message === '폴더를 찾을 수 없습니다') {
-        return res.status(404).json({ message: error.message });
-      }
-
-      if (error.message.includes('1 depth')) {
-        return res.status(400).json({ message: error.message });
-      }
-
-      res.status(500).json({ message: '폴더 이동에 실패했습니다' });
     }
   },
 

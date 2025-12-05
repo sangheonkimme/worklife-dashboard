@@ -5,7 +5,6 @@ import { validate } from '../middlewares/validate';
 import {
   createFolderSchema,
   updateFolderSchema,
-  moveFolderSchema,
   deleteFolderSchema,
   getFoldersSchema,
 } from '../validators/folderValidator';
@@ -27,10 +26,7 @@ router.post('/', validate(createFolderSchema), folderController.createFolder);
 // PUT /api/folders/:id - 폴더 수정
 router.put('/:id', validate(updateFolderSchema), folderController.updateFolder);
 
-// POST /api/folders/:id/move - 폴더 이동
-router.post('/:id/move', validate(moveFolderSchema), folderController.moveFolder);
-
-// DELETE /api/folders/:id - 폴더 삭제
+// DELETE /api/folders/:id - 폴더 삭제 (soft delete)
 router.delete('/:id', validate(deleteFolderSchema), folderController.deleteFolder);
 
 export default router;

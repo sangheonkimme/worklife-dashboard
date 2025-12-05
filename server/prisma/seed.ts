@@ -149,13 +149,13 @@ async function main() {
 
   console.log(`✅ 템플릿 생성 완료: ${templates.length}개`);
 
-  // 기본 폴더 생성
+  // 기본 폴더 생성 (Flutter 앱과 동일)
   console.log('📁 기본 폴더 생성 중...');
   const defaultFolders = [
-    { name: '개인' },
-    { name: '학업' },
-    { name: '업무' },
-    { name: '기타' },
+    { name: '개인', color: '#7C8FFF', sortOrder: 0 },   // 파란색
+    { name: '업무', color: '#4CAF50', sortOrder: 1 },   // 초록색
+    { name: '학업', color: '#FFB74D', sortOrder: 2 },   // 노란색
+    { name: '기타', color: '#FF7043', sortOrder: 3 },   // 주황색
   ];
 
   const users = await prisma.user.findMany();

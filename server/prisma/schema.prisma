@@ -225,16 +225,16 @@ model SalaryCalculation {
 
 // 폴더 모델
 model Folder {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
+  userId    String
   name      String
   color     String?
-  icon      String?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  sortOrder Int?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   notes Note[]
 
   @@index([userId])
