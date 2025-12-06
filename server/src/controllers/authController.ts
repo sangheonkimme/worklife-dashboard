@@ -30,6 +30,7 @@ const refreshTokenCookieOptions: CookieOptions = {
   sameSite: isProduction ? 'none' : 'lax',
   maxAge: refreshTokenMaxAgeMs,
   domain: process.env.COOKIE_DOMAIN || undefined,
+  path: '/api/auth', // refreshToken은 갱신 엔드포인트에서만 전송
 };
 
 const allowedOrigins = Array.from(

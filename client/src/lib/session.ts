@@ -27,11 +27,10 @@ export const clearAccessTokenCookie = async () => {
   return deleteCookie();
 };
 
+// httpOnly 쿠키로 변경되어 JavaScript에서 접근 불가
+// 인증 상태 확인은 서버 API (/api/auth/me) 호출로 대체
+// 이 함수는 하위 호환을 위해 유지하되 항상 null 반환
+/** @deprecated httpOnly 쿠키로 변경되어 더 이상 사용되지 않음 */
 export const getClientAccessToken = (): string | null => {
-  if (typeof document === "undefined") {
-    return null;
-  }
-
-  const match = document.cookie.match(/(?:^|; )accessToken=([^;]+)/);
-  return match ? decodeURIComponent(match[1]) : null;
+  return null;
 };
