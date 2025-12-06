@@ -17,10 +17,16 @@ export const useAuth = () => {
   const { t } = useTranslation("auth");
 
   // 현재 사용자 정보 조회
-  const { data: currentUser, isLoading, error } = useQuery({
+  // httpOnly 쿠키는 JS에서 확인 불가하므로, 항상 /api/auth/me를 호출하여 인증 상태 확인
+  // 쿠키가 있으면 서버에서 인증 성공, 없으면 401 반환
+  const {
+    data: currentUser,
+    isLoading,
+    error,
+    isFetched,
+  } = useQuery({
     queryKey: ["auth", "me"],
     queryFn: authApi.me,
-    enabled: isAuthenticated,
     retry: false,
     retryOnMount: false,
     refetchOnWindowFocus: false,
@@ -125,7 +131,7 @@ export const useAuth = () => {
     return googleLoginMutation.mutateAsync(credential);
   };
 
-  // Redux 또는 서버에서 가져온 사용자 중 하나라도 있으면 인증된 것으로 간주
+  // Zustand 또는 서버에서 가져온 사용자 중 하나라도 있으면 인증된 것으로 간주
   const effectiveUser: User | null = user || currentUser || null;
   const effectiveIsAuthenticated = Boolean(effectiveUser) || isAuthenticated;
 
@@ -133,6 +139,7 @@ export const useAuth = () => {
     user: effectiveUser,
     isAuthenticated: effectiveIsAuthenticated,
     isLoading,
+    isFetched, // 인증 확인 완료 여부 (로딩 UI 제어용)
     login,
     register,
     logout,
