@@ -9,6 +9,7 @@ import {
   isEmailTaken,
   findUserByGoogleId,
   createGoogleUser,
+  updateLastLoginAt,
 } from '../services/userService';
 import { generateAccessToken } from '../utils/jwt';
 import { OAuth2Client } from 'google-auth-library';
@@ -147,6 +148,9 @@ export const login = async (
       return;
     }
 
+    // 마지막 로그인 시간 업데이트
+    await updateLastLoginAt(user.id);
+
     // 세션/토큰 생성
     const { session, refreshToken } = await createRefreshSession({
       userId: user.id,
@@ -168,7 +172,7 @@ export const login = async (
       success: true,
       message: '로그인이 완료되었습니다',
       data: {
-        user: userWithoutPassword,
+        user: { ...userWithoutPassword, lastLoginAt: new Date() },
         accessToken,
       },
     });
@@ -459,6 +463,9 @@ export const googleLogin = async (
       });
     }
 
+    // 마지막 로그인 시간 업데이트
+    await updateLastLoginAt(user.id);
+
     // 세션/토큰 생성
     const { session, refreshToken } = await createRefreshSession({
       userId: user.id,
@@ -477,7 +484,7 @@ export const googleLogin = async (
       success: true,
       message: '로그인이 완료되었습니다',
       data: {
-        user,
+        user: { ...user, lastLoginAt: new Date() },
         accessToken,
       },
     });

@@ -41,6 +41,7 @@ export const createUser = async (data: CreateUserData): Promise<Omit<User, 'pass
       name: true,
       googleId: true,
       picture: true,
+      lastLoginAt: true,
       createdAt: true,
       updatedAt: true,
     },
@@ -74,6 +75,7 @@ export const findUserById = async (id: string): Promise<Omit<User, 'password'> |
       name: true,
       googleId: true,
       picture: true,
+      lastLoginAt: true,
       createdAt: true,
       updatedAt: true,
     },
@@ -118,6 +120,7 @@ export const updateUser = async (
       name: true,
       googleId: true,
       picture: true,
+      lastLoginAt: true,
       createdAt: true,
       updatedAt: true,
     },
@@ -165,6 +168,7 @@ export const findUserByGoogleId = async (googleId: string): Promise<Omit<User, '
       name: true,
       googleId: true,
       picture: true,
+      lastLoginAt: true,
       createdAt: true,
       updatedAt: true,
     },
@@ -191,10 +195,22 @@ export const createGoogleUser = async (data: CreateGoogleUserData): Promise<Omit
       name: true,
       googleId: true,
       picture: true,
+      lastLoginAt: true,
       createdAt: true,
       updatedAt: true,
     },
   });
 
   return user;
+};
+
+/**
+ * 마지막 로그인 시간을 업데이트합니다
+ * @param id 사용자 ID
+ */
+export const updateLastLoginAt = async (id: string): Promise<void> => {
+  await prisma.user.update({
+    where: { id },
+    data: { lastLoginAt: new Date() },
+  });
 };
