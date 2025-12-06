@@ -14,7 +14,6 @@ export interface AuthRequest extends Request {
 
 /**
  * JWT 액세스 토큰을 검증하는 미들웨어
- * Authorization 헤더 우선, 없으면 쿠키에서 accessToken 읽기
  */
 export const authenticateToken = (
   req: Request,
@@ -22,14 +21,8 @@ export const authenticateToken = (
   next: NextFunction
 ): void => {
   try {
-    // 1. Authorization 헤더에서 토큰 추출 (우선)
     const authHeader = req.headers['authorization'];
-    let token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
-
-    // 2. 헤더에 없으면 쿠키에서 accessToken 읽기 (httpOnly 쿠키 지원)
-    if (!token && req.cookies?.accessToken) {
-      token = req.cookies.accessToken;
-    }
+    const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
     if (!token) {
       res.status(401).json({
