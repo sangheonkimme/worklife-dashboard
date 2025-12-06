@@ -1,6 +1,66 @@
-import { User } from '@prisma/client';
+import { User, CategoryType } from '@prisma/client';
 import { hashPassword, comparePassword } from '../utils/password';
 import { prisma } from '../lib/prisma';
+
+// 기본 폴더 데이터 (Flutter 앱과 동일)
+const DEFAULT_FOLDERS = [
+  { name: '개인', color: '#7C8FFF', sortOrder: 0 },
+  { name: '업무', color: '#4CAF50', sortOrder: 1 },
+  { name: '학업', color: '#FFB74D', sortOrder: 2 },
+  { name: '기타', color: '#FF7043', sortOrder: 3 },
+];
+
+// 기본 카테고리 데이터
+const DEFAULT_INCOME_CATEGORIES = [
+  { name: '급여', icon: 'IconBriefcase', color: '#4CAF50' },
+  { name: '보너스', icon: 'IconGift', color: '#8BC34A' },
+  { name: '투자수익', icon: 'IconTrendingUp', color: '#00BCD4' },
+  { name: '기타 수입', icon: 'IconCash', color: '#009688' },
+];
+
+const DEFAULT_EXPENSE_CATEGORIES = [
+  { name: '식비', icon: 'IconToolsKitchen2', color: '#FF5722' },
+  { name: '교통비', icon: 'IconBus', color: '#FF9800' },
+  { name: '쇼핑', icon: 'IconShoppingCart', color: '#E91E63' },
+  { name: '문화생활', icon: 'IconMovie', color: '#9C27B0' },
+  { name: '주거비', icon: 'IconHome', color: '#3F51B5' },
+  { name: '의료비', icon: 'IconMedicalCross', color: '#F44336' },
+  { name: '교육비', icon: 'IconBook', color: '#2196F3' },
+  { name: '통신비', icon: 'IconDeviceMobile', color: '#00BCD4' },
+  { name: '보험', icon: 'IconShield', color: '#607D8B' },
+  { name: '기타 지출', icon: 'IconDots', color: '#9E9E9E' },
+];
+
+/**
+ * 새 사용자에게 기본 폴더와 카테고리를 생성합니다
+ */
+const createDefaultUserData = async (userId: string): Promise<void> => {
+  // 기본 폴더 생성
+  await prisma.folder.createMany({
+    data: DEFAULT_FOLDERS.map((folder) => ({
+      ...folder,
+      userId,
+    })),
+  });
+
+  // 기본 수입 카테고리 생성
+  await prisma.category.createMany({
+    data: DEFAULT_INCOME_CATEGORIES.map((cat) => ({
+      ...cat,
+      type: CategoryType.INCOME,
+      userId,
+    })),
+  });
+
+  // 기본 지출 카테고리 생성
+  await prisma.category.createMany({
+    data: DEFAULT_EXPENSE_CATEGORIES.map((cat) => ({
+      ...cat,
+      type: CategoryType.EXPENSE,
+      userId,
+    })),
+  });
+};
 
 export interface CreateUserData {
   email: string;
@@ -46,6 +106,9 @@ export const createUser = async (data: CreateUserData): Promise<Omit<User, 'pass
       updatedAt: true,
     },
   });
+
+  // 기본 폴더와 카테고리 생성
+  await createDefaultUserData(user.id);
 
   return user;
 };
@@ -200,6 +263,9 @@ export const createGoogleUser = async (data: CreateGoogleUserData): Promise<Omit
       updatedAt: true,
     },
   });
+
+  // 기본 폴더와 카테고리 생성
+  await createDefaultUserData(user.id);
 
   return user;
 };
