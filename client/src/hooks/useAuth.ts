@@ -23,10 +23,10 @@ export const useAuth = () => {
     data: currentUser,
     isLoading,
     error,
-    isFetched,
   } = useQuery({
     queryKey: ["auth", "me"],
     queryFn: authApi.me,
+    enabled: isAuthenticated,
     retry: false,
     retryOnMount: false,
     refetchOnWindowFocus: false,
@@ -139,7 +139,6 @@ export const useAuth = () => {
     user: effectiveUser,
     isAuthenticated: effectiveIsAuthenticated,
     isLoading,
-    isFetched, // 인증 확인 완료 여부 (로딩 UI 제어용)
     login,
     register,
     logout,

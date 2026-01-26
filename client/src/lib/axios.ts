@@ -3,7 +3,10 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from "axios";
 import NProgress from "nprogress";
-import { clearAccessTokenCookie } from "@/lib/session";
+import {
+  clearAccessTokenCookie,
+  getClientAccessToken,
+} from "@/lib/session";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5001";
@@ -46,8 +49,6 @@ const requestAccessToken = async () => {
     throw new Error("Failed to refresh access token");
   }
 
-  // Route Handler가 Set-Cookie로 accessToken을 설정하므로
-  // 응답 body는 확인용으로만 사용
   const payload = await response.json();
   const token = payload?.accessToken ?? payload?.data?.accessToken;
 
@@ -64,14 +65,18 @@ export const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true, // 쿠키 자동 전송 (accessToken httpOnly 쿠키)
+  withCredentials: true,
 });
 
-// 요청 인터셉터: httpOnly 쿠키는 withCredentials: true로 자동 전송됨
-// Authorization 헤더 설정 불필요
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     startProgress();
+
+    const token = getClientAccessToken();
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
     return config;
   },
   (error: AxiosError) => {
@@ -86,12 +91,12 @@ let failedQueue: Array<{
   reject: (reason?: unknown) => void;
 }> = [];
 
-const processQueue = (error: unknown) => {
+const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
     } else {
-      prom.resolve();
+      prom.resolve(token);
     }
   });
 
@@ -123,8 +128,10 @@ api.interceptors.response.use(
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
-          .then(() => {
-            // 토큰 갱신 완료 후 쿠키가 자동 전송되므로 헤더 설정 불필요
+          .then((token) => {
+            if (token && originalRequest.headers) {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+            }
             return api(originalRequest);
           })
           .catch((queueError) => Promise.reject(queueError));
@@ -133,13 +140,16 @@ api.interceptors.response.use(
       isRefreshing = true;
       startProgress();
       try {
-        await requestAccessToken();
-        processQueue(null);
+        const accessToken = await requestAccessToken();
+        processQueue(null, accessToken);
 
-        // 토큰 갱신 완료 - 쿠키가 자동 전송되므로 헤더 설정 불필요
+        if (originalRequest.headers) {
+          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+        }
+
         return api(originalRequest);
       } catch (refreshError) {
-        processQueue(refreshError);
+        processQueue(refreshError, null);
         void clearAccessTokenCookie();
         redirectToLogin();
         return Promise.reject(refreshError);

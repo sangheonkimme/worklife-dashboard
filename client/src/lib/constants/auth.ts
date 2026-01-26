@@ -7,7 +7,7 @@ export const ACCESS_TOKEN_COOKIE_DOMAIN =
 
 export const getAccessTokenCookieOptions = (maxAge = DEFAULT_ACCESS_TOKEN_MAX_AGE) => ({
   name: ACCESS_TOKEN_COOKIE_NAME,
-  httpOnly: true, // XSS 방어: JavaScript에서 접근 불가
+  httpOnly: false, // JS에서 접근 가능 (클라이언트 인증 상태 확인용)
   secure: process.env.NODE_ENV === "production",
   sameSite: "lax" as const,
   path: "/",
