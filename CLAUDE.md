@@ -13,402 +13,102 @@ WorkLife Dashboard는 Next.js 프론트엔드와 Express 백엔드를 갖춘 풀
 - 구독 관리 및 캐시플로우 캘린더
 - 다국어 지원 (한국어/영어)
 
-## 최신 변경사항 메모
-
-- **2025-11-27: Vite → Next.js 16 (App Router) 마이그레이션 완료**
-  - 클라이언트가 Next.js 16 + App Router로 전환되었습니다
-  - 페이지는 `client/src/app/` 디렉토리 구조 사용
-  - Server Components와 Client Components 분리 (`"use client"` 지시어)
-  - Route Handlers (`/api/*`) 로 서버 측 API 프록시 구현
-  - SSR/Prefetch 전략으로 사용자 데이터 사전 로드 (상세: docs/14_client-next-ssr-prefetch-strategy.md)
-- 2025-11-09: `/settings` 페이지가 추가되어 사용자별 월급일/통화/테마/타이머 기본값을 서버와 동기화합니다. `client/src/app/dashboard/settings/SettingsPageClient.tsx` 는 `react-hook-form` 기반이며, 저장/되돌리기 스티키 바와 섹션별 dirty 배지가 있으므로 신규 설정 항목을 추가할 때 이 컴포넌트를 확장하세요.
-- 2025-11-07: TransactionsPage에서 `useFinanceSettingsStore` 값을 객체로 한 번에 구조분해하면서 React 19가 `getSnapshot` 결과가 매 렌더마다 바뀐다고 판단하여 무한 렌더링 경고(`Maximum update depth exceeded`)가 발생한 이슈를 수정했습니다. `payday`와 `setPayday`를 각각 별도 selector로 호출하도록 변경해 동일 스냅샷을 재활용하며, 월급일 선택/통계 계산 로직은 그대로 유지됩니다. 동일 패턴이 필요하면 `useFinanceSettingsStore((state) => state.someValue)`처럼 각 값별 selector 또는 `useShallow`를 사용해주세요.
-
 ## 프로젝트 구조
 
 ```text
 worklife-dashboard/
-├── client/     # Next.js 16 프론트엔드 (App Router + TypeScript + Mantine)
-├── server/     # Express 백엔드 (TypeScript + Prisma + PostgreSQL)
-├── docs/       # 문서
+├── client/     # Next.js 16 프론트엔드 (App Router + TypeScript + Mantine v8)
+├── server/     # Express 5 백엔드 (TypeScript + Prisma + PostgreSQL)
+├── docs/       # 설계 문서 및 PRD
 └── prompts/    # 개발 프롬프트
 ```
 
 ## 주요 명령어
 
-### 클라이언트 (프론트엔드)
+### 클라이언트 (client/)
 
 ```bash
-cd client
-npm install              # 의존성 설치
-npm run dev              # 개발 서버 시작 (http://localhost:3000)
-npm run build            # 프로덕션 빌드 (Next.js)
-npm start                # 프로덕션 서버 실행
-npm run lint             # ESLint 실행
+npm run dev              # 개발 서버 (http://localhost:3000)
+npm run build            # 프로덕션 빌드
+npm run lint             # ESLint
 ```
 
-### 서버 (백엔드)
+### 서버 (server/)
 
 ```bash
-cd server
-npm install              # 의존성 설치
-npm run dev              # nodemon으로 개발 서버 시작 (http://localhost:5001)
-npm run build            # TypeScript를 dist/로 컴파일
-npm start                # 컴파일된 프로덕션 빌드 실행
+npm run dev              # nodemon 개발 서버 (http://localhost:5001)
+npm run build            # TypeScript → dist/ 컴파일
+npm test                 # Jest 전체 테스트
+npm test -- path/to/test.ts               # 단일 파일 테스트
+npm test -- --testNamePattern="test name"  # 특정 테스트
 
-# 데이터베이스 명령어 (Prisma)
-npm run db:generate      # Prisma Client 생성 (스키마 변경 후 실행)
-npm run db:migrate       # 마이그레이션 실행 (DB 스키마 생성/업데이트)
-npm run db:seed          # 초기 데이터로 데이터베이스 시드
-npm run db:studio        # Prisma Studio 열기 (시각적 DB 편집기)
+# Prisma (스키마 변경 후 반드시 이 순서로 실행)
+npm run db:generate      # 1단계: Prisma Client 타입 생성
+npm run db:migrate       # 2단계: DB 스키마 적용
+npm run db:seed          # 초기 데이터 시드
+npm run db:studio        # Prisma Studio (시각적 DB 편집기)
 
-# 테스트 명령어 (Jest)
-npm test                 # 모든 테스트 실행
-npm run test:watch       # watch 모드로 테스트 실행
-npm run test:coverage    # 테스트 커버리지 리포트 생성
-npm test -- path/to/test.ts        # 단일 테스트 파일 실행
-npm test -- --testNamePattern="test name"  # 특정 테스트 실행
-
-# Docker 명령어 (개발 환경 - DB 포함)
-npm run docker:dev       # 서버 + PostgreSQL 시작
-npm run docker:dev:detach # 백그라운드 모드로 시작
-npm run docker:dev:down  # 컨테이너 중지 및 제거
-npm run docker:dev:logs  # 로그 확인
+# Docker (권장 - 서버 + PostgreSQL 동시 실행)
+npm run docker:dev       # 서버 + DB 시작
+npm run docker:dev:down  # 컨테이너 중지
 ```
 
 ### 풀스택 개발
 
-별도의 터미널에서 두 서버를 동시에 실행:
-
 ```bash
-# 방법 1: 별도 터미널에서 실행
-# 터미널 1
-cd server && npm run dev
+# 터미널 1: 서버 + DB
+cd server && npm run docker:dev
 
-# 터미널 2
+# 터미널 2: 클라이언트
 cd client && npm run dev
-
-# 방법 2: Docker 사용 (권장 - DB 포함)
-cd server && npm run docker:dev  # 서버 + PostgreSQL
-cd client && npm run dev          # 별도 터미널에서 클라이언트 실행
 ```
 
 ## 아키텍처
 
-### 클라이언트 아키텍처
+### 클라이언트
 
-**상태 관리 전략:**
+- **Next.js 16 App Router** — 페이지는 `client/src/app/` 디렉토리, `"use client"` 지시어로 Server/Client Components 분리
+- **Route Handlers** (`client/src/app/api/`) — Express API를 프록시, `cookies()`로 HttpOnly 쿠키 기반 인증 처리
+- **SSR/Prefetch** — Server Component에서 TanStack Query `prefetchQuery` → `dehydrate` → 클라이언트에서 hydrate (상세: `docs/14_client-next-ssr-prefetch-strategy.md`)
+- **상태 관리**:
+  - **TanStack Query**: 서버 상태 (5분 stale time, 10분 cache time)
+  - **Zustand**: 클라이언트 UI 상태 (`useAuthStore`, `useUiStore`, `useWidgetStore`)
+- **UI**: Mantine v8, i18next (한국어/영어), Axios (자동 토큰 주입/리프레시 인터셉터)
+- **인증**: JWT 액세스 토큰(localStorage) + 리프레시 토큰(HttpOnly 쿠키), Google OAuth, Axios 인터셉터가 401 시 자동 갱신 및 동시 요청 큐잉
 
-- **TanStack Query (React Query)**: 서버 상태 (사용자 데이터, 거래 내역, 카테고리, 예산, 노트)
-  - 5분 stale time, 10분 cache time 설정
-  - 자동 재시도 및 백그라운드 리프레시
-- **Zustand**: 클라이언트 전용 UI 상태
-  - `useAuthStore`: 인증 상태 (user, isAuthenticated)
-  - `useUiStore`: UI 설정 (사이드바, 테마, 로딩) - localStorage 자동 동기화
-  - `useWidgetStore`: 위젯 관련 상태
+### 서버
 
-**주요 기술:**
+- **Express 5** — 라우트(`routes/`) → Zod 검증(`validators/`) → 컨트롤러(`controllers/`) → 서비스(`services/`) → Prisma
+- **보안**: Helmet, CORS, rate limiting, bcrypt
+- **DB**: PostgreSQL + Prisma ORM, 스키마는 `server/prisma/schema.prisma` 참조
+- **테스트**: Jest + ts-jest, `__tests__/` 디렉토리
 
-- Next.js 16 with App Router
-- React 19 with TypeScript
-- Mantine v8 UI 컴포넌트 라이브러리
-- Server Components와 Client Components 분리
-- Axios HTTP 요청 (자동 토큰 주입 및 리프레시)
-- Google OAuth 통합 (@react-oauth/google)
-- i18next 다국어 지원 (한국어/영어)
+### 배포
 
-**디렉토리 구조:**
-
-```text
-client/src/
-├── app/                  # Next.js App Router 페이지
-│   ├── api/             # Route Handlers (서버 사이드 API 프록시)
-│   ├── dashboard/       # 대시보드 관련 페이지
-│   ├── tools/           # 도구 페이지 (이미지 크롭, PDF 변환 등)
-│   ├── layout.tsx       # 루트 레이아웃
-│   ├── page.tsx         # 홈페이지
-│   └── providers.tsx    # React Query, Mantine 등 Provider 설정
-├── components/          # 재사용 가능한 컴포넌트
-│   ├── common/          # 공통 컴포넌트
-│   ├── layout/          # 레이아웃 컴포넌트
-│   └── dashboard/       # 대시보드 위젯
-├── hooks/               # 커스텀 훅
-├── lib/                 # 라이브러리 설정
-│   ├── axios.ts         # 인터셉터가 있는 Axios 인스턴스
-│   ├── queryClient.ts   # TanStack Query 설정
-│   ├── i18n.ts          # 다국어 설정
-│   └── server/          # 서버 전용 유틸리티
-│       ├── auth.ts      # 서버 사이드 인증
-│       └── fetchWithAuth.ts  # 인증 헤더 포함 fetch 유틸리티
-├── services/            # API 서비스 함수
-│   └── api/             # API 모듈 (authApi.ts 등)
-├── store/               # Zustand 스토어
-│   ├── useUiStore.ts         # UI 상태 스토어
-│   ├── useAuthStore.ts       # 인증 상태 스토어
-│   └── useWidgetStore.ts     # 위젯 상태 스토어
-└── types/               # TypeScript 타입 정의
-```
-
-**인증 흐름:**
-
-- JWT 액세스 토큰은 localStorage에 저장
-- 리프레시 토큰은 HttpOnly 쿠키에 저장
-- Axios 인터셉터를 통해 401 에러 시 자동 토큰 갱신
-- 토큰 갱신 실패 시 자동으로 /login 페이지로 리다이렉트
-- `useAuth` 훅 제공: `user`, `login`, `register`, `logout`, `isAuthenticated`
-- **Next.js 통합**: Route Handlers(`/api/*`)에서 `cookies()` 를 통해 서버 사이드 인증 처리
-
-**Next.js App Router 패턴:**
-
-- **Server Components**: 기본적으로 서버에서 렌더링, SEO 최적화 및 초기 로드 성능 향상
-- **Client Components**: `"use client"` 지시어로 표시, 상태 관리 및 인터랙션 처리
-- **Route Handlers**: `/api/` 디렉토리에서 서버 사이드 API 엔드포인트 정의
-  - 기존 Express API를 프록시하여 Next.js에서 호출
-  - `cookies()`로 HttpOnly 쿠키 기반 인증 처리
-- **SSR/Prefetch**: Server Component에서 TanStack Query의 `prefetchQuery`로 데이터 사전 로드
-  - `dehydrate`로 클라이언트에 초기 데이터 전달
-  - 클라이언트에서 `useQuery`로 동일한 쿼리 키로 hydrate된 데이터 사용
-
-### 서버 아키텍처
-
-**주요 기술:**
-
-- Express 5 with TypeScript
-- Prisma ORM with PostgreSQL
-- Zod 요청 검증
-- bcrypt 비밀번호 해싱
-- JWT 인증
-- 보안: Helmet, CORS, rate limiting
-
-**디렉토리 구조:**
-
-```text
-server/src/
-├── controllers/     # 요청 핸들러 (비즈니스 로직)
-├── routes/          # Express 라우트 정의
-├── middlewares/     # 커스텀 미들웨어 (인증, 에러 처리, rate limiting)
-├── services/        # 서비스 레이어 (데이터베이스 작업)
-├── validators/      # 요청 검증을 위한 Zod 스키마
-└── utils/           # 유틸리티 함수
-```
-
-**데이터베이스 스키마 (Prisma):**
-
-- `User`: 인증 및 사용자 프로필 (이메일/비밀번호, Google OAuth 지원)
-- `Category`: 수입/지출 카테고리 (사용자별 및 기본)
-- `Transaction`: 수입/지출 기록
-- `Budget`: 카테고리별 월간 예산 추적
-- `SalaryCalculation`: 급여 및 공제 계산
-- `Note`: 메모 관리 (마크다운, 태그, 체크리스트, 공개/비공개/암호보호)
-  - 노트 타입: TEXT, CHECKLIST, MARKDOWN, QUICK
-  - 소프트 삭제 지원 (deletedAt 필드)
-  - 암호화 및 비밀번호 보호 옵션 (visibility: PRIVATE/PUBLIC/PROTECTED)
-  - 디바이스 동기화를 위한 리비전 추적 (deviceRevision)
-  - 공개 URL을 통한 노트 공유 (publishedUrl)
-  - 고정(pinned), 즐겨찾기(favorite), 보관(archived) 기능
-- `Folder`: 중첩 폴더 구조 (자기 참조 관계)
-- `Tag`: 노트 태그
-- `ChecklistItem`: 체크리스트 항목
-- `NoteTemplate`: 재사용 가능한 노트 템플릿
-- `Attachment`: 메모 첨부파일 (이미지, 오디오, 일반 파일)
-  - 파일 해시 기반 중복 제거 (hash 필드)
-- `NoteTransaction`: 노트와 거래 내역 간 다대다 관계
-- `StickyNote`: 대시보드에 고정된 3개의 스티커 메모 슬롯
-- `DashboardChecklistItem`: 대시보드 우측 고정 체크리스트 항목 (최대 7개)
-
-### 데이터 흐름 패턴
-
-1. **클라이언트 요청** → API 서비스 함수 (services/api/)
-2. **Axios 인터셉터** → Authorization 헤더 추가
-3. **서버 라우트** → Express 라우트 (routes/)
-4. **미들웨어** → 검증 (Zod), 인증
-5. **컨트롤러** → 비즈니스 로직 (controllers/)
-6. **서비스** → Prisma를 통한 데이터베이스 작업 (services/)
-7. **응답** → TanStack Query가 결과를 캐시
+- **클라이언트**: Vercel 자동 배포
+- **서버 + DB**: Render (Web Service + PostgreSQL)
+- **CI/CD**: GitHub Actions (상세: `docs/DEPLOYMENT.md`)
 
 ## 개발 워크플로우
 
-### 코딩 컨벤션
+### 새로운 풀스택 기능 추가
 
-- TypeScript에서 타입만 가져오는 경우 `import type { Foo } from "./types";`처럼 `type` 키워드를 반드시 명시해 트리 셰이킹과 런타임 번들을 깔끔하게 유지합니다.
-
-### 새로운 기능 추가
-
-**풀스택 기능:**
-
-1. `server/prisma/schema.prisma`에 Prisma 스키마 모델 정의
-2. `npm run db:migrate` 및 `npm run db:generate` 실행
-3. `server/src/validators/`에 Zod 검증 생성
-4. `server/src/services/`에 서비스 함수 생성
-5. `server/src/controllers/`에 컨트롤러 생성
-6. `server/src/routes/`에 라우트 추가
-7. `client/src/types/`에 TypeScript 타입 정의
-8. `client/src/services/api/`에 API 함수 생성
-
-## 대시보드 체크리스트 & 스티커 메모 참고사항
-
-- **체크리스트 데이터 모델**: Prisma 모델 `DashboardChecklistItem`은 `userId`, `content`, `isCompleted`, `order`를 포함합니다. 관련 API는 `/api/dashboard-checklist` 경로에 매핑되어 있으며, 인증 후 아래 엔드포인트를 제공합니다.
-  - `GET /api/dashboard-checklist`: 활성/완료 항목을 분리해 반환 (`{ activeItems, completedItems, maxItems }`).
-  - `POST /api/dashboard-checklist`: 새 항목 추가 (최대 7개 제한).
-  - `PATCH /api/dashboard-checklist/:id`: 내용 또는 완료 상태 업데이트.
-  - `DELETE /api/dashboard-checklist/:id`: 항목 삭제.
-- **마이그레이션 필수**: 체크리스트 작업을 시작하거나 리뷰할 때 `cd server && npm run db:migrate -- --name add_dashboard_checklist_items`로 스키마를 최신 상태로 맞춰주세요. Prisma Client가 필요하면 `npm run db:generate`.
-- **프론트엔드 위젯**: `client/src/components/dashboard/DashboardChecklist.tsx`가 우측 고정 카드이며, TanStack Query 키 `dashboardChecklist`를 사용합니다. 새 항목 입력은 Enter 또는 + 버튼으로 실행됩니다.
-- **스티커 메모 제한**: `StickyNote` 위젯은 최대 3개까지만 생성됩니다. `server/src/services/stickyNoteService.ts`에서 서버 측 제한을, `client/src/components/dashboard/StickyNotes.tsx`에서 UI 제한과 안내 문구를 확인하세요. 위치 인덱스는 0~2만 허용하므로 하드코딩 범위를 변경할 때 백/프론트를 동시에 수정해야 합니다.
-- 컴포넌트에서 TanStack Query 훅 사용
-
-**클라이언트 전용 기능:**
-
-1. `client/src/types/`에 타입 추가
-2. 서버 상태의 경우: TanStack Query 사용
-3. UI 상태의 경우: `client/src/store/`에 Zustand 스토어 생성
-4. `client/src/app/` 또는 `client/src/components/`에 페이지/컴포넌트 생성
-   - 페이지는 `client/src/app/[route]/page.tsx` 형식으로 생성
-   - 인터랙션이 필요한 컴포넌트는 `"use client"` 지시어 추가
+1. `server/prisma/schema.prisma`에 모델 정의
+2. `cd server && npm run db:generate && npm run db:migrate`
+3. `server/src/validators/` → `services/` → `controllers/` → `routes/` 순서로 구현
+4. `client/src/types/`에 타입 정의, `client/src/services/api/`에 API 함수
 5. 필요 시 `client/src/app/api/`에 Route Handler 추가
-
-### 데이터베이스 변경
-
-`schema.prisma` 수정 후:
-
-```bash
-cd server
-npm run db:generate    # ⚠️ 1단계: Prisma Client 타입 업데이트 (먼저 실행)
-npm run db:migrate     # ⚠️ 2단계: 데이터베이스에 변경사항 적용 (그 다음 실행)
-```
-
-**중요**: 반드시 `db:generate` → `db:migrate` 순서로 실행해야 합니다.
 
 ### 환경 변수
 
-**클라이언트** (.env.local):
+- **서버**: `server/.env` (참고: `.env.dev` 파일에 템플릿 있음)
+- **클라이언트**: `client/.env.local` — 클라이언트에서 접근하려면 반드시 `NEXT_PUBLIC_` 접두사 필요
 
-```bash
-NEXT_PUBLIC_API_URL=http://localhost:5001
-NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-google-oauth-client-id  # Google OAuth 사용 시
-```
+## 코딩 컨벤션 & 주의사항
 
-**중요**: Next.js에서 클라이언트 사이드에서 접근 가능한 환경 변수는 반드시 `NEXT_PUBLIC_` 접두사를 사용해야 합니다.
-
-**서버** (.env):
-
-```bash
-DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/worklife_dashboard"
-JWT_SECRET="your-secret-key"
-JWT_REFRESH_SECRET="your-refresh-secret"
-JWT_EXPIRES_IN="1h"
-JWT_REFRESH_EXPIRES_IN="7d"
-PORT=5001
-NODE_ENV=development
-CLIENT_URL="http://localhost:3000"
-```
-
-## 주요 패턴
-
-### 클라이언트 패턴
-
-**TanStack Query로 API 호출:**
-
-```typescript
-// services/api/exampleApi.ts
-import api from "@/lib/axios";
-
-export const exampleApi = {
-  getAll: () => api.get("/api/examples").then((res) => res.data),
-  getById: (id: string) =>
-    api.get(`/api/examples/${id}`).then((res) => res.data),
-};
-
-// 컴포넌트에서
-const { data, isLoading } = useQuery({
-  queryKey: ["examples"],
-  queryFn: exampleApi.getAll,
-});
-```
-
-**UI 상태를 위한 Zustand:**
-
-```typescript
-// store/useExampleStore.ts
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-
-interface ExampleState {
-  value: string;
-  setValue: (value: string) => void;
-}
-
-export const useExampleStore = create<ExampleState>()(
-  persist(
-    (set) => ({
-      value: "",
-      setValue: (value) => set({ value }),
-    }),
-    {
-      name: "example-storage", // localStorage 키
-    }
-  )
-);
-
-// 컴포넌트에서
-const { value, setValue } = useExampleStore();
-setValue("new value");
-```
-
-### 서버 패턴
-
-**라우트 → 미들웨어 → 컨트롤러:**
-
-```typescript
-// routes/exampleRoutes.ts
-import { Router } from "express";
-import { validate } from "../middlewares/validate";
-import { exampleSchema } from "../validators/exampleValidator";
-import { exampleController } from "../controllers/exampleController";
-
-const router = Router();
-router.post("/", validate(exampleSchema), exampleController.create);
-```
-
-**Zod 검증:**
-
-```typescript
-// validators/exampleValidator.ts
-import { z } from "zod";
-
-export const exampleSchema = z.object({
-  body: z.object({
-    name: z.string().min(1),
-    amount: z.number().positive(),
-  }),
-});
-```
-
-**Prisma 서비스:**
-
-```typescript
-// services/exampleService.ts
-import { prisma } from "../lib/prisma";
-
-export const exampleService = {
-  create: (data: CreateDto) => prisma.example.create({ data }),
-  findById: (id: string) => prisma.example.findUnique({ where: { id } }),
-};
-```
-
-## 중요 사항
-
-- **경로 별칭**: 클라이언트와 서버 모두 `@/` → `src/` 별칭 사용 (tsconfig 및 jest.config에 설정됨)
-- **TypeScript**: 서버는 strict 설정 사용 (noImplicitAny, strictNullChecks 등)
-- **Prisma 워크플로우**: 스키마 변경 후 반드시 `npm run db:generate` → `npm run db:migrate` 순서로 실행
-- **개발 모드 자동 새로고침**:
-  - 서버: Nodemon이 `server/src/` 변경사항을 감시하고 자동 재시작
-  - 클라이언트: Next.js Fast Refresh가 즉각적인 핫 리로드 제공
-- **테스트**: 서버는 Jest + ts-jest 사용, `__tests__/` 디렉토리에 테스트 파일 위치
-- **토큰 리프레시**: Axios 인터셉터가 401 에러 발생 시 자동으로 토큰 갱신 시도, 동시 요청은 큐에 대기
-- **Docker 개발**: `npm run docker:dev`로 서버와 PostgreSQL을 한 번에 시작 가능 (권장)
-- **Next.js 주의사항**:
-  - Server Components에서는 `useState`, `useEffect` 등 React Hooks 사용 불가
-  - 클라이언트 상태가 필요한 컴포넌트는 `"use client"` 지시어 필수
-  - 환경 변수는 `NEXT_PUBLIC_` 접두사로 클라이언트 노출 가능
-  - Route Handlers는 `/api/` 경로에 위치하며 서버 사이드 로직 처리
+- **경로 별칭**: 클라이언트/서버 모두 `@/` → `src/`
+- **타입 임포트**: `import type { Foo } from "./types"` — `type` 키워드 필수
+- **Zustand selector**: React 19에서 `useStore((s) => ({ a: s.a, b: s.b }))` 패턴은 무한 렌더링 유발. 반드시 `useStore((s) => s.someValue)` 처럼 값별 개별 selector 사용 또는 `useShallow` 사용
+- **설정 페이지**: `client/src/app/dashboard/settings/SettingsPageClient.tsx`는 `react-hook-form` 기반, 신규 설정 항목은 이 컴포넌트를 확장
+- **스티커 메모**: 최대 3개, 위치 인덱스 0~2 하드코딩 — 변경 시 `server/src/services/stickyNoteService.ts` + `client/src/components/dashboard/StickyNotes.tsx` 동시 수정 필요
+- **대시보드 체크리스트**: 최대 7개, TanStack Query 키 `dashboardChecklist`, API 경로 `/api/dashboard-checklist`
