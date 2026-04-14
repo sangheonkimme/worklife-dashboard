@@ -14,7 +14,7 @@ export const noteController = {
 
       const result = await noteService.getNotes(userId, filters);
 
-      res.json(result);
+      res.json({ success: true, data: result });
     } catch (error) {
       next(error);
     }
@@ -32,7 +32,7 @@ export const noteController = {
         return res.status(404).json({ message: '메모를 찾을 수 없습니다' });
       }
 
-      res.json(note);
+      res.json({ success: true, data: note });
     } catch (error) {
       next(error);
     }
@@ -46,7 +46,7 @@ export const noteController = {
 
       const note = await noteService.createNote(userId, data);
 
-      res.status(201).json(note);
+      res.status(201).json({ success: true, data: note });
     } catch (error) {
       next(error);
     }
@@ -61,7 +61,7 @@ export const noteController = {
 
       const note = await noteService.updateNote(id, userId, data);
 
-      res.json(note);
+      res.json({ success: true, data: note });
     } catch (error) {
       next(error);
     }
@@ -75,7 +75,7 @@ export const noteController = {
 
       const result = await noteService.deleteNote(id, userId);
 
-      res.json(result);
+      res.json({ success: true, data: result });
     } catch (error) {
       next(error);
     }
@@ -92,7 +92,7 @@ export const noteController = {
 
       const result = await noteService.getTrashNotes(userId, pageNum, limitNum);
 
-      res.json(result);
+      res.json({ success: true, data: result });
     } catch (error) {
       next(error);
     }
@@ -106,7 +106,7 @@ export const noteController = {
 
       const result = await noteService.restoreNote(id, userId);
 
-      res.json(result);
+      res.json({ success: true, data: result });
     } catch (error) {
       next(error);
     }
@@ -120,7 +120,7 @@ export const noteController = {
 
       const result = await noteService.permanentDeleteNote(id, userId);
 
-      res.json(result);
+      res.json({ success: true, data: result });
     } catch (error) {
       next(error);
     }
@@ -135,7 +135,7 @@ export const noteController = {
 
       const result = await noteService.toggleNoteFlag(id, userId, flag, value);
 
-      res.json(result);
+      res.json({ success: true, data: result });
     } catch (error) {
       next(error);
     }
@@ -149,7 +149,7 @@ export const noteController = {
 
       const result = await searchService.searchNotes(userId, options as any);
 
-      res.json(result);
+      res.json({ success: true, data: result });
     } catch (error) {
       next(error);
     }
@@ -167,7 +167,7 @@ export const noteController = {
         limit ? Number(limit) : 5
       );
 
-      res.json(result);
+      res.json({ success: true, data: result });
     } catch (error) {
       next(error);
     }

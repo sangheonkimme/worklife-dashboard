@@ -13,7 +13,7 @@ export const syncController = {
 
       const result = await syncService.getSyncData(userId, { since, limit });
 
-      res.json(result);
+      res.json({ success: true, data: result });
     } catch (error) {
       next(error);
     }

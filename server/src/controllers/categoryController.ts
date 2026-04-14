@@ -11,7 +11,7 @@ export const categoryController = {
 
       const categories = await categoryService.getCategories(userId, filters);
 
-      res.json(categories);
+      res.json({ success: true, data: categories });
     } catch (error) {
       next(error);
     }
@@ -29,7 +29,7 @@ export const categoryController = {
         return res.status(404).json({ message: '카테고리를 찾을 수 없습니다' });
       }
 
-      res.json(category);
+      res.json({ success: true, data: category });
     } catch (error) {
       next(error);
     }
@@ -43,7 +43,7 @@ export const categoryController = {
 
       const category = await categoryService.createCategory(userId, data);
 
-      res.status(201).json(category);
+      res.status(201).json({ success: true, data: category });
     } catch (error) {
       next(error);
     }
@@ -58,7 +58,7 @@ export const categoryController = {
 
       const category = await categoryService.updateCategory(id, userId, data);
 
-      res.json(category);
+      res.json({ success: true, data: category });
     } catch (error) {
       next(error);
     }
@@ -73,7 +73,7 @@ export const categoryController = {
 
       const result = await categoryService.deleteCategory(id, userId, reassignTo);
 
-      res.json(result);
+      res.json({ success: true, data: result });
     } catch (error) {
       next(error);
     }
@@ -87,7 +87,7 @@ export const categoryController = {
 
       const usage = await categoryService.getCategoryUsage(id, userId);
 
-      res.json(usage);
+      res.json({ success: true, data: usage });
     } catch (error) {
       next(error);
     }

@@ -23,7 +23,7 @@ export const subscriptionController = {
       } as any;
 
       const result = await subscriptionService.list(userId, filters);
-      res.json({ success: true, ...result });
+      res.json({ success: true, data: result });
     } catch (error) {
       next(error);
     }

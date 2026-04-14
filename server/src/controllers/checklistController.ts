@@ -11,7 +11,7 @@ export const checklistController = {
       const data = req.body;
 
       const item = await checklistService.createItem(noteId, userId, data);
-      res.status(201).json(item);
+      res.status(201).json({ success: true, data: item });
     } catch (error) {
       if (error instanceof Error && error.message === '메모를 찾을 수 없습니다') {
         res.status(404).json({ message: error.message });
@@ -29,7 +29,7 @@ export const checklistController = {
       const userId = req.user!.userId;
 
       const items = await checklistService.getItemsByNoteId(noteId, userId);
-      res.json(items);
+      res.json({ success: true, data: items });
     } catch (error) {
       if (error instanceof Error && error.message === '메모를 찾을 수 없습니다') {
         res.status(404).json({ message: error.message });
@@ -48,7 +48,7 @@ export const checklistController = {
       const data = req.body;
 
       const item = await checklistService.updateItem(id, userId, data);
-      res.json(item);
+      res.json({ success: true, data: item });
     } catch (error) {
       if (
         error instanceof Error &&
@@ -70,7 +70,7 @@ export const checklistController = {
       const { isCompleted } = req.body;
 
       const item = await checklistService.toggleItem(id, userId, isCompleted);
-      res.json(item);
+      res.json({ success: true, data: item });
     } catch (error) {
       if (
         error instanceof Error &&
@@ -91,7 +91,7 @@ export const checklistController = {
       const userId = req.user!.userId;
 
       await checklistService.deleteItem(id, userId);
-      res.status(204).send();
+      res.json({ success: true, data: null });
     } catch (error) {
       if (
         error instanceof Error &&
@@ -113,7 +113,7 @@ export const checklistController = {
       const { items } = req.body;
 
       const reorderedItems = await checklistService.reorderItems(noteId, userId, items);
-      res.json(reorderedItems);
+      res.json({ success: true, data: reorderedItems });
     } catch (error) {
       if (error instanceof Error && error.message === '메모를 찾을 수 없습니다') {
         res.status(404).json({ message: error.message });
@@ -131,7 +131,7 @@ export const checklistController = {
       const userId = req.user!.userId;
 
       const progress = await checklistService.getProgress(noteId, userId);
-      res.json(progress);
+      res.json({ success: true, data: progress });
     } catch (error) {
       if (error instanceof Error && error.message === '메모를 찾을 수 없습니다') {
         res.status(404).json({ message: error.message });

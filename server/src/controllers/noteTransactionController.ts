@@ -11,7 +11,7 @@ export const noteTransactionController = {
       const { transactionId } = req.body;
 
       const result = await noteTransactionService.linkTransaction(noteId, transactionId, userId);
-      res.status(201).json(result);
+      res.status(201).json({ success: true, data: result });
     } catch (error) {
       if (error instanceof Error) {
         if (error.message.includes('찾을 수 없습니다')) {
@@ -40,7 +40,7 @@ export const noteTransactionController = {
         transactionId,
         userId
       );
-      res.json(result);
+      res.json({ success: true, data: result });
     } catch (error) {
       if (error instanceof Error && error.message.includes('찾을 수 없습니다')) {
         res.status(404).json({ message: error.message });
@@ -58,7 +58,7 @@ export const noteTransactionController = {
       const { noteId } = req.params;
 
       const transactions = await noteTransactionService.getLinkedTransactions(noteId, userId);
-      res.json(transactions);
+      res.json({ success: true, data: transactions });
     } catch (error) {
       if (error instanceof Error && error.message === '메모를 찾을 수 없습니다') {
         res.status(404).json({ message: error.message });
@@ -76,7 +76,7 @@ export const noteTransactionController = {
       const { transactionId } = req.params;
 
       const notes = await noteTransactionService.getNotesForTransaction(transactionId, userId);
-      res.json(notes);
+      res.json({ success: true, data: notes });
     } catch (error) {
       if (error instanceof Error && error.message === '거래를 찾을 수 없습니다') {
         res.status(404).json({ message: error.message });

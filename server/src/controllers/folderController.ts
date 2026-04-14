@@ -12,7 +12,7 @@ export const folderController = {
 
       const folders = await folderService.getFolders(userId);
 
-      res.json(folders);
+      res.json({ success: true, data: folders });
     } catch (error) {
       console.error('폴더 목록 조회 실패:', error);
       res.status(500).json({ message: '폴더 목록 조회에 실패했습니다' });
@@ -29,7 +29,7 @@ export const folderController = {
 
       const folder = await folderService.getFolderById(id, userId);
 
-      res.json(folder);
+      res.json({ success: true, data: folder });
     } catch (error: any) {
       console.error('폴더 조회 실패:', error);
 
@@ -51,7 +51,7 @@ export const folderController = {
 
       const folder = await folderService.createFolder(folderData, userId);
 
-      res.status(201).json(folder);
+      res.status(201).json({ success: true, data: folder });
     } catch (error: any) {
       console.error('폴더 생성 실패:', error);
 
@@ -74,7 +74,7 @@ export const folderController = {
 
       const folder = await folderService.updateFolder(id, folderData, userId);
 
-      res.json(folder);
+      res.json({ success: true, data: folder });
     } catch (error: any) {
       console.error('폴더 수정 실패:', error);
 
@@ -104,7 +104,7 @@ export const folderController = {
 
       await folderService.deleteFolder(id, userId);
 
-      res.json({ message: '폴더가 삭제되었습니다' });
+      res.json({ success: true, data: null, message: '폴더가 삭제되었습니다' });
     } catch (error: any) {
       console.error('폴더 삭제 실패:', error);
 

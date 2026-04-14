@@ -9,7 +9,7 @@ export const templateController = {
       const userId = req.user!.userId;
 
       const templates = await templateService.getTemplates(userId);
-      res.json(templates);
+      res.json({ success: true, data: templates });
     } catch (error) {
       console.error('템플릿 목록 조회 실패:', error);
       res.status(500).json({ message: '템플릿 목록 조회에 실패했습니다' });
@@ -28,7 +28,7 @@ export const templateController = {
         return res.status(404).json({ message: '템플릿을 찾을 수 없습니다' });
       }
 
-      return res.json(template);
+      return res.json({ success: true, data: template });
     } catch (error) {
       console.error('템플릿 조회 실패:', error);
       return res.status(500).json({ message: '템플릿 조회에 실패했습니다' });
@@ -42,7 +42,7 @@ export const templateController = {
       const data = req.body;
 
       const template = await templateService.createTemplate(userId, data);
-      res.status(201).json(template);
+      res.status(201).json({ success: true, data: template });
     } catch (error) {
       console.error('템플릿 생성 실패:', error);
       res.status(500).json({ message: '템플릿 생성에 실패했습니다' });
@@ -57,7 +57,7 @@ export const templateController = {
       const data = req.body;
 
       const template = await templateService.updateTemplate(id, userId, data);
-      res.json(template);
+      res.json({ success: true, data: template });
     } catch (error) {
       if (error instanceof Error && error.message.includes('찾을 수 없거나')) {
         res.status(404).json({ message: error.message });
@@ -75,7 +75,7 @@ export const templateController = {
       const { id } = req.params;
 
       const result = await templateService.deleteTemplate(id, userId);
-      res.json(result);
+      res.json({ success: true, data: result });
     } catch (error) {
       if (error instanceof Error && error.message.includes('찾을 수 없거나')) {
         res.status(404).json({ message: error.message });

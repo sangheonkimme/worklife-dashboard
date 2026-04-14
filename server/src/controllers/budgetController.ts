@@ -11,7 +11,7 @@ export const budgetController = {
 
       const budgets = await budgetService.getBudgets(userId, filters);
 
-      res.json(budgets);
+      res.json({ success: true, data: budgets });
     } catch (error) {
       next(error);
     }
@@ -29,7 +29,7 @@ export const budgetController = {
         return res.status(404).json({ message: '예산을 찾을 수 없습니다' });
       }
 
-      res.json(budget);
+      res.json({ success: true, data: budget });
     } catch (error) {
       next(error);
     }
@@ -43,7 +43,7 @@ export const budgetController = {
 
       const budget = await budgetService.createBudget(userId, data);
 
-      res.status(201).json(budget);
+      res.status(201).json({ success: true, data: budget });
     } catch (error) {
       next(error);
     }
@@ -58,7 +58,7 @@ export const budgetController = {
 
       const budget = await budgetService.updateBudget(id, userId, data);
 
-      res.json(budget);
+      res.json({ success: true, data: budget });
     } catch (error) {
       next(error);
     }
@@ -72,7 +72,7 @@ export const budgetController = {
 
       const result = await budgetService.deleteBudget(id, userId);
 
-      res.json(result);
+      res.json({ success: true, data: result });
     } catch (error) {
       next(error);
     }
@@ -86,7 +86,7 @@ export const budgetController = {
 
       const status = await budgetService.getBudgetStatus(userId, month);
 
-      res.json(status);
+      res.json({ success: true, data: status });
     } catch (error) {
       next(error);
     }

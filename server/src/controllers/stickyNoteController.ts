@@ -8,7 +8,7 @@ export const stickyNoteController = {
     try {
       const userId = req.user!.userId;
       const notes = await stickyNoteService.findAllByUserId(userId);
-      res.json(notes);
+      res.json({ success: true, data: notes });
     } catch (error) {
       next(error);
     }
@@ -21,7 +21,7 @@ export const stickyNoteController = {
       const data = req.body;
 
       const note = await stickyNoteService.create(userId, data);
-      res.status(201).json(note);
+      res.status(201).json({ success: true, data: note });
     } catch (error: any) {
       if (error.message === '최대 4개의 스티커 메모만 생성할 수 있습니다') {
         return res.status(400).json({ message: error.message });
@@ -38,7 +38,7 @@ export const stickyNoteController = {
       const data = req.body;
 
       const note = await stickyNoteService.update(id, userId, data);
-      res.json(note);
+      res.json({ success: true, data: note });
     } catch (error: any) {
       if (error.message === '스티커 메모를 찾을 수 없습니다') {
         return res.status(404).json({ message: error.message });
@@ -54,7 +54,7 @@ export const stickyNoteController = {
       const { id } = req.params;
 
       await stickyNoteService.delete(id, userId);
-      res.json({ message: '스티커 메모가 삭제되었습니다' });
+      res.json({ success: true, data: null, message: '스티커 메모가 삭제되었습니다' });
     } catch (error: any) {
       if (error.message === '스티커 메모를 찾을 수 없습니다') {
         return res.status(404).json({ message: error.message });

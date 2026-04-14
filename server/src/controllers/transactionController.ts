@@ -17,7 +17,7 @@ export const transactionController = {
 
       const result = await transactionService.getTransactions(userId, filters);
 
-      res.json(result);
+      res.json({ success: true, data: result });
     } catch (error) {
       next(error);
     }
@@ -35,7 +35,7 @@ export const transactionController = {
         return res.status(404).json({ message: '거래를 찾을 수 없습니다' });
       }
 
-      res.json(transaction);
+      res.json({ success: true, data: transaction });
     } catch (error) {
       next(error);
     }
@@ -49,7 +49,7 @@ export const transactionController = {
 
       const transaction = await transactionService.createTransaction(userId, data);
 
-      res.status(201).json(transaction);
+      res.status(201).json({ success: true, data: transaction });
     } catch (error) {
       next(error);
     }
@@ -64,7 +64,7 @@ export const transactionController = {
 
       const transaction = await transactionService.updateTransaction(id, userId, data);
 
-      res.json(transaction);
+      res.json({ success: true, data: transaction });
     } catch (error) {
       next(error);
     }
@@ -78,7 +78,7 @@ export const transactionController = {
 
       const result = await transactionService.deleteTransaction(id, userId);
 
-      res.json(result);
+      res.json({ success: true, data: result });
     } catch (error) {
       next(error);
     }
@@ -92,7 +92,7 @@ export const transactionController = {
 
       const result = await transactionService.bulkCreateTransactions(userId, transactions);
 
-      res.status(201).json(result);
+      res.status(201).json({ success: true, data: result });
     } catch (error) {
       next(error);
     }
@@ -106,7 +106,7 @@ export const transactionController = {
 
       const statistics = await transactionService.getStatistics(userId, filters);
 
-      res.json(statistics);
+      res.json({ success: true, data: statistics });
     } catch (error) {
       next(error);
     }

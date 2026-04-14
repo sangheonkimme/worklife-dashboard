@@ -15,7 +15,7 @@ export const attachmentController = {
       }
 
       const attachment = await attachmentService.uploadAttachment(noteId, userId, file);
-      return res.status(201).json(attachment);
+      return res.status(201).json({ success: true, data: attachment });
     } catch (error) {
       if (error instanceof Error && error.message === '메모를 찾을 수 없습니다') {
         return res.status(404).json({ message: error.message });
@@ -42,7 +42,7 @@ export const attachmentController = {
         userId,
         files
       );
-      return res.status(201).json(attachments);
+      return res.status(201).json({ success: true, data: attachments });
     } catch (error) {
       if (error instanceof Error && error.message === '메모를 찾을 수 없습니다') {
         return res.status(404).json({ message: error.message });
@@ -60,7 +60,7 @@ export const attachmentController = {
       const { noteId } = req.params;
 
       const attachments = await attachmentService.getAttachments(noteId, userId);
-      return res.json(attachments);
+      return res.json({ success: true, data: attachments });
     } catch (error) {
       if (error instanceof Error && error.message === '메모를 찾을 수 없습니다') {
         return res.status(404).json({ message: error.message });
@@ -78,7 +78,7 @@ export const attachmentController = {
       const { id } = req.params;
 
       const result = await attachmentService.deleteAttachment(id, userId);
-      return res.json(result);
+      return res.json({ success: true, data: result });
     } catch (error) {
       if (error instanceof Error && error.message === '첨부파일을 찾을 수 없습니다') {
         return res.status(404).json({ message: error.message });
