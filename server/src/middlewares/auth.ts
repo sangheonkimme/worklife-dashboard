@@ -5,7 +5,7 @@ import { verifyAccessToken, verifyRefreshToken } from '../utils/jwt';
 export interface AuthRequest extends Request {
   user?: {
     userId: string;
-    email: string;
+    email?: string;
     sessionId?: string;
     iat?: number;
     exp?: number;
@@ -17,7 +17,7 @@ export interface AuthRequest extends Request {
  * Authorization 헤더 우선, 없으면 쿠키에서 accessToken 읽기
  */
 export const authenticateToken = (
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction
 ): void => {
@@ -41,7 +41,6 @@ export const authenticateToken = (
 
     const decoded = verifyAccessToken(token);
 
-    // @ts-ignore - Request 객체에 user 속성 추가
     req.user = decoded;
     next();
   } catch (error) {
@@ -73,7 +72,7 @@ export const authenticateToken = (
  * JWT 리프레시 토큰을 검증하는 미들웨어
  */
 export const authenticateRefreshToken = (
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction
 ): void => {
@@ -90,7 +89,6 @@ export const authenticateRefreshToken = (
 
     const decoded = verifyRefreshToken(refreshToken);
 
-    // @ts-ignore - Request 객체에 user 속성 추가
     req.user = decoded;
     next();
   } catch (error) {

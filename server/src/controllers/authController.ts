@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction, CookieOptions } from 'express';
+import { AuthRequest } from '../middlewares/auth';
 import {
   createUser,
   findUserByEmail,
@@ -215,13 +216,12 @@ export const logout = async (
  * 현재 사용자 정보 조회
  */
 export const me = async (
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
-    // @ts-ignore - authenticateToken 미들웨어에서 설정됨
-    const userId = req.user.userId;
+    const userId = req.user!.userId;
 
     const user = await findUserById(userId);
     if (!user) {
@@ -326,13 +326,12 @@ export const refreshToken = async (
  * 프로필 업데이트
  */
 export const updateProfile = async (
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
-    // @ts-ignore
-    const userId = req.user.userId;
+    const userId = req.user!.userId;
     const { name, currentPassword, newPassword } = req.body;
 
     // 비밀번호 변경 시 현재 비밀번호 확인

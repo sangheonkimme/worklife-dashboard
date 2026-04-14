@@ -9,6 +9,7 @@ import {
   googleLogin,
 } from '../controllers/authController';
 import { authenticateToken } from '../middlewares/auth';
+import { authLimiter } from '../middlewares/rateLimiter';
 import { validate } from '../middlewares/validate';
 import {
   registerSchema,
@@ -24,14 +25,14 @@ const router = Router();
  * @desc    회원가입
  * @access  Public
  */
-router.post('/register', validate(registerSchema), register);
+router.post('/register', authLimiter, validate(registerSchema), register);
 
 /**
  * @route   POST /api/auth/login
  * @desc    로그인
  * @access  Public
  */
-router.post('/login', validate(loginSchema), login);
+router.post('/login', authLimiter, validate(loginSchema), login);
 
 /**
  * @route   POST /api/auth/logout
@@ -66,6 +67,6 @@ router.put('/profile', authenticateToken, validate(updateProfileSchema), updateP
  * @desc    Google 로그인
  * @access  Public
  */
-router.post('/google', validate(googleLoginSchema), googleLogin);
+router.post('/google', authLimiter, validate(googleLoginSchema), googleLogin);
 
 export default router;
