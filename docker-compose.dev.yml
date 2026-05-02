@@ -28,6 +28,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    env_file:
+      - ./server/.env
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-worklife_dashboard}
       JWT_SECRET: ${JWT_SECRET:-dev-jwt-secret-change-me}
