@@ -3,6 +3,13 @@
   "private": true,
   "scripts": {
     "i18n:extract": "node scripts/i18n/extract.mjs",
-    "i18n:lint": "node scripts/i18n/lint.mjs"
+    "i18n:lint": "node scripts/i18n/lint.mjs",
+    "dev": "concurrently -n server,client -c blue,green \"npm:dev:server\" \"npm:dev:client\"",
+    "dev:server": "cd server && npm run docker:dev",
+    "dev:client": "cd client && npm run dev",
+    "dev:down": "cd server && npm run docker:dev:down"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
   }
 }
