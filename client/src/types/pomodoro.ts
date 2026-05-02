@@ -82,13 +82,6 @@ export interface SessionsQuery {
   endDate?: string;
 }
 
-// API 응답
-export interface ApiResponse<T> {
-  success: boolean;
-  data: T;
-  message?: string;
-}
-
 export interface SessionsResponse {
   sessions: PomodoroSession[];
   total: number;

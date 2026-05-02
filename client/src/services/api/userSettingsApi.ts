@@ -1,14 +1,9 @@
 import api from '@/lib/axios';
+import type { ApiResponse } from '@/types';
 import type {
   UpdateUserSettingsPayload,
   UserSettings,
 } from '@/types/userSettings';
-
-interface ApiResponse<T> {
-  success: boolean;
-  data: T;
-  message?: string;
-}
 
 export const userSettingsApi = {
   getSettings: async (): Promise<UserSettings> => {

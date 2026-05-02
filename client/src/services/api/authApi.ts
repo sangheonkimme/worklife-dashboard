@@ -1,18 +1,12 @@
 import api from '../../lib/axios';
 import type {
+  ApiResponse,
   LoginCredentials,
   RegisterData,
   AuthResponse,
   User,
   UpdateProfilePayload,
 } from '../../types';
-
-// 백엔드 API 응답 형식
-interface ApiResponse<T> {
-  success: boolean;
-  data: T;
-  message?: string;
-}
 
 export const authApi = {
   // 회원가입
