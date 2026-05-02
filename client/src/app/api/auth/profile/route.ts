@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { signProxyJwt } from "@/lib/server/proxyJwt";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5001";
 
-export async function GET() {
+const forward = async (request: NextRequest, method: "PUT" | "GET") => {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json(
@@ -19,10 +19,19 @@ export async function GET() {
     email: session.user.email ?? undefined,
   });
 
-  const upstream = await fetch(`${API_BASE_URL}/api/auth/me`, {
-    headers: { authorization: `Bearer ${token}` },
+  const upstream = await fetch(`${API_BASE_URL}/api/auth/profile`, {
+    method,
+    headers: {
+      "content-type":
+        request.headers.get("content-type") ?? "application/json",
+      authorization: `Bearer ${token}`,
+    },
+    body: method === "GET" ? undefined : await request.text(),
   });
 
   const data = await upstream.json().catch(() => ({}));
   return NextResponse.json(data, { status: upstream.status });
-}
+};
+
+export const PUT = (request: NextRequest) => forward(request, "PUT");
+export const GET = (request: NextRequest) => forward(request, "GET");

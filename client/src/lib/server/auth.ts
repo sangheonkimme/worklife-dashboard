@@ -8,9 +8,7 @@ import { fetchWithAuth, FetchWithAuthError } from "@/lib/server/fetchWithAuth";
 const AUTH_ME_ENDPOINT = "/api/auth/me";
 
 export const getCurrentUser = cache(async (): Promise<User> => {
-  const response = await fetchWithAuth(AUTH_ME_ENDPOINT, {
-    target: "proxy",
-  });
+  const response = await fetchWithAuth(AUTH_ME_ENDPOINT);
   const payload = await response.json();
   return payload?.data ?? payload;
 });

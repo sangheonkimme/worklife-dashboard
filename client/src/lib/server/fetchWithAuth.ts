@@ -1,51 +1,49 @@
 import "server-only";
-import { cookies, headers } from "next/headers";
+import { auth } from "@/auth";
+import { signProxyJwt } from "@/lib/server/proxyJwt";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5001";
 
 interface FetchWithAuthOptions extends RequestInit {
   cache?: RequestCache;
-  target?: "backend" | "proxy";
 }
 
 const UNAUTHORIZED_ERROR = "UNAUTHORIZED";
 
 export class FetchWithAuthError extends Error {
-  constructor(message: string, public status?: number) {
+  constructor(
+    message: string,
+    public status?: number
+  ) {
     super(message);
   }
 }
 
+/**
+ * Server Component / Route Handler 에서 Express 호출 시 사용.
+ * NextAuth 세션 → PROXY_JWT → Bearer 헤더로 전달.
+ */
 export const fetchWithAuth = async (
   path: string,
   options: FetchWithAuthOptions = {}
 ) => {
-  const cookieStore = await cookies();
-  const incomingHeaders = await headers();
+  const session = await auth();
 
   const requestHeaders = new Headers(options.headers);
-  const token = cookieStore.get("accessToken")?.value;
-  if (token) {
+
+  if (session?.user?.id) {
+    const token = await signProxyJwt({
+      userId: session.user.id,
+      email: session.user.email ?? undefined,
+    });
     requestHeaders.set("Authorization", `Bearer ${token}`);
   }
 
-  const forwardedCookies = incomingHeaders.get("cookie");
-  if (forwardedCookies) {
-    requestHeaders.set("Cookie", forwardedCookies);
-  }
-
-  const target = options.target ?? "backend";
-  const protocol = incomingHeaders.get("x-forwarded-proto") ?? "http";
-  const host = incomingHeaders.get("host");
-  const proxyBase = host ? `${protocol}://${host}` : "";
-  const baseUrl = target === "proxy" ? proxyBase : API_BASE_URL;
-
-  const response = await fetch(`${baseUrl}${path}`, {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
     ...options,
     headers: requestHeaders,
     cache: options.cache ?? "no-store",
-    credentials: "include",
   });
 
   if (response.status === 401) {

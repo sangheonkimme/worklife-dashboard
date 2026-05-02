@@ -11,7 +11,7 @@ import { Notifications } from "@mantine/notifications";
 import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
 import "@mantine/notifications/styles.css";
-import { GoogleOAuthProvider } from "@react-oauth/google";
+import { SessionProvider } from "next-auth/react";
 import { createQueryClient } from "@/lib/queryClient";
 import { worklifeCssVariablesResolver, worklifeTheme } from "@/theme";
 
@@ -22,11 +22,9 @@ interface AppProvidersProps {
 export const AppProviders = ({ children }: AppProvidersProps) => {
   const locale = "ko-KR";
   const [client] = useState(() => createQueryClient());
-  const googleClientId =
-    process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "missing-google-client-id";
 
   return (
-    <GoogleOAuthProvider clientId={googleClientId}>
+    <SessionProvider>
       <QueryClientProvider client={client}>
         <MantineProvider
           theme={worklifeTheme}
@@ -42,6 +40,6 @@ export const AppProviders = ({ children }: AppProvidersProps) => {
         </MantineProvider>
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
-    </GoogleOAuthProvider>
+    </SessionProvider>
   );
 };

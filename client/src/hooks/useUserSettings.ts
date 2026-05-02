@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
 import { userSettingsApi } from "@/services/api/userSettingsApi";
 import { useUserSettingsStore } from "@/store/useUserSettingsStore";
 import type { UpdateUserSettingsPayload } from "@/types/userSettings";
-import { getClientAccessToken } from "@/lib/session";
 
 export const USER_SETTINGS_QUERY_KEY = ['user-settings'] as const;
 
@@ -31,15 +31,13 @@ export const useUserSettings = () => {
   const initialized = useUserSettingsStore((state) => state.initialized);
   const error = useUserSettingsStore((state) => state.error);
 
-  const isTokenAvailable = useMemo(() => {
-    if (typeof window === "undefined") return false;
-    return Boolean(getClientAccessToken());
-  }, []);
+  const { status: sessionStatus } = useSession();
+  const isAuthenticated = sessionStatus === "authenticated";
 
   const settingsQuery = useQuery({
     queryKey: USER_SETTINGS_QUERY_KEY,
     queryFn: userSettingsApi.getSettings,
-    enabled: isTokenAvailable,
+    enabled: isAuthenticated,
     staleTime: 15 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
     retry: 1,

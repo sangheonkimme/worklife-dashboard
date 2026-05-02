@@ -20,7 +20,6 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconAlertCircle } from "@tabler/icons-react";
-import { GoogleLogin } from "@react-oauth/google";
 import { useTranslation } from "react-i18next";
 import { isAxiosError } from "axios";
 import { useAuth } from "@/hooks/useAuth";
@@ -28,13 +27,12 @@ import { useAuth } from "@/hooks/useAuth";
 export const LoginPageClient = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { t, i18n } = useTranslation("auth");
+  const { t } = useTranslation("auth");
   const {
     login,
     loginError,
     isLoginLoading,
     googleLogin,
-    googleLoginError,
     isGoogleLoginLoading,
     isAuthenticated,
   } = useAuth();
@@ -148,50 +146,14 @@ export const LoginPageClient = () => {
 
             <Divider label={t("login.form.divider")} labelPosition="center" />
 
-            {googleLoginError && (
-              <Alert
-                icon={<IconAlertCircle size={16} />}
-                title={t("login.alerts.title")}
-                color="red"
-                variant="light"
-              >
-                {(() => {
-                  if (isAxiosError(googleLoginError)) {
-                    if (
-                      googleLoginError.code === "ERR_BAD_RESPONSE" ||
-                      googleLoginError.code === "ERR_NETWORK" ||
-                      googleLoginError.message.includes("Network Error")
-                    ) {
-                      return t("login.alerts.network");
-                    }
-                    if (googleLoginError.response?.data?.message) {
-                      return googleLoginError.response.data.message;
-                    }
-                  }
-                  return t("login.alerts.googleDefault");
-                })()}
-              </Alert>
-            )}
-
-            <GoogleLogin
-              onSuccess={async ({ credential }) => {
-                if (credential) {
-                  await googleLogin(credential);
-                }
-              }}
-              onError={() => {
-                console.error("Google login failed");
-              }}
-              text="signin_with"
-              width="100%"
-              locale={i18n.language}
-            />
-
-            {isGoogleLoginLoading && (
-              <Text size="sm" c="dimmed" ta="center">
-                Google 로그인 중...
-              </Text>
-            )}
+            <Button
+              variant="default"
+              fullWidth
+              onClick={() => googleLogin()}
+              loading={isGoogleLoginLoading}
+            >
+              Google 로그인
+            </Button>
           </Stack>
         </form>
       </Paper>

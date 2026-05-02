@@ -1,72 +1,65 @@
 import { Router } from 'express';
 import {
   register,
-  login,
-  logout,
   me,
-  refreshToken,
   updateProfile,
-  googleLogin,
+  verifyCredentials,
+  syncOAuthUser,
 } from '../controllers/authController';
 import { authenticateToken } from '../middlewares/auth';
+import { requireInternalApiKey } from '../middlewares/internalApiKey';
 import { authLimiter } from '../middlewares/rateLimiter';
 import { validate } from '../middlewares/validate';
 import {
   registerSchema,
-  loginSchema,
   updateProfileSchema,
-  googleLoginSchema,
 } from '../validators/authValidator';
 
 const router = Router();
 
 /**
  * @route   POST /api/auth/register
- * @desc    회원가입
+ * @desc    회원가입 (사용자만 생성, 세션은 NextAuth 가 별도 처리)
  * @access  Public
  */
 router.post('/register', authLimiter, validate(registerSchema), register);
 
 /**
- * @route   POST /api/auth/login
- * @desc    로그인
- * @access  Public
- */
-router.post('/login', authLimiter, validate(loginSchema), login);
-
-/**
- * @route   POST /api/auth/logout
- * @desc    로그아웃
- * @access  Public
- */
-router.post('/logout', logout);
-
-/**
  * @route   GET /api/auth/me
  * @desc    현재 사용자 정보 조회
- * @access  Private
+ * @access  Private (PROXY_JWT)
  */
 router.get('/me', authenticateToken, me);
 
 /**
- * @route   POST /api/auth/refresh
- * @desc    액세스 토큰 갱신
- * @access  Private (리프레시 토큰 필요)
- */
-router.post('/refresh', refreshToken);
-
-/**
  * @route   PUT /api/auth/profile
  * @desc    프로필 업데이트
- * @access  Private
+ * @access  Private (PROXY_JWT)
  */
-router.put('/profile', authenticateToken, validate(updateProfileSchema), updateProfile);
+router.put(
+  '/profile',
+  authenticateToken,
+  validate(updateProfileSchema),
+  updateProfile
+);
 
 /**
- * @route   POST /api/auth/google
- * @desc    Google 로그인
- * @access  Public
+ * @route   POST /api/auth/credentials/verify
+ * @desc    NextAuth Credentials provider 전용 비밀번호 검증
+ * @access  Internal (INTERNAL_API_KEY)
  */
-router.post('/google', authLimiter, validate(googleLoginSchema), googleLogin);
+router.post(
+  '/credentials/verify',
+  requireInternalApiKey,
+  authLimiter,
+  verifyCredentials
+);
+
+/**
+ * @route   POST /api/auth/oauth/sync
+ * @desc    NextAuth OAuth 콜백에서 호출 — DB 사용자 동기화
+ * @access  Internal (INTERNAL_API_KEY)
+ */
+router.post('/oauth/sync', requireInternalApiKey, syncOAuthUser);
 
 export default router;

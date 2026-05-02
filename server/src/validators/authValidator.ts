@@ -23,20 +23,7 @@ export const registerSchema = z.object({
 });
 
 /**
- * 로그인 검증 스키마
- */
-export const loginSchema = z.object({
-  body: z.object({
-    email: z
-      .string({ message: '이메일은 필수입니다' })
-      .email('올바른 이메일 형식이 아닙니다'),
-    password: z.string({ message: '비밀번호는 필수입니다' }),
-  }),
-});
-
-/**
- * 프로필 업데이트 검증 스키마
- * 이메일은 로그인 ID로 사용되므로 변경 불가
+ * 프로필 업데이트 검증 스키마 (이메일 변경 불가)
  */
 export const updateProfileSchema = z.object({
   body: z.object({
@@ -57,17 +44,5 @@ export const updateProfileSchema = z.object({
   }),
 });
 
-/**
- * Google 로그인 검증 스키마
- */
-export const googleLoginSchema = z.object({
-  body: z.object({
-    credential: z.string({ message: 'Google credential은 필수입니다' }),
-  }),
-});
-
-// TypeScript 타입 추출
 export type RegisterInput = z.infer<typeof registerSchema>['body'];
-export type LoginInput = z.infer<typeof loginSchema>['body'];
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>['body'];
-export type GoogleLoginInput = z.infer<typeof googleLoginSchema>['body'];

@@ -1,20 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyAccessToken, verifyRefreshToken } from '../utils/jwt';
+import jwt from 'jsonwebtoken';
 
-// AuthRequest 타입 정의
 export interface AuthRequest extends Request {
   user?: {
     userId: string;
     email?: string;
-    sessionId?: string;
     iat?: number;
     exp?: number;
   };
 }
 
 /**
- * JWT 액세스 토큰을 검증하는 미들웨어
- * Authorization 헤더 우선, 없으면 쿠키에서 accessToken 읽기
+ * Next.js Route Handler 프록시가 발급한 PROXY_JWT 를 검증.
+ * Authorization: Bearer <jwt> 헤더 필수.
  */
 export const authenticateToken = (
   req: AuthRequest,
@@ -22,14 +20,8 @@ export const authenticateToken = (
   next: NextFunction
 ): void => {
   try {
-    // 1. Authorization 헤더에서 토큰 추출 (우선)
     const authHeader = req.headers['authorization'];
-    let token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
-
-    // 2. 헤더에 없으면 쿠키에서 accessToken 읽기 (httpOnly 쿠키 지원)
-    if (!token && req.cookies?.accessToken) {
-      token = req.cookies.accessToken;
-    }
+    const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
       res.status(401).json({
@@ -39,7 +31,21 @@ export const authenticateToken = (
       return;
     }
 
-    const decoded = verifyAccessToken(token);
+    const secret = process.env.PROXY_JWT_SECRET;
+    if (!secret) {
+      res.status(500).json({
+        success: false,
+        message: 'PROXY_JWT_SECRET 환경변수가 설정되지 않았습니다',
+      });
+      return;
+    }
+
+    const decoded = jwt.verify(token, secret) as {
+      userId: string;
+      email?: string;
+      iat?: number;
+      exp?: number;
+    };
 
     req.user = decoded;
     next();
@@ -68,53 +74,5 @@ export const authenticateToken = (
   }
 };
 
-/**
- * JWT 리프레시 토큰을 검증하는 미들웨어
- */
-export const authenticateRefreshToken = (
-  req: AuthRequest,
-  res: Response,
-  next: NextFunction
-): void => {
-  try {
-    const refreshToken = req.cookies.refreshToken;
-
-    if (!refreshToken) {
-      res.status(401).json({
-        success: false,
-        message: '리프레시 토큰이 필요합니다',
-      });
-      return;
-    }
-
-    const decoded = verifyRefreshToken(refreshToken);
-
-    req.user = decoded;
-    next();
-  } catch (error) {
-    if (error instanceof Error) {
-      if (error.name === 'TokenExpiredError') {
-        res.status(401).json({
-          success: false,
-          message: '리프레시 토큰이 만료되었습니다',
-          code: 'REFRESH_TOKEN_EXPIRED',
-        });
-        return;
-      }
-      if (error.name === 'JsonWebTokenError') {
-        res.status(401).json({
-          success: false,
-          message: '유효하지 않은 리프레시 토큰입니다',
-        });
-        return;
-      }
-    }
-    res.status(500).json({
-      success: false,
-      message: '토큰 검증 중 오류가 발생했습니다',
-    });
-  }
-};
-
-// authenticateToken의 alias (가계부 API에서 사용)
+// 가계부 API 등에서 import 한 alias 유지
 export const authenticate = authenticateToken;

@@ -25,9 +25,10 @@ import {
   IconCheck,
   IconAlertCircle,
 } from "@tabler/icons-react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "@/hooks/useAuth";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { authApi } from "@/services/api/authApi";
+import api from "@/lib/axios";
+import type { ApiResponse, User } from "@/types";
 import { AuthRequiredWrapper } from "@/components/auth/AuthRequiredWrapper";
 import { formatDate } from "@/utils/format";
 import { getApiErrorMessage } from "@/utils/error";
@@ -42,8 +43,14 @@ interface ProfileFormValues {
 }
 
 const ProfilePageClient = () => {
-  const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { data: user } = useQuery({
+    queryKey: ["auth", "me"],
+    queryFn: async () => {
+      const res = await api.get<ApiResponse<User>>("/api/auth/me");
+      return res.data.data;
+    },
+  });
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const { t } = useTranslation('profile');
 

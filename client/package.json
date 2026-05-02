@@ -31,6 +31,7 @@
     "i18next": "^25.6.3",
     "i18next-browser-languagedetector": "^8.2.0",
     "next": "^16.0.7",
+    "next-auth": "^5.0.0-beta.31",
     "nprogress": "^0.2.0",
     "pdf-lib": "^1.17.1",
     "react": "^19.1.2",

@@ -1,52 +1,28 @@
-import api from '../../lib/axios';
+import api from "../../lib/axios";
 import type {
   ApiResponse,
-  LoginCredentials,
   RegisterData,
   AuthResponse,
   User,
   UpdateProfilePayload,
-} from '../../types';
+} from "../../types";
 
 export const authApi = {
-  // 회원가입
+  // 회원가입 — NextAuth 미사용. Express 직접 호출 후 별도로 signIn 진행
   register: async (data: RegisterData): Promise<AuthResponse> => {
-    const response = await api.post<ApiResponse<AuthResponse>>('/api/auth/register', data);
-    return response.data.data;
-  },
-
-  // 로그인
-  login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
-    const response = await api.post<ApiResponse<AuthResponse>>('/api/auth/login', credentials);
-    return response.data.data;
-  },
-
-  // 로그아웃
-  logout: async (): Promise<void> => {
-    await api.post('/api/auth/logout');
-  },
-
-  // 현재 사용자 정보 조회
-  me: async (): Promise<User> => {
-    const response = await api.get<ApiResponse<User>>('/api/auth/me');
-    return response.data.data;
-  },
-
-  // 토큰 갱신
-  refresh: async (): Promise<{ accessToken: string }> => {
-    const response = await api.post<ApiResponse<{ accessToken: string }>>('/api/auth/refresh');
+    const response = await api.post<ApiResponse<AuthResponse>>(
+      "/api/auth/register",
+      data
+    );
     return response.data.data;
   },
 
   // 프로필 수정
   updateProfile: async (data: UpdateProfilePayload): Promise<User> => {
-    const response = await api.put<ApiResponse<User>>('/api/auth/profile', data);
-    return response.data.data;
-  },
-
-  // Google 로그인
-  googleLogin: async (credential: string): Promise<AuthResponse> => {
-    const response = await api.post<ApiResponse<AuthResponse>>('/api/auth/google', { credential });
+    const response = await api.put<ApiResponse<User>>(
+      "/api/auth/profile",
+      data
+    );
     return response.data.data;
   },
 };
