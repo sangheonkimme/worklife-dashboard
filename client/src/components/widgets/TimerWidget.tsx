@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActionIcon,
   Badge,
@@ -29,6 +29,7 @@ import { useTranslation } from "react-i18next";
 import { useTimerStore } from "@/store/useTimerStore";
 import type { WidgetProps } from "@/types/widget";
 import { formatTimeSimple } from "@/utils/timeFormat";
+import { playTone, unlockAudio } from "@/utils/audio";
 import type { TimerStatus } from "@/types/timer";
 
 const statusColor: Record<string, string> = {
@@ -63,57 +64,8 @@ export function TimerWidget({ onClose, showHeader = true }: WidgetProps) {
   const [seconds, setSeconds] = useState(
     Math.floor((totalMs % 60000) / 1000)
   );
-  const audioContextRef = useRef<AudioContext | null>(null);
   const prevPreAlertRef = useRef(preAlertTriggered);
   const prevStatusRef = useRef<TimerStatus>(status);
-
-  const ensureAudioContext = useCallback(() => {
-    if (typeof window === "undefined") return null;
-    if (!audioContextRef.current) {
-      audioContextRef.current = new AudioContext();
-    }
-    if (audioContextRef.current.state === "suspended") {
-      audioContextRef.current.resume().catch(() => {
-        // ignore resume failure
-      });
-    }
-    return audioContextRef.current;
-  }, []);
-
-  const unlockAudio = useCallback(() => {
-    const ctx = ensureAudioContext();
-    if (ctx?.state === "suspended") {
-      ctx
-        .resume()
-        .catch(() => {
-          // ignore resume failure triggered outside user gestures
-        });
-    }
-  }, [ensureAudioContext]);
-
-  const playTone = useCallback(
-    (frequency: number, duration = 0.35) => {
-      const ctx = ensureAudioContext();
-      if (!ctx) return;
-
-      const oscillator = ctx.createOscillator();
-      const gain = ctx.createGain();
-
-      oscillator.type = "sine";
-      oscillator.frequency.value = frequency;
-      oscillator.connect(gain);
-      gain.connect(ctx.destination);
-
-      const now = ctx.currentTime;
-      gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.exponentialRampToValueAtTime(0.25, now + 0.01);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-
-      oscillator.start(now);
-      oscillator.stop(now + duration + 0.05);
-    },
-    [ensureAudioContext]
-  );
 
   useEffect(() => {
     restoreTimer();
@@ -145,7 +97,7 @@ export function TimerWidget({ onClose, showHeader = true }: WidgetProps) {
     if (preAlertTriggered && !previouslyTriggered) {
       playTone(880, 0.25);
     }
-  }, [preAlertTriggered, settings.soundEnabled, playTone]);
+  }, [preAlertTriggered, settings.soundEnabled]);
 
   useEffect(() => {
     const previousStatus = prevStatusRef.current;
@@ -156,7 +108,7 @@ export function TimerWidget({ onClose, showHeader = true }: WidgetProps) {
       playTone(520, 0.35);
       setTimeout(() => playTone(660, 0.35), 220);
     }
-  }, [status, settings.soundEnabled, playTone]);
+  }, [status, settings.soundEnabled]);
 
   const progress = useMemo(() => {
     if (totalMs <= 0) return 0;

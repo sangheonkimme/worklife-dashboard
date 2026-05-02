@@ -3,6 +3,10 @@ import { persist } from "zustand/middleware";
 import { notifications } from "@mantine/notifications";
 import i18n from "@/lib/i18n";
 import type { TimerSettings, TimerStatus } from "@/types/timer";
+import {
+  notifyTimerStarted,
+  registerTimerPauseHandler,
+} from "@/utils/timerCoordinator";
 
 interface TimerState {
   status: TimerStatus;
@@ -87,6 +91,7 @@ export const useTimerStore = create<TimerState>()(
           return;
         }
 
+        notifyTimerStarted("timer");
         set({
           status: "running",
           remainingMs: target,
@@ -105,6 +110,7 @@ export const useTimerStore = create<TimerState>()(
       resumeTimer: () => {
         const { status, remainingMs } = get();
         if (status !== "paused" || remainingMs <= 0) return;
+        notifyTimerStarted("timer");
         set({ status: "running", lastUpdatedAt: Date.now() });
         startInterval(get);
       },
@@ -303,3 +309,18 @@ export const useTimerStore = create<TimerState>()(
     }
   )
 );
+
+// 동시 실행 정책: 다른 카운트다운 시작 시 자동 일시정지
+registerTimerPauseHandler("timer", () => {
+  const state = useTimerStore.getState();
+  if (state.status === "running") state.pauseTimer();
+});
+
+// 백그라운드 탭 스로틀링 대응: 포커스 복귀 시 즉시 동기화
+if (typeof document !== "undefined") {
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) return;
+    const state = useTimerStore.getState();
+    if (state.status === "running") state.tick();
+  });
+}

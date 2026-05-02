@@ -11,6 +11,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { usePomodoroStore } from "@/store/usePomodoroStore";
 import { useRouter, usePathname } from "next/navigation";
+import { unlockAudio } from "@/utils/audio";
 
 export function PomodoroWidget() {
   const {
@@ -84,6 +85,16 @@ export function PomodoroWidget() {
     router.push("/dashboard");
   };
 
+  const handleStart = () => {
+    unlockAudio();
+    startTimer();
+  };
+
+  const handleResume = () => {
+    unlockAudio();
+    resumeTimer();
+  };
+
   return (
     <Paper
       shadow="xl"
@@ -154,7 +165,7 @@ export function PomodoroWidget() {
               variant="filled"
               color={color}
               size="lg"
-              onClick={startTimer}
+              onClick={handleStart}
               aria-label={t("pomodoro.actions.start")}
             >
               <IconPlayerPlay size={18} />
@@ -190,7 +201,7 @@ export function PomodoroWidget() {
                 variant="filled"
                 color={color}
                 size="lg"
-                onClick={resumeTimer}
+                onClick={handleResume}
                 aria-label={t("pomodoro.actions.resume")}
               >
                 <IconPlayerPlay size={18} />

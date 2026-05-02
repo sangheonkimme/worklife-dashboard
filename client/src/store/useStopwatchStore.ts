@@ -326,3 +326,12 @@ export const useStopwatchStore = create<StopwatchState>()(
     }
   )
 );
+
+// 백그라운드 탭 스로틀링 대응: 포커스 복귀 시 즉시 동기화
+if (typeof document !== 'undefined') {
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) return;
+    const state = useStopwatchStore.getState();
+    if (state.status === 'running') state.tick();
+  });
+}

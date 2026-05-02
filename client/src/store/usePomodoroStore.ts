@@ -3,6 +3,11 @@ import { persist } from 'zustand/middleware';
 import type { SessionType, TimerStatus } from '@/types/pomodoro';
 import * as pomodoroApi from '@/services/api/pomodoroApi';
 import i18n from '@/lib/i18n';
+import { playCompletionChime } from '@/utils/audio';
+import {
+  notifyTimerStarted,
+  registerTimerPauseHandler,
+} from '@/utils/timerCoordinator';
 
 interface PomodoroSettings {
   focusDuration: number; // 초
@@ -82,6 +87,7 @@ export const usePomodoroStore = create<PomodoroState>()(
       startTimer: () => {
         if (intervalId) return; // 이미 실행 중
 
+        notifyTimerStarted('pomodoro');
         const now = new Date().toISOString();
         set({
           status: 'running',
@@ -107,6 +113,7 @@ export const usePomodoroStore = create<PomodoroState>()(
       resumeTimer: () => {
         if (intervalId) return; // 이미 실행 중
 
+        notifyTimerStarted('pomodoro');
         const now = new Date().toISOString();
         set({ status: 'running', lastTickAt: now });
 
@@ -137,19 +144,27 @@ export const usePomodoroStore = create<PomodoroState>()(
         });
       },
 
-      // 1초마다 호출
+      // 주기적으로 호출. 백그라운드 탭 스로틀링과 무관하게 실제 경과시간으로 차감.
       tick: () => {
-        const { remainingTime } = get();
-        const now = new Date().toISOString();
+        const { remainingTime, lastTickAt } = get();
+        const nowMs = Date.now();
+        const lastMs = lastTickAt ? new Date(lastTickAt).getTime() : nowMs;
+        const deltaSeconds = Math.max(0, Math.floor((nowMs - lastMs) / 1000));
 
-        if (remainingTime <= 0) {
+        if (deltaSeconds === 0) return; // 1초 미만 경과 시 상태 변경 없음
+
+        const newRemainingTime = remainingTime - deltaSeconds;
+        const nextTickAt = new Date(nowMs - ((nowMs - lastMs) % 1000)).toISOString();
+
+        if (newRemainingTime <= 0) {
+          set({ remainingTime: 0, lastTickAt: nextTickAt });
           get().completeSession();
           return;
         }
 
         set({
-          remainingTime: remainingTime - 1,
-          lastTickAt: now
+          remainingTime: newRemainingTime,
+          lastTickAt: nextTickAt,
         });
       },
 
@@ -189,9 +204,9 @@ export const usePomodoroStore = create<PomodoroState>()(
           showNotification(notificationTitle, message);
         }
 
-        // 소리 재생
+        // 소리 재생 (WebAudio 기반 — 자산 불필요, 사용자 제스처 후 unlock 됨)
         if (settings.soundEnabled) {
-          playCompletionSound(settings.soundVolume);
+          playCompletionChime(settings.soundVolume / 100);
         }
 
         // 집중 세션 완료 시 카운트 증가
@@ -422,17 +437,6 @@ function showNotification(title: string, body: string) {
 }
 
 /**
- * 완료 소리 재생
- */
-function playCompletionSound(volume: number) {
-  const audio = new Audio('/sounds/pomodoro-complete.mp3');
-  audio.volume = volume / 100;
-  audio.play().catch((error) => {
-    console.error('Failed to play completion sound:', error);
-  });
-}
-
-/**
  * 알림 권한 요청
  */
 export const requestNotificationPermission = async (): Promise<boolean> => {
@@ -452,3 +456,18 @@ export const requestNotificationPermission = async (): Promise<boolean> => {
 
   return false;
 };
+
+// 동시 실행 정책: 일반 타이머가 시작되면 포모도로 자동 일시정지
+registerTimerPauseHandler('pomodoro', () => {
+  const state = usePomodoroStore.getState();
+  if (state.status === 'running') state.pauseTimer();
+});
+
+// 백그라운드 탭 스로틀링 대응: 포커스 복귀 시 즉시 동기화
+if (typeof document !== 'undefined') {
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) return;
+    const state = usePomodoroStore.getState();
+    if (state.status === 'running') state.tick();
+  });
+}

@@ -23,6 +23,7 @@ import {
   usePomodoroStore,
   requestNotificationPermission,
 } from '@/store/usePomodoroStore';
+import { unlockAudio } from '@/utils/audio';
 
 export function PomodoroTimerCard() {
   const {
@@ -77,6 +78,16 @@ export function PomodoroTimerCard() {
   };
 
   const color = getColor();
+
+  const handleStart = () => {
+    unlockAudio();
+    startTimer();
+  };
+
+  const handleResume = () => {
+    unlockAudio();
+    resumeTimer();
+  };
 
   return (
     <Card
@@ -134,7 +145,7 @@ export function PomodoroTimerCard() {
             <Button
               leftSection={<IconPlayerPlay size={16} />}
               color={color}
-              onClick={startTimer}
+              onClick={handleStart}
               size="sm"
             >
               {t('pomodoro.actions.start')}
@@ -169,7 +180,7 @@ export function PomodoroTimerCard() {
               <Button
                 leftSection={<IconPlayerPlay size={16} />}
                 color={color}
-                onClick={resumeTimer}
+                onClick={handleResume}
                 size="sm"
               >
                 {t('pomodoro.actions.resume')}
