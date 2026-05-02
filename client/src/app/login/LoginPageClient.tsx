@@ -104,7 +104,16 @@ export const LoginPageClient = () => {
   };
 
   return (
-    <Container size={420} my={40}>
+    <Container
+      size={420}
+      style={{
+        minHeight: "calc(100vh - 80px)",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+      }}
+      py={40}
+    >
       <Title ta="center" fw={900}>
         {t("login.title")}
       </Title>
