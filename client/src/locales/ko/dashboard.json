@@ -2,7 +2,14 @@
   "sidebar": {
     "menuLabel": "메뉴",
     "guestName": "게스트",
-    "planFree": "무료 플랜"
+    "planFree": "무료 플랜",
+    "groups": {
+      "home": "홈",
+      "moneyAndSchedule": "가계 · 일정",
+      "records": "기록",
+      "tools": "도구",
+      "system": "시스템"
+    }
   },
   "topbar": {
     "greeting": "좋은 아침이에요, {{name}}",
@@ -10,6 +17,7 @@
     "handTagline": "let's get it done",
     "subtitle": "오늘의 메모와 타이머를 한곳에서 관리하세요.",
     "subtitleShort": "오늘 일정과 메모를 한곳에서 정리하세요.",
+    "subtitleDetail": "오늘은 {{events}}개의 일정과 {{pomodoros}}개의 포모도로 세션이 예약되어 있어요.",
     "searchPlaceholder": "검색하기...",
     "actions": {
       "darkMode": "다크 모드로 전환",

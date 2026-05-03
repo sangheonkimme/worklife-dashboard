@@ -2,7 +2,14 @@
   "sidebar": {
     "menuLabel": "MENU",
     "guestName": "Guest",
-    "planFree": "Free plan"
+    "planFree": "Free plan",
+    "groups": {
+      "home": "Home",
+      "moneyAndSchedule": "Money · schedule",
+      "records": "Records",
+      "tools": "Tools",
+      "system": "System"
+    }
   },
   "topbar": {
     "greeting": "Good morning, {{name}}",
@@ -10,6 +17,7 @@
     "handTagline": "let's get it done",
     "subtitle": "Notes and timers, all in one place.",
     "subtitleShort": "Today's notes and schedule in one place.",
+    "subtitleDetail": "{{events}} events and {{pomodoros}} pomodoro sessions scheduled today.",
     "searchPlaceholder": "Search...",
     "actions": {
       "darkMode": "Switch to dark mode",

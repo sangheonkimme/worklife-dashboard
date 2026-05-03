@@ -17,6 +17,12 @@
   "layout": {
     "nav": {
       "heading": "Menu",
+      "txns": {
+        "label": "Transactions",
+        "description": "Search · details",
+        "pageTitle": "Transactions",
+        "pageDescription": "Search and inspect every transaction."
+      },
       "transactions": {
         "label": "Finance",
         "description": "Income · expense · stats",

@@ -56,11 +56,12 @@ export function RedesignedTopbar() {
     <header className="wl-topbar">
       <div>
         <h1 style={{ margin: 0, fontSize: 28, fontWeight: 800, letterSpacing: "-0.02em" }}>
-          {t("topbar.greeting", { name: greetingName })}
-          <span className="wl-hand"> — {t("topbar.handTagline")}</span>
+          {t("topbar.greeting", { name: greetingName })}{" "}
+          <span className="wl-hand">— {t("topbar.handTagline")}</span>
         </h1>
         <div className="wl-topbar-sub">
-          {today} · {t("topbar.subtitleShort")}
+          {today} ·{" "}
+          {t("topbar.subtitleDetail", { events: 4, pomodoros: 1 })}
         </div>
       </div>
 

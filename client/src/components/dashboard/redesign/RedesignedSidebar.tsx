@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import {
   IconHome,
   IconWallet,
+  IconCash,
   IconCalendar,
   IconRepeat,
   IconCrop,
@@ -29,22 +30,44 @@ interface NavItem {
   aliases?: string[];
 }
 
-const NAV: NavItem[] = [
-  { key: "dashboard", href: "/dashboard", icon: IconHome },
+interface NavGroup {
+  labelKey: string;
+  items: NavItem[];
+}
+
+// 5개 섹션 그룹화 (시안 2026-05-03 기준)
+const NAV_GROUPS: NavGroup[] = [
   {
-    key: "transactions",
-    href: "/dashboard/transactions",
-    icon: IconWallet,
-    aliases: ["/dashboard/expense"],
+    labelKey: "home",
+    items: [{ key: "dashboard", href: "/dashboard", icon: IconHome }],
   },
-  { key: "calendar", href: "/dashboard/calendar", icon: IconCalendar },
-  { key: "subscriptions", href: "/dashboard/subscriptions", icon: IconRepeat },
-  { key: "imageCrop", href: "/tools/image-crop", icon: IconCrop },
-  { key: "imageToPdf", href: "/tools/image-to-pdf", icon: IconFileTypePdf },
-  { key: "salary", href: "/dashboard/salary", icon: IconCalculator },
-  { key: "financeTools", href: "/dashboard/finance-tools", icon: IconCurrencyWon },
-  { key: "notes", href: "/dashboard/notes", icon: IconNotes },
-  { key: "settings", href: "/dashboard/settings", icon: IconSettings },
+  {
+    labelKey: "moneyAndSchedule",
+    items: [
+      { key: "transactions", href: "/dashboard/transactions", icon: IconWallet },
+      // 거래내역(txns) — 별도 페이지 신설 예정. 우선 가계부 페이지로 라우팅.
+      { key: "txns", href: "/dashboard/transactions", icon: IconCash },
+      { key: "subscriptions", href: "/dashboard/subscriptions", icon: IconRepeat },
+      { key: "calendar", href: "/dashboard/calendar", icon: IconCalendar },
+    ],
+  },
+  {
+    labelKey: "records",
+    items: [{ key: "notes", href: "/dashboard/notes", icon: IconNotes }],
+  },
+  {
+    labelKey: "tools",
+    items: [
+      { key: "salary", href: "/dashboard/salary", icon: IconCalculator },
+      { key: "financeTools", href: "/dashboard/finance-tools", icon: IconCurrencyWon },
+      { key: "imageCrop", href: "/tools/image-crop", icon: IconCrop },
+      { key: "imageToPdf", href: "/tools/image-to-pdf", icon: IconFileTypePdf },
+    ],
+  },
+  {
+    labelKey: "system",
+    items: [{ key: "settings", href: "/dashboard/settings", icon: IconSettings }],
+  },
 ];
 
 export function RedesignedSidebar() {
@@ -64,39 +87,45 @@ export function RedesignedSidebar() {
         </div>
         <div>
           <div className="wl-brand-name">WorkLife</div>
-          <div className="wl-brand-tag">DASHBOARD · 2026</div>
+          <div className="wl-brand-tag">Dashboard · 2026</div>
         </div>
       </Link>
 
-      <div className="wl-side-section-label">
-        {t("dashboard:sidebar.menuLabel")}
-      </div>
-
       <nav className="wl-nav">
-        {NAV.map((item) => {
-          const isActive =
-            pathname === item.href ||
-            (item.aliases?.includes(pathname) ?? false);
-          const Icon = item.icon;
-          const label = t(`system:layout.nav.${item.key}.label`);
-          const sub = t(`system:layout.nav.${item.key}.description`);
+        {NAV_GROUPS.map((group, gi) => (
+          <div
+            key={group.labelKey}
+            className={`wl-nav-group${gi === 0 ? " wl-nav-group--first" : ""}`}
+          >
+            <div className="wl-side-section-label">
+              {t(`dashboard:sidebar.groups.${group.labelKey}`)}
+            </div>
+            {group.items.map((item) => {
+              const isActive =
+                pathname === item.href ||
+                (item.aliases?.includes(pathname) ?? false);
+              const Icon = item.icon;
+              const label = t(`system:layout.nav.${item.key}.label`);
+              const sub = t(`system:layout.nav.${item.key}.description`);
 
-          return (
-            <Link
-              key={item.key}
-              href={item.href}
-              className={`wl-nav-item${
-                isActive ? " wl-nav-item--active" : ""
-              }`}
-            >
-              <Icon className="wl-nav-item__icon" stroke={1.5} />
-              <span className="wl-nav-item__label">
-                <span>{label}</span>
-                <span className="wl-nav-item__sub">{sub}</span>
-              </span>
-            </Link>
-          );
-        })}
+              return (
+                <Link
+                  key={item.key}
+                  href={item.href}
+                  className={`wl-nav-item${
+                    isActive ? " wl-nav-item--active" : ""
+                  }`}
+                >
+                  <Icon className="wl-nav-item__icon" stroke={1.5} />
+                  <span className="wl-nav-item__label">
+                    <span>{label}</span>
+                    <span className="wl-nav-item__sub">{sub}</span>
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        ))}
       </nav>
 
       <div className="wl-side-foot">
