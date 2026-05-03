@@ -65,6 +65,11 @@
     --font-mono,
     "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace
   );
+
+  /* 한글 + ₩ + 숫자가 섞이는 곳(통화/잔액 표시)에서 일관된 글리프를 보장.
+     JetBrains Mono Latin 서브셋에 ₩(U+20A9)가 없어 폴백이 발생하는 문제를 회피. */
+  --wl-font-tabular: Pretendard, "Apple SD Gothic Neo", "Noto Sans KR",
+    system-ui, -apple-system, sans-serif;
 }
 
 /* 다크모드는 Phase 5에서 처리. 토큰만 정의. */

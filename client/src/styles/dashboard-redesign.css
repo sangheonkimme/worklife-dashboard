@@ -1137,8 +1137,9 @@
   font-weight: 600;
 }
 .wl-money-stat__val {
-  font-family: var(--wl-font-mono);
-  font-size: 18px;
+  font-family: var(--wl-font-tabular);
+  font-variant-numeric: tabular-nums;
+  font-size: 22px;
   font-weight: 700;
   margin-top: 4px;
   letter-spacing: -0.02em;
@@ -1178,7 +1179,8 @@
   font-size: 11px;
   color: var(--wl-ink-mute);
   margin-top: 6px;
-  font-family: var(--wl-font-mono);
+  font-family: var(--wl-font-tabular);
+  font-variant-numeric: tabular-nums;
 }
 .wl-budget__labels b {
   color: var(--wl-ink);
@@ -1213,7 +1215,8 @@
   justify-content: space-between;
   font-size: 10px;
   color: var(--wl-ink-mute);
-  font-family: var(--wl-font-mono);
+  font-family: var(--wl-font-tabular);
+  font-variant-numeric: tabular-nums;
   margin-top: 4px;
 }
 
@@ -1256,8 +1259,9 @@
   margin-top: 2px;
 }
 .wl-txn__amount {
-  font-family: var(--wl-font-mono);
-  font-size: 13px;
+  font-family: var(--wl-font-tabular);
+  font-variant-numeric: tabular-nums;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: -0.01em;
 }
