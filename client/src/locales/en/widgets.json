@@ -297,49 +297,6 @@
       "description": "JPG · PNG · WebP · HEIC up to 20 MB · paste with ⌘V",
       "cta": "Choose file"
     },
-    "dropzone": {
-      "title": "Drop an image or click to upload",
-      "replaceTitle": "Drop or click to replace the current image",
-      "subtitle": "PNG, JPEG, or WebP up to 20 MB. Paste with ⌘/Ctrl + V."
-    },
-    "aspect": {
-      "free": "Freeform",
-      "custom": "Custom"
-    },
-    "sections": {
-      "inputArea": "Source image",
-      "inputDescription": "Upload, drop, or paste an image before editing the crop.",
-      "aspect": "Aspect ratio",
-      "freeformArea": "Crop area size",
-      "zoom": "Zoom",
-      "format": "Output format",
-      "quality": "Quality",
-      "transparent": "Keep transparent background",
-      "transparentHint": "JPEG does not support transparency."
-    },
-    "fields": {
-      "aspectWidth": "Width",
-      "aspectHeight": "Height",
-      "cropWidth": "Width (px)",
-      "cropHeight": "Height (px)"
-    },
-    "actions": {
-      "download": "Download crop",
-      "copy": "Copy to clipboard",
-      "clearImage": "Remove current image"
-    },
-    "empty": {
-      "title": "Drop or paste an image to get started",
-      "description": "Use drag-and-drop, the upload area above, or paste directly from the clipboard."
-    },
-    "history": {
-      "title": "Recent exports",
-      "empty": "Exports will appear here after you save or copy a crop.",
-      "download": "Download",
-      "copy": "Copy",
-      "remove": "Remove",
-      "clear": "Clear history"
-    },
     "notifications": {
       "unsupportedTitle": "Unsupported file",
       "unsupportedMessage": "Please upload a PNG, JPEG, or WebP image.",
