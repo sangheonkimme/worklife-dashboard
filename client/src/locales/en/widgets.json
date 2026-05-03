@@ -261,6 +261,42 @@
     "crumb": "Tools · Image cropper",
     "handSub": "crop it clean",
     "pageSub": "Adjust ratio, rotation, and output format on a single screen",
+    "headerMeta": "Source {{w}} × {{h}} px",
+    "actions": {
+      "reset": "Reset",
+      "export": "Export",
+      "download": "Download",
+      "downloadAs": "Save as {{format}}",
+      "copy": "Copy to clipboard",
+      "flipH": "Flip"
+    },
+    "sections": {
+      "aspect": "Ratio presets",
+      "area": "Manual area",
+      "transform": "Transform",
+      "format": "Format",
+      "quality": "Quality",
+      "qualityNotePng": "PNG is lossless — quality setting ignored",
+      "download": "Download",
+      "recent": "Recent"
+    },
+    "stage": {
+      "preview": "Preview",
+      "dropHint": "Drop an image here",
+      "fit": "Fit",
+      "output": "Output {{w}} × {{h}} · {{ratio}}",
+      "noOutput": "Drop an image to see output info",
+      "zoomLabel": "Zoom {{pct}}%"
+    },
+    "tip": {
+      "title": "Tip",
+      "body": "For social, 1080px wide at quality 88~92 works well."
+    },
+    "empty": {
+      "title": "Drop an image here",
+      "description": "JPG · PNG · WebP · HEIC up to 20 MB · paste with ⌘V",
+      "cta": "Choose file"
+    },
     "dropzone": {
       "title": "Drop an image or click to upload",
       "replaceTitle": "Drop or click to replace the current image",

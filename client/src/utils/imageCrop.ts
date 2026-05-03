@@ -52,12 +52,19 @@ const blobToDataUrl = (blob: Blob): Promise<string> =>
     reader.readAsDataURL(blob);
   });
 
+export interface CropTransforms {
+  rotation?: number; // degrees, any (positive=cw)
+  flipH?: boolean;
+  flipV?: boolean;
+}
+
 export async function getCroppedImage(
   imageSrc: string,
   croppedArea: Area,
   format: CropFormat,
   quality: number,
-  transparentBackground: boolean
+  transparentBackground: boolean,
+  transforms: CropTransforms = {}
 ): Promise<CropResult> {
   const image = await loadImage(imageSrc);
   const canvas = document.createElement("canvas");
@@ -75,17 +82,55 @@ export async function getCroppedImage(
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
 
-  ctx.drawImage(
-    image,
-    croppedArea.x,
-    croppedArea.y,
-    croppedArea.width,
-    croppedArea.height,
-    0,
-    0,
-    canvas.width,
-    canvas.height
-  );
+  const rotation = ((transforms.rotation ?? 0) * Math.PI) / 180;
+  const flipH = transforms.flipH ? -1 : 1;
+  const flipV = transforms.flipV ? -1 : 1;
+
+  if (rotation === 0 && flipH === 1 && flipV === 1) {
+    // Fast path — direct draw
+    ctx.drawImage(
+      image,
+      croppedArea.x,
+      croppedArea.y,
+      croppedArea.width,
+      croppedArea.height,
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+  } else {
+    // Render rotated/flipped source onto an intermediate canvas, then crop.
+    const sw = image.naturalWidth || image.width;
+    const sh = image.naturalHeight || image.height;
+    const cos = Math.abs(Math.cos(rotation));
+    const sin = Math.abs(Math.sin(rotation));
+    const bw = Math.ceil(sw * cos + sh * sin);
+    const bh = Math.ceil(sw * sin + sh * cos);
+
+    const stage = document.createElement("canvas");
+    stage.width = bw;
+    stage.height = bh;
+    const sctx = stage.getContext("2d");
+    if (!sctx) throw new Error("widgets:imageCrop.errors.canvas");
+
+    sctx.translate(bw / 2, bh / 2);
+    sctx.rotate(rotation);
+    sctx.scale(flipH, flipV);
+    sctx.drawImage(image, -sw / 2, -sh / 2);
+
+    ctx.drawImage(
+      stage,
+      croppedArea.x,
+      croppedArea.y,
+      croppedArea.width,
+      croppedArea.height,
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+  }
 
   const mimeType = FORMAT_TO_MIME[format];
   const effectiveQuality =
