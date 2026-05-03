@@ -1,0 +1,377 @@
+/* ============================================================
+ * Dashboard Redesign — Component Styles (Phase 1)
+ * 대시보드 전용. 다른 페이지 영향 없음.
+ * 모든 셀렉터는 .wl-* 프리픽스로 격리.
+ * ============================================================ */
+
+/* ───────── 대시보드 표면 (배경/타입) ───────── */
+.wl-dashboard-surface {
+  background: var(--wl-bg);
+  background-image: radial-gradient(
+      circle at 20% 10%,
+      rgba(255, 255, 255, 0.5) 0%,
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 80% 90%,
+      rgba(180, 160, 120, 0.1) 0%,
+      transparent 50%
+    );
+  font-family: var(--wl-font-sans);
+  color: var(--wl-ink);
+}
+
+[data-mantine-color-scheme="dark"] .wl-dashboard-surface {
+  background-image: radial-gradient(
+      circle at 20% 10%,
+      rgba(255, 255, 255, 0.04) 0%,
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 80% 90%,
+      rgba(180, 160, 120, 0.05) 0%,
+      transparent 50%
+    );
+}
+
+/* ───────── 토픽바 (인사) ───────── */
+.wl-topbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.wl-topbar h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--wl-ink);
+}
+.wl-topbar .wl-hand {
+  font-family: var(--wl-font-hand);
+  font-weight: 700;
+  color: var(--wl-ink-soft);
+  font-size: 22px;
+  margin-left: 6px;
+  font-style: italic;
+}
+.wl-topbar-sub {
+  margin-top: 3px;
+  font-size: 13px;
+  color: var(--wl-ink-mute);
+}
+
+/* ───────── 손글씨 강조 ───────── */
+.wl-hand {
+  font-family: var(--wl-font-hand);
+}
+.wl-mono {
+  font-family: var(--wl-font-mono);
+}
+
+/* ───────── 스티커 메모 ───────── */
+.wl-notes-card {
+  background: linear-gradient(180deg, #f7f1e3 0%, #f1e9d3 100%);
+  border-radius: var(--wl-radius-lg);
+  border: 1px solid var(--wl-line-strong);
+  padding: 22px 22px 28px;
+  position: relative;
+  overflow: visible;
+  box-shadow: var(--wl-shadow-sm);
+}
+
+[data-mantine-color-scheme="dark"] .wl-notes-card {
+  background: linear-gradient(180deg, #2a2620 0%, #1f1c17 100%);
+}
+
+.wl-sticky {
+  position: relative;
+  width: 100%;
+  min-height: 200px;
+  padding: 28px 18px 18px;
+  border-radius: 2px 14px 4px 8px;
+  box-shadow: var(--wl-shadow-paper);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  border: none;
+}
+.wl-sticky:hover {
+  transform: translateY(-3px) rotate(var(--wl-rot, 0deg)) scale(1.02);
+  box-shadow: var(--wl-shadow-lift);
+  z-index: 5;
+}
+
+.wl-sticky--yellow {
+  background: linear-gradient(170deg, var(--wl-yellow-light) 0%, var(--wl-yellow) 100%);
+  --wl-rot: -1.2deg;
+}
+.wl-sticky--pink {
+  background: linear-gradient(170deg, var(--wl-pink-light) 0%, var(--wl-pink) 100%);
+  --wl-rot: 1.6deg;
+}
+.wl-sticky--blue {
+  background: linear-gradient(170deg, var(--wl-blue-light) 0%, var(--wl-blue) 100%);
+  --wl-rot: -0.8deg;
+}
+.wl-sticky--mint {
+  background: linear-gradient(170deg, #e3f1d6 0%, var(--wl-green) 100%);
+  --wl-rot: 1deg;
+}
+
+.wl-sticky::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 70px;
+  height: 22px;
+  background: var(--wl-tape);
+  border: 1px solid var(--wl-tape-edge);
+  transform: translateX(-50%) rotate(-2deg);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  pointer-events: none;
+}
+.wl-sticky--pink::before {
+  background: rgba(255, 200, 200, 0.6);
+  transform: translateX(-50%) rotate(3deg);
+}
+.wl-sticky--blue::before {
+  background: rgba(200, 220, 255, 0.6);
+  transform: translateX(-50%) rotate(-1deg);
+}
+
+.wl-sticky textarea,
+.wl-sticky textarea:focus {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  font-family: var(--wl-font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--wl-ink);
+  line-height: 1.55;
+  letter-spacing: -0.005em;
+}
+.wl-sticky textarea::placeholder {
+  color: rgba(0, 0, 0, 0.3);
+}
+
+/* 빈 메모 (생성 버튼) */
+.wl-sticky--empty {
+  background: transparent;
+  border: 2px dashed var(--wl-line-strong);
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--wl-ink-mute);
+  font-family: var(--wl-font-hand);
+  font-size: 22px;
+  cursor: pointer;
+  border-radius: var(--wl-radius-md);
+  min-height: 200px;
+  transition: border-color 0.15s, color 0.15s;
+}
+.wl-sticky--empty:hover {
+  border-color: var(--wl-ink);
+  color: var(--wl-ink);
+}
+.wl-sticky--empty::before {
+  display: none;
+}
+
+/* ───────── 페이퍼 카드 (타이머/체크리스트 공통) ───────── */
+.wl-paper-card {
+  background: var(--wl-card);
+  border: 1px solid var(--wl-line);
+  border-radius: var(--wl-radius-md);
+  box-shadow: var(--wl-shadow-sm);
+  position: relative;
+}
+.wl-paper-card--pomodoro {
+  background: linear-gradient(180deg, #fff5f0 0%, #fde7dc 100%);
+}
+.wl-paper-card--stopwatch {
+  background: linear-gradient(180deg, #f0f6ff 0%, #e1ecf9 100%);
+}
+
+[data-mantine-color-scheme="dark"] .wl-paper-card--pomodoro {
+  background: linear-gradient(180deg, #2d211c 0%, #261912 100%);
+}
+[data-mantine-color-scheme="dark"] .wl-paper-card--stopwatch {
+  background: linear-gradient(180deg, #1c2330 0%, #131a26 100%);
+}
+
+/* ───────── 원형 타이머 디스플레이 ───────── */
+.wl-timer-circle {
+  width: 170px;
+  height: 170px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  margin: 4px auto 4px;
+}
+.wl-timer-circle svg {
+  position: absolute;
+  inset: 0;
+  transform: rotate(-90deg);
+}
+.wl-timer-time {
+  font-family: var(--wl-font-mono);
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-align: center;
+  line-height: 1;
+  color: var(--wl-ink);
+}
+.wl-timer-time small {
+  display: block;
+  font-family: var(--wl-font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--wl-ink-mute);
+  margin-top: 4px;
+  letter-spacing: 0.06em;
+}
+.wl-timer-time--pomodoro {
+  color: var(--wl-red);
+}
+.wl-timer-time--stopwatch {
+  color: var(--wl-stopwatch-blue);
+  font-size: 26px;
+}
+
+/* ───────── 프리셋 칩 ───────── */
+.wl-preset {
+  font-family: var(--wl-font-mono);
+  font-size: 11px;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--wl-line);
+  border-radius: 99px;
+  cursor: pointer;
+  color: var(--wl-ink-soft);
+  transition: all 0.12s;
+  user-select: none;
+}
+.wl-preset:hover {
+  background: #fff;
+  border-color: var(--wl-ink);
+  color: var(--wl-ink);
+}
+.wl-preset--on {
+  background: var(--wl-ink);
+  color: var(--wl-yellow);
+  border-color: var(--wl-ink);
+}
+
+/* ───────── 타이머 버튼 ───────── */
+.wl-timer-btn {
+  height: 36px;
+  padding: 0 16px;
+  border: 1px solid var(--wl-line);
+  background: var(--wl-card-elev);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.12s;
+  color: var(--wl-ink);
+}
+.wl-timer-btn:hover {
+  border-color: var(--wl-ink);
+}
+.wl-timer-btn--primary {
+  background: var(--wl-ink);
+  color: var(--wl-yellow);
+  border-color: var(--wl-ink);
+}
+.wl-timer-btn--primary:hover {
+  background: #000;
+  border-color: #000;
+}
+.wl-paper-card--pomodoro .wl-timer-btn--primary {
+  background: var(--wl-red);
+  color: white;
+  border-color: var(--wl-red);
+}
+.wl-paper-card--stopwatch .wl-timer-btn--primary {
+  background: var(--wl-stopwatch-blue);
+  color: white;
+  border-color: var(--wl-stopwatch-blue);
+}
+
+/* ───────── 태그 ───────── */
+.wl-tag {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 99px;
+  background: var(--wl-bg-paper);
+  border: 1px solid var(--wl-line);
+  color: var(--wl-ink-soft);
+}
+.wl-tag--live {
+  background: var(--wl-red);
+  color: #fff;
+  border-color: var(--wl-red);
+}
+
+/* ───────── 진행링 ───────── */
+.wl-progress-ring {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+}
+.wl-progress-ring svg {
+  transform: rotate(-90deg);
+}
+.wl-progress-ring__pct {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--wl-font-sans);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--wl-ink);
+}
+
+/* ───────── 카드 헤드 ───────── */
+.wl-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  gap: 10px;
+}
+.wl-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--wl-ink);
+}
+.wl-card-title--accent {
+  color: var(--wl-red);
+}
+.wl-card-title--stopwatch {
+  color: var(--wl-stopwatch-blue);
+}
+.wl-card-foot {
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--wl-ink-mute);
+  text-align: center;
+}

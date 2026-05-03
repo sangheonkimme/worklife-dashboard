@@ -1,0 +1,81 @@
+/* ============================================================
+ * WorkLife Dashboard — Design Tokens (Phase 1)
+ * Paper-desk aesthetic. CSS custom properties only.
+ * 폰트는 next/font가 주입한 --font-sans / --font-hand / --font-mono를 사용.
+ * ============================================================ */
+
+:root {
+  /* ── Surface ── */
+  --wl-bg: #efe9dc;
+  --wl-bg-paper: #f7f1e3;
+  --wl-card: #fffdf6;
+  --wl-card-elev: #ffffff;
+
+  /* ── Text ── */
+  --wl-ink: #1f1d18;
+  --wl-ink-soft: #4a463d;
+  --wl-ink-mute: #8a8479;
+
+  /* ── Lines ── */
+  --wl-line: #e0d6bf;
+  --wl-line-strong: #c9bd9f;
+
+  /* ── Accents ── */
+  --wl-yellow: #ffe27a;
+  --wl-yellow-edge: #e8c84a;
+  --wl-yellow-light: #fff0a8;
+  --wl-pink: #ffc1ce;
+  --wl-pink-edge: #e89aac;
+  --wl-pink-light: #ffd2dc;
+  --wl-blue: #b9dcec;
+  --wl-blue-edge: #8ec0d6;
+  --wl-blue-light: #d3ecf6;
+  --wl-green: #c5e4a8;
+  --wl-red: #e25c4d;
+  --wl-stopwatch-blue: #2c5e8b;
+
+  /* ── Tape ── */
+  --wl-tape: rgba(255, 240, 180, 0.7);
+  --wl-tape-edge: rgba(220, 200, 130, 0.5);
+
+  /* ── Shadows ── */
+  --wl-shadow-sm: 0 1px 2px rgba(40, 30, 10, 0.06),
+    0 2px 6px rgba(40, 30, 10, 0.04);
+  --wl-shadow-md: 0 4px 14px rgba(40, 30, 10, 0.08),
+    0 2px 4px rgba(40, 30, 10, 0.05);
+  --wl-shadow-paper: 0 1px 1px rgba(0, 0, 0, 0.06),
+    0 6px 14px rgba(40, 30, 10, 0.1),
+    0 18px 30px -18px rgba(40, 30, 10, 0.18);
+  --wl-shadow-lift: 0 8px 24px rgba(40, 30, 10, 0.14),
+    0 24px 48px -16px rgba(40, 30, 10, 0.18);
+
+  /* ── Radius ── */
+  --wl-radius-sm: 8px;
+  --wl-radius-md: 14px;
+  --wl-radius-lg: 22px;
+
+  /* ── Type stack fallbacks (next/font가 --font-* 변수를 주입함) ── */
+  --wl-font-sans: var(
+    --font-sans,
+    "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system,
+      "Apple SD Gothic Neo", "Noto Sans KR", sans-serif
+  );
+  --wl-font-hand: var(--font-hand, "Gaegu", "Caveat", cursive);
+  --wl-font-mono: var(
+    --font-mono,
+    "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace
+  );
+}
+
+/* 다크모드는 Phase 5에서 처리. 토큰만 정의. */
+[data-mantine-color-scheme="dark"] {
+  --wl-bg: #1a1814;
+  --wl-bg-paper: #211e18;
+  --wl-card: #2a2620;
+  --wl-card-elev: #322d26;
+  --wl-ink: #f5efde;
+  --wl-ink-soft: #c9c0a8;
+  --wl-ink-mute: #8a8479;
+  --wl-line: #3a352c;
+  --wl-line-strong: #564f42;
+}

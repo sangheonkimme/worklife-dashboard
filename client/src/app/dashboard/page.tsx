@@ -262,6 +262,24 @@ const SortableWidget = ({
   );
 };
 
+const DashboardTopbar = () => {
+  const { t } = useTranslation("dashboard");
+  const { user } = useAuth();
+  const greetingName = user?.name?.trim() || t("topbar.guestName");
+
+  return (
+    <div className="wl-topbar">
+      <div>
+        <h1>
+          {t("topbar.greeting", { name: greetingName })}
+          <span className="wl-hand"> — {t("topbar.handTagline")}</span>
+        </h1>
+        <div className="wl-topbar-sub">{t("topbar.subtitle")}</div>
+      </div>
+    </div>
+  );
+};
+
 const DashboardPage = () => {
   const { isAuthenticated } = useAuth();
   const { t } = useTranslation("dashboard");
@@ -340,8 +358,10 @@ const DashboardPage = () => {
   };
 
   return (
-    <Stack gap="lg">
-      {isAuthenticated ? (
+    <div className="wl-dashboard-surface" style={{ padding: "8px 4px 32px" }}>
+      <DashboardTopbar />
+      <Stack gap="lg">
+        {isAuthenticated ? (
         <Grid gutter="lg" align="stretch">
           <Grid.Col span={{ base: 12, lg: 9 }}>
             <StickyNotes />
@@ -426,7 +446,8 @@ const DashboardPage = () => {
           </SimpleGrid>
         )}
       </div>
-    </Stack>
+      </Stack>
+    </div>
   );
 };
 

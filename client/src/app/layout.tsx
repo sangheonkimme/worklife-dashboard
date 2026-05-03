@@ -1,7 +1,31 @@
 import type { Metadata } from "next";
+import { Plus_Jakarta_Sans, Gaegu, JetBrains_Mono } from "next/font/google";
 import { AppProviders } from "./providers";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
+import "@/styles/design-tokens.css";
+import "@/styles/dashboard-redesign.css";
+
+const fontSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-sans",
+  display: "swap",
+});
+
+const fontHand = Gaegu({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-hand",
+  display: "swap",
+});
+
+const fontMono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-mono",
+  display: "swap",
+});
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL || "https://www.worklife-dashboard.com";
@@ -34,7 +58,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko">
+    <html
+      lang="ko"
+      className={`${fontSans.variable} ${fontHand.variable} ${fontMono.variable}`}
+    >
       <body>
         <AppProviders>{children}</AppProviders>
         <SpeedInsights />

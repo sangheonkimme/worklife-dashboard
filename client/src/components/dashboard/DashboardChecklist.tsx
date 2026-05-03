@@ -14,13 +14,12 @@ import {
   Stack,
   Text,
   TextInput,
-  ThemeIcon,
   UnstyledButton,
 } from "@mantine/core";
+import { ChecklistProgressRing } from "./redesign/ChecklistProgressRing";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { notifications } from "@mantine/notifications";
 import {
-  IconCheck,
   IconChevronDown,
   IconChevronUp,
   IconPlus,
@@ -417,10 +416,12 @@ export function DashboardChecklist() {
       }}
     >
       <Stack gap="sm" style={{ flex: 1 }}>
-        <Group justify="space-between">
+        <Group justify="space-between" align="center">
           <div>
-            <Text fw={600}>{t("dashboard:checklist.title")}</Text>
-            <Text size="sm" c="dimmed">
+            <Text fw={700} size="md" style={{ letterSpacing: "-0.01em" }}>
+              {t("dashboard:checklist.title")}
+            </Text>
+            <Text size="xs" c="dimmed" mt={2}>
               {isLimitReached
                 ? t("dashboard:checklist.limitReached")
                 : t("dashboard:checklist.countLabel", {
@@ -430,9 +431,10 @@ export function DashboardChecklist() {
             </Text>
           </div>
 
-          <ThemeIcon variant="light" color="green" radius="md">
-            <IconCheck size={18} />
-          </ThemeIcon>
+          <ChecklistProgressRing
+            completed={data?.completedItems.length ?? 0}
+            total={totalCount}
+          />
         </Group>
 
         <TextInput

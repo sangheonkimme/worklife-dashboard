@@ -1,4 +1,10 @@
 {
+  "topbar": {
+    "greeting": "안녕하세요, {{name}}님",
+    "guestName": "게스트",
+    "handTagline": "오늘도 한 페이지씩",
+    "subtitle": "오늘의 메모와 타이머를 한곳에서 관리하세요."
+  },
   "stickyNotes": {
     "title": "스티커 메모",
     "loading": "로딩 중...",

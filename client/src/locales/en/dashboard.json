@@ -1,4 +1,10 @@
 {
+  "topbar": {
+    "greeting": "Hi, {{name}}",
+    "guestName": "Friend",
+    "handTagline": "one page at a time",
+    "subtitle": "Notes and timers, all in one place."
+  },
   "stickyNotes": {
     "title": "Sticky notes",
     "loading": "Loading...",

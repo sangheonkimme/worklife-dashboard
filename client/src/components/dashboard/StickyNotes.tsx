@@ -160,8 +160,8 @@ export function StickyNotes() {
 
   if (isLoading) {
     return (
-      <Box>
-        <Title order={3} mb="md">
+      <Box className="wl-notes-card">
+        <Title order={4} mb="md">
           {t("dashboard:stickyNotes.title")}
         </Title>
         <Text c="dimmed">{t("dashboard:stickyNotes.loading")}</Text>
@@ -170,13 +170,28 @@ export function StickyNotes() {
   }
 
   return (
-    <Box>
-      <Title order={4} mb="md">
-        {t("dashboard:stickyNotes.title")}
-      </Title>
+    <Box className="wl-notes-card">
+      <Box
+        mb="md"
+        style={{ display: "flex", alignItems: "baseline", gap: 10 }}
+      >
+        <Title
+          order={2}
+          style={{
+            margin: 0,
+            fontSize: 22,
+            fontWeight: 800,
+            letterSpacing: "-0.02em",
+          }}
+        >
+          {t("dashboard:stickyNotes.title")}
+        </Title>
+        <Text className="wl-hand" size="md" c="dimmed">
+          desk · sticky
+        </Text>
+      </Box>
 
-      <Grid gutter="md">
-        {/* 기존 메모들 렌더링 */}
+      <Grid gutter="lg" align="stretch">
         {notes.map((note) => (
           <Grid.Col key={note.id} span={{ base: 12, xs: 6, md: 4 }}>
             <StickyNoteCard
@@ -187,7 +202,6 @@ export function StickyNotes() {
           </Grid.Col>
         ))}
 
-        {/* 3개 미만일 때만 새 메모 버튼 1개 표시 */}
         {notes.length < MAX_NOTES && (
           <Grid.Col span={{ base: 12, xs: 6, md: 4 }}>
             <CreateStickyNoteButton
@@ -200,8 +214,8 @@ export function StickyNotes() {
       </Grid>
 
       {notes.length >= MAX_NOTES && (
-        <Text size="sm" c="dimmed" mt="sm">
-          {t("dashboard:stickyNotes.limitNotice", { count: MAX_NOTES })}
+        <Text size="sm" c="dimmed" mt="md" className="wl-hand">
+          — {t("dashboard:stickyNotes.limitNotice", { count: MAX_NOTES })}
         </Text>
       )}
     </Box>
