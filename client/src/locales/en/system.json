@@ -19,55 +19,61 @@
       "heading": "Menu",
       "transactions": {
         "label": "Finance",
-        "description": "Budgets · transactions · stats",
+        "description": "Income · expense · stats",
         "pageTitle": "Finance",
         "pageDescription": "Manage budgets, transactions, and analytics in one place."
       },
       "dashboard": {
         "label": "Dashboard",
-        "description": "Home dashboard",
+        "description": "Home / Dashboard",
         "pageTitle": "Dashboard",
         "pageDescription": "View your frequently used tools at a glance."
       },
+      "calendar": {
+        "label": "Calendar",
+        "description": "Schedule · events",
+        "pageTitle": "Calendar",
+        "pageDescription": "See this month's schedule and events."
+      },
       "subscriptions": {
         "label": "Subscriptions",
-        "description": "Recurring & fixed costs",
+        "description": "Manage subscriptions",
         "pageTitle": "Subscriptions",
         "pageDescription": "Track recurring payments and fixed expenses."
       },
       "imageCrop": {
         "label": "Image cropper",
-        "description": "Crop & export images",
+        "description": "Aspect · crop",
         "pageTitle": "Image cropper",
         "pageDescription": "Crop, resize, and export images quickly."
       },
       "imageToPdf": {
         "label": "Image to PDF",
-        "description": "Combine images to PDF",
+        "description": "Convert in batch",
         "pageTitle": "Image to PDF",
         "pageDescription": "Convert multiple images into a single PDF."
       },
       "salary": {
-        "label": "Salary calculator",
-        "description": "Net pay calculator",
+        "label": "Salary",
+        "description": "Net pay",
         "pageTitle": "Salary calculator",
-        "pageDescription": "Estimate take-home pay with the 2025 tax brackets."
+        "pageDescription": "Estimate take-home pay with the 2026 tax brackets."
       },
       "financeTools": {
-        "label": "Finance tools",
-        "description": "Loan & repayment",
-        "pageTitle": "Finance tools",
-        "pageDescription": "Simulate loan repayments and compare payment plans."
+        "label": "Wage tools",
+        "description": "Hourly · weekly",
+        "pageTitle": "Wage tools",
+        "pageDescription": "Compare hourly and weekly pay scenarios."
       },
       "notes": {
         "label": "Notes",
-        "description": "Note manager",
+        "description": "Long-form",
         "pageTitle": "Notes",
         "pageDescription": "Create and organize personal notes."
       },
       "settings": {
         "label": "Settings",
-        "description": "Preferences",
+        "description": "Theme · account",
         "pageTitle": "Settings",
         "pageDescription": "Adjust notification, theme, and widget preferences."
       }

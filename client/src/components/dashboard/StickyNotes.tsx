@@ -7,6 +7,8 @@ import { useTranslation } from "react-i18next";
 import { stickyNotesApi } from "@/services/api/stickyNotesApi";
 import { StickyNoteCard } from "./StickyNoteCard";
 import { CreateStickyNoteButton } from "./CreateStickyNoteButton";
+import { JournalCard } from "./redesign/JournalCard";
+import { PinBoardCard } from "./redesign/PinBoardCard";
 import { STICKY_NOTE_COLOR_ARRAY } from "@/types/stickyNote";
 import type { StickyNote } from "@/types/stickyNote";
 import { getApiErrorMessage } from "@/utils/error";
@@ -213,11 +215,30 @@ export function StickyNotes() {
         )}
       </Grid>
 
-      {notes.length >= MAX_NOTES && (
-        <Text size="sm" c="dimmed" mt="md" className="wl-hand">
-          — {t("dashboard:stickyNotes.limitNotice", { count: MAX_NOTES })}
-        </Text>
-      )}
+      <Box
+        mt="md"
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          fontSize: 12,
+          color: "var(--wl-ink-mute)",
+        }}
+      >
+        <span>
+          {t("dashboard:stickyNotes.limitNotice", { count: MAX_NOTES })}
+        </span>
+        <span style={{ fontFamily: "var(--wl-font-mono)" }}>
+          {notes.length} / {MAX_NOTES}
+        </span>
+      </Box>
+
+      <div className="wl-desk-pile">
+        <div className="wl-desk-pile__row">
+          <JournalCard />
+          <PinBoardCard />
+        </div>
+      </div>
     </Box>
   );
 }

@@ -1,9 +1,88 @@
 {
+  "sidebar": {
+    "menuLabel": "MENU",
+    "guestName": "Guest",
+    "planFree": "Free plan"
+  },
   "topbar": {
-    "greeting": "Hi, {{name}}",
-    "guestName": "Friend",
-    "handTagline": "one page at a time",
-    "subtitle": "Notes and timers, all in one place."
+    "greeting": "Good morning, {{name}}",
+    "guestName": "friend",
+    "handTagline": "let's get it done",
+    "subtitle": "Notes and timers, all in one place.",
+    "subtitleShort": "Today's notes and schedule in one place.",
+    "searchPlaceholder": "Search...",
+    "actions": {
+      "darkMode": "Switch to dark mode",
+      "lightMode": "Switch to light mode",
+      "notifications": "Notifications"
+    }
+  },
+  "footer": {
+    "copyright": "© {{year}} WorkLife Dashboard · Made with ☕ in Seoul",
+    "version": "v2.0 · Release notes"
+  },
+  "sections": {
+    "tools": "Tools",
+    "toolsViewAll": "View all →",
+    "timers": "Timers",
+    "timersSettings": "Settings →",
+    "overview": "At a glance",
+    "overviewMore": "More →"
+  },
+  "tools": {
+    "salary": {
+      "title": "Salary calculator",
+      "desc": "Quickly estimate your take-home pay",
+      "point1": "Applies 2026 tax brackets",
+      "point2": "Auto national insurance & income tax"
+    },
+    "imageCrop": {
+      "title": "Image cropper",
+      "desc": "Crop and export uploaded images fast",
+      "point1": "Set custom size and format",
+      "point2": "Available in fullscreen tool"
+    },
+    "imageToPdf": {
+      "title": "Image to PDF",
+      "desc": "Combine multiple images into a clean PDF",
+      "point1": "Preserves quality and order",
+      "point2": "Runs in fullscreen tool"
+    }
+  },
+  "deskPile": {
+    "journal": {
+      "tab": "One-line journal",
+      "placeholder": "Write your one line for today",
+      "footHand": "today's line"
+    },
+    "pinBoard": {
+      "title": "Quick info",
+      "addLabel": "+ Add pin"
+    }
+  },
+  "money": {
+    "title": "Finance — {{month}}",
+    "subtitle": "Payday in D-{{days}} · this month at a glance",
+    "addEntry": "+ Add entry",
+    "stats": {
+      "income": "Salary (net)",
+      "expense": "This month",
+      "remaining": "Remaining",
+      "incomeSub": "Paid on the 25th",
+      "expenseSub": "{{pct}}% of budget used",
+      "remainingSub": "Through D-{{days}}"
+    },
+    "budgetUsed": "{{pct}}% used",
+    "viewAll": "More →"
+  },
+  "calendar": {
+    "title": "{{year}} . {{month}}",
+    "subtitle": "{{count}} events this month",
+    "expandAria": "Open full calendar",
+    "weekdays": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    "memoPlaceholder": "Jot down a quick thought",
+    "memoLabel": "Quick memo",
+    "memoSave": "Save"
   },
   "stickyNotes": {
     "title": "Sticky notes",
