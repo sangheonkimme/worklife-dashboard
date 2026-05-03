@@ -251,12 +251,13 @@ export function StickyNotes() {
           />
         ))}
 
-        {/* 비어있을 때만 시안과 동일한 dashed 슬롯을 표시. 추가는 헤더 버튼으로 */}
-        {sortedNotes.length === 0 && (
+        {/* 한도 미만일 땐 보드 끝에 dashed 슬롯 노출 (헤더 버튼과 동일 동작) */}
+        {!isLimitReached && (
           <button
             type="button"
             className="wl-sticky--empty"
             onClick={handleAdd}
+            disabled={createMutation.isPending}
             aria-label={t("dashboard:stickyNotes.createButton")}
           >
             + {t("dashboard:stickyNotes.createButton")}
