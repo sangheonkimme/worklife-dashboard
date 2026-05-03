@@ -1,6 +1,5 @@
 "use client";
 
-import { Container, Stack, Title, Text, Card } from "@mantine/core";
 import { useTranslation } from "react-i18next";
 import { ImageCropWidget } from "@/components/widgets/ImageCropWidget";
 
@@ -8,17 +7,25 @@ const ImageCropPage = () => {
   const { t } = useTranslation("widgets");
 
   return (
-    <Container size="lg" py="xl">
-      <Stack gap="md">
+    <div className="wl-tool-page">
+      <header className="wl-page-head">
         <div>
-          <Title order={2}>{t("imageCrop.title")}</Title>
-          <Text c="dimmed">{t("imageCrop.subtitle")}</Text>
+          <div className="wl-crumb">{t("imageCrop.crumb")}</div>
+          <h1 className="wl-page-title">
+            {t("imageCrop.title")}
+            <span className="wl-hand-sub">— {t("imageCrop.handSub")}</span>
+          </h1>
+          <div className="wl-page-sub">{t("imageCrop.pageSub")}</div>
         </div>
-        <Card shadow="sm" padding="lg" radius="md" withBorder>
-          <ImageCropWidget />
-        </Card>
-      </Stack>
-    </Container>
+      </header>
+
+      <div
+        className="wl-paper-card"
+        style={{ padding: 18, overflow: "hidden" }}
+      >
+        <ImageCropWidget showHeader={false} />
+      </div>
+    </div>
   );
 };
 

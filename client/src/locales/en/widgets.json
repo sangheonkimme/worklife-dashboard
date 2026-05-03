@@ -258,6 +258,9 @@
     "title": "Image cropper",
     "subtitle": "Import, crop, and export images without leaving the dashboard.",
     "cta": "Open the full editor to fine-tune crop sizes and formats.",
+    "crumb": "Tools · Image cropper",
+    "handSub": "crop it clean",
+    "pageSub": "Adjust ratio, rotation, and output format on a single screen",
     "dropzone": {
       "title": "Drop an image or click to upload",
       "replaceTitle": "Drop or click to replace the current image",

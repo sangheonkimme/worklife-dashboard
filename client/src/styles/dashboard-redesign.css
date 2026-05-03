@@ -780,6 +780,381 @@
   color: var(--wl-ink-mute);
 }
 
+/* ───────── TOOL PAGE HEAD (이미지 자르기 등 도구 상세) ───────── */
+.wl-page-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.wl-page-head__actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.wl-crumb {
+  font-size: 11px;
+  color: var(--wl-ink-mute);
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+.wl-page-title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--wl-ink);
+}
+.wl-page-title .wl-hand-sub {
+  font-family: var(--wl-font-hand);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--wl-ink-soft);
+  margin-left: 6px;
+  font-style: italic;
+}
+.wl-page-sub {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--wl-ink-mute);
+}
+
+/* 도구 페이지 공통 페이퍼 셸 */
+.wl-tool-page {
+  font-family: var(--wl-font-sans);
+  color: var(--wl-ink);
+}
+
+/* ───────── CROP — 3컬럼 셸 (rail · stage · output) ───────── */
+.wl-crop-shell {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr) 280px;
+  gap: 18px;
+  align-items: stretch;
+}
+@media (max-width: 1100px) {
+  .wl-crop-shell {
+    grid-template-columns: 1fr;
+  }
+}
+
+.wl-crop-rail,
+.wl-crop-out {
+  background: var(--wl-card);
+  border: 1px solid var(--wl-line);
+  border-radius: var(--wl-radius-md);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.wl-rail-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.wl-rail-h {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--wl-ink-mute);
+}
+
+/* 비율 프리셋 그리드 */
+.wl-ratio-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.wl-ratio-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 8px;
+  background: var(--wl-bg-paper);
+  border: 1px solid var(--wl-line);
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--wl-ink);
+  transition: border-color 0.12s, background 0.12s, color 0.12s;
+}
+.wl-ratio-card:hover {
+  border-color: var(--wl-line-strong);
+}
+.wl-ratio-card--on {
+  background: var(--wl-ink);
+  border-color: var(--wl-ink);
+  color: var(--wl-yellow);
+}
+.wl-ratio-card b {
+  font-size: 11px;
+  font-weight: 700;
+}
+.wl-ratio-card small {
+  font-size: 9px;
+  opacity: 0.7;
+}
+.wl-ratio-glyph {
+  display: block;
+  border: 1px solid var(--wl-line-strong);
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.6);
+  margin-bottom: 2px;
+}
+.wl-ratio-card--on .wl-ratio-glyph {
+  background: var(--wl-yellow);
+  border-color: var(--wl-yellow);
+}
+
+/* 자유 입력 (W/H/X/Y) */
+.wl-num-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.wl-num-grid label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--wl-bg-paper);
+  border: 1px solid var(--wl-line);
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 11px;
+}
+.wl-num-grid label > span {
+  font-weight: 700;
+  color: var(--wl-ink-mute);
+  letter-spacing: 0.06em;
+}
+.wl-num-grid label input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--wl-font-tabular);
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--wl-ink);
+}
+.wl-num-grid label em {
+  font-style: normal;
+  font-size: 9px;
+  color: var(--wl-ink-mute);
+  letter-spacing: 0.06em;
+}
+
+/* 변환 버튼 */
+.wl-trans-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.wl-trans-row button {
+  flex: 1;
+  min-width: 70px;
+  height: 32px;
+  padding: 0 10px;
+  background: var(--wl-bg-paper);
+  border: 1px solid var(--wl-line);
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--wl-ink);
+}
+.wl-trans-row button:hover {
+  border-color: var(--wl-ink);
+}
+.wl-trans-row button.wl-on {
+  background: var(--wl-ink);
+  border-color: var(--wl-ink);
+  color: var(--wl-yellow);
+}
+.wl-rot-slider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.wl-rot-slider input[type="range"] {
+  flex: 1;
+  accent-color: var(--wl-ink);
+}
+.wl-rot-val {
+  font-family: var(--wl-font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 40px;
+  text-align: right;
+}
+
+/* CENTER — stage */
+.wl-crop-stage {
+  display: flex;
+  flex-direction: column;
+  background: var(--wl-card);
+  border: 1px solid var(--wl-line);
+  border-radius: var(--wl-radius-md);
+  overflow: hidden;
+}
+.wl-stage-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px dashed var(--wl-line);
+}
+.wl-stage-meta {
+  font-size: 12px;
+  color: var(--wl-ink-mute);
+  letter-spacing: 0.04em;
+}
+.wl-stage-zoom {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+}
+.wl-stage-zoom button {
+  width: 24px;
+  height: 24px;
+  background: var(--wl-bg-paper);
+  border: 1px solid var(--wl-line);
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  color: var(--wl-ink);
+}
+.wl-stage-zoom .wl-div {
+  width: 1px;
+  height: 16px;
+  background: var(--wl-line);
+  margin: 0 4px;
+}
+.wl-stage-canvas {
+  background: linear-gradient(
+      45deg,
+      var(--wl-bg-paper) 25%,
+      transparent 25%
+    ),
+    linear-gradient(-45deg, var(--wl-bg-paper) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--wl-bg-paper) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--wl-bg-paper) 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+  flex: 1;
+  min-height: 320px;
+  position: relative;
+  display: grid;
+  place-items: stretch;
+}
+.wl-stage-foot {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-top: 1px dashed var(--wl-line);
+  font-size: 11px;
+  color: var(--wl-ink-mute);
+}
+
+/* RIGHT — output */
+.wl-format-row {
+  display: flex;
+  gap: 6px;
+}
+.wl-format-row button {
+  flex: 1;
+  height: 32px;
+  background: var(--wl-bg-paper);
+  border: 1px solid var(--wl-line);
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--wl-ink);
+}
+.wl-format-row button.wl-on {
+  background: var(--wl-ink);
+  border-color: var(--wl-ink);
+  color: var(--wl-yellow);
+}
+
+.wl-quality-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--wl-ink-mute);
+}
+.wl-quality-row b {
+  color: var(--wl-ink);
+  font-family: var(--wl-font-mono);
+}
+
+.wl-dl-btn {
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--wl-ink);
+  color: var(--wl-yellow);
+  border: 1px solid var(--wl-ink);
+  width: 100%;
+  transition: background 0.12s;
+}
+.wl-dl-btn:hover {
+  background: #000;
+}
+.wl-dl-btn--ghost {
+  background: transparent;
+  color: var(--wl-ink);
+  border: 1px solid var(--wl-line-strong);
+}
+.wl-dl-btn--ghost:hover {
+  background: var(--wl-bg-paper);
+}
+
+.wl-tip-card {
+  margin-top: 6px;
+  padding: 12px 14px;
+  background: linear-gradient(170deg, var(--wl-yellow-light) 0%, var(--wl-yellow) 100%);
+  border: 1px solid var(--wl-yellow-edge);
+  border-radius: 10px;
+  position: relative;
+}
+.wl-tip-card .wl-hand {
+  font-family: var(--wl-font-hand);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--wl-ink);
+}
+.wl-tip-card p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--wl-ink-soft);
+  line-height: 1.5;
+}
+
 /* ───────── SECTION HEADING ───────── */
 .wl-section-head {
   display: flex;
