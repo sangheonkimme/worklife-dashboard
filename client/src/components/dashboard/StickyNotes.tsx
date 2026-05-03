@@ -1,33 +1,44 @@
 "use client";
 
-import { Box, Title, Grid, Text } from "@mantine/core";
+import { useState } from "react";
+import { Box, Title, Text } from "@mantine/core";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { notifications } from "@mantine/notifications";
 import { useTranslation } from "react-i18next";
 import { stickyNotesApi } from "@/services/api/stickyNotesApi";
 import { StickyNoteCard } from "./StickyNoteCard";
-import { CreateStickyNoteButton } from "./CreateStickyNoteButton";
 import { JournalCard } from "./redesign/JournalCard";
 import { PinBoardCard } from "./redesign/PinBoardCard";
-import { STICKY_NOTE_COLOR_ARRAY } from "@/types/stickyNote";
+import {
+  STICKY_NOTE_COLORS,
+  STICKY_NOTE_COLOR_ARRAY,
+} from "@/types/stickyNote";
 import type { StickyNote } from "@/types/stickyNote";
+import type { StickyVariant } from "@/utils/stickyNoteColor";
 import { getApiErrorMessage } from "@/utils/error";
 import { trackEvent } from "@/lib/analytics";
 
+// 무료 플랜 기본 한도. 유료 플랜은 추후 plan별 cap으로 교체 (DB 개편 후).
 const MAX_NOTES = 3;
-const POSITIONS = [0, 1, 2];
+
+const SWATCHES: { variant: StickyVariant; hex: string }[] = [
+  { variant: "yellow", hex: STICKY_NOTE_COLORS.YELLOW },
+  { variant: "pink", hex: STICKY_NOTE_COLORS.PINK },
+  { variant: "blue", hex: STICKY_NOTE_COLORS.BLUE },
+];
 
 export function StickyNotes() {
   const queryClient = useQueryClient();
   const { t } = useTranslation(["dashboard", "system"]);
+  const [selectedColor, setSelectedColor] = useState<string>(
+    STICKY_NOTE_COLORS.YELLOW
+  );
 
-  // 스티커 메모 목록 조회
   const { data: notes = [], isLoading } = useQuery({
     queryKey: ["stickyNotes"],
     queryFn: stickyNotesApi.getAll,
   });
 
-  // 스티커 메모 생성 mutation
   const createMutation = useMutation({
     mutationFn: (data: { color: string; position: number }) =>
       stickyNotesApi.create(data),
@@ -38,7 +49,6 @@ export function StickyNotes() {
         message: t("dashboard:stickyNotes.notifications.createSuccess"),
         color: "green",
       });
-
       trackEvent({
         name: "sticky_note_saved",
         params: {
@@ -61,17 +71,14 @@ export function StickyNotes() {
     },
   });
 
-  // 스티커 메모 수정 mutation
   const updateMutation = useMutation({
     mutationFn: ({ id, content }: { id: string; content: string }) =>
       stickyNotesApi.update(id, { content }),
     onMutate: async ({ id, content }) => {
-      // 낙관적 업데이트
       await queryClient.cancelQueries({ queryKey: ["stickyNotes"] });
       const previousNotes = queryClient.getQueryData<StickyNote[]>([
         "stickyNotes",
       ]);
-
       queryClient.setQueryData<StickyNote[]>(["stickyNotes"], (old) =>
         old?.map((note) =>
           note.id === id
@@ -79,7 +86,6 @@ export function StickyNotes() {
             : note
         )
       );
-
       return { previousNotes };
     },
     onSuccess: (_result, variables) => {
@@ -93,7 +99,6 @@ export function StickyNotes() {
       });
     },
     onError: (_error, _variables, context) => {
-      // 실패 시 롤백
       if (context?.previousNotes) {
         queryClient.setQueryData(["stickyNotes"], context.previousNotes);
       }
@@ -108,7 +113,6 @@ export function StickyNotes() {
     },
   });
 
-  // 스티커 메모 삭제 mutation
   const deleteMutation = useMutation({
     mutationFn: (id: string) => stickyNotesApi.deleteById(id),
     onSuccess: (_result, id) => {
@@ -118,12 +122,9 @@ export function StickyNotes() {
         message: t("dashboard:stickyNotes.notifications.deleteSuccess"),
         color: "green",
       });
-
       trackEvent({
         name: "sticky_note_deleted",
-        params: {
-          note_id: id,
-        },
+        params: { note_id: id },
       });
     },
     onError: () => {
@@ -135,11 +136,6 @@ export function StickyNotes() {
     },
   });
 
-  // 핸들러 함수들
-  const handleCreate = (color: string, position: number) => {
-    createMutation.mutate({ color, position });
-  };
-
   const handleUpdate = (id: string, content: string) => {
     updateMutation.mutate({ id, content });
   };
@@ -148,17 +144,27 @@ export function StickyNotes() {
     deleteMutation.mutate(id);
   };
 
-  // 사용된 position 찾기
-  const usedPositions = new Set(notes.map((note) => note.position));
+  // 다음 빈 position 찾기 (0부터 순차)
+  const usedPositions = new Set(notes.map((n) => n.position));
+  const nextPosition = (() => {
+    for (let i = 0; ; i++) {
+      if (!usedPositions.has(i)) return i;
+    }
+  })();
 
-  // 다음 사용 가능한 색상 찾기
-  const usedColors = new Set(notes.map((note) => note.color));
-  const availableColor =
-    STICKY_NOTE_COLOR_ARRAY.find((color) => !usedColors.has(color)) ||
-    STICKY_NOTE_COLOR_ARRAY[notes.length % STICKY_NOTE_COLOR_ARRAY.length];
+  const isLimitReached = notes.length >= MAX_NOTES;
 
-  // 다음 사용 가능한 position 찾기
-  const nextPosition = POSITIONS.find((pos) => !usedPositions.has(pos)) ?? 0;
+  const handleAdd = () => {
+    if (isLimitReached) return;
+    // 선택된 색상이 이미 다 찼으면 다른 색으로 자동 폴백
+    const usedColors = new Set(notes.map((n) => n.color));
+    let color = selectedColor;
+    if (usedColors.has(color)) {
+      const fallback = STICKY_NOTE_COLOR_ARRAY.find((c) => !usedColors.has(c));
+      if (fallback) color = fallback;
+    }
+    createMutation.mutate({ color, position: nextPosition });
+  };
 
   if (isLoading) {
     return (
@@ -171,52 +177,95 @@ export function StickyNotes() {
     );
   }
 
+  // 정렬: position 오름차순으로 표시 (생성 순서 안정성)
+  const sortedNotes = [...notes].sort((a, b) => a.position - b.position);
+
   return (
     <Box className="wl-notes-card">
       <Box
         mb="md"
-        style={{ display: "flex", alignItems: "baseline", gap: 10 }}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 16,
+          flexWrap: "wrap",
+        }}
       >
-        <Title
-          order={2}
-          style={{
-            margin: 0,
-            fontSize: 22,
-            fontWeight: 800,
-            letterSpacing: "-0.02em",
-          }}
-        >
-          {t("dashboard:stickyNotes.title")}
-        </Title>
-        <Text className="wl-hand" size="md" c="dimmed">
-          desk · sticky
-        </Text>
+        <Box style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
+          <Title
+            order={2}
+            style={{
+              margin: 0,
+              fontSize: 22,
+              fontWeight: 800,
+              letterSpacing: "-0.02em",
+            }}
+          >
+            {t("dashboard:stickyNotes.title")}
+          </Title>
+          <Text className="wl-hand" size="md" c="dimmed">
+            {t("dashboard:stickyNotes.handTagline")}
+          </Text>
+        </Box>
+
+        <Box style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <div
+            className="wl-color-pick"
+            role="radiogroup"
+            aria-label={t("dashboard:stickyNotes.colorPickerAria")}
+          >
+            {SWATCHES.map((s) => (
+              <button
+                key={s.variant}
+                type="button"
+                role="radio"
+                aria-checked={selectedColor === s.hex}
+                aria-label={s.variant}
+                className={`wl-swatch wl-swatch--${s.variant}${
+                  selectedColor === s.hex ? " wl-swatch--active" : ""
+                }`}
+                onClick={() => setSelectedColor(s.hex)}
+              />
+            ))}
+          </div>
+          <button
+            type="button"
+            className="wl-add-note"
+            onClick={handleAdd}
+            disabled={isLimitReached || createMutation.isPending}
+            aria-label={t("dashboard:stickyNotes.createButton")}
+          >
+            + {t("dashboard:stickyNotes.createButton")}
+          </button>
+        </Box>
       </Box>
 
-      <Grid gutter="lg" align="stretch">
-        {notes.map((note) => (
-          <Grid.Col key={note.id} span={{ base: 12, xs: 6, md: 4 }}>
-            <StickyNoteCard
-              note={note}
-              onUpdate={handleUpdate}
-              onDelete={handleDelete}
-            />
-          </Grid.Col>
+      <div className="wl-notes-board">
+        {sortedNotes.map((note) => (
+          <StickyNoteCard
+            key={note.id}
+            note={note}
+            onUpdate={handleUpdate}
+            onDelete={handleDelete}
+          />
         ))}
 
-        {notes.length < MAX_NOTES && (
-          <Grid.Col span={{ base: 12, xs: 6, md: 4 }}>
-            <CreateStickyNoteButton
-              onCreate={handleCreate}
-              nextPosition={nextPosition}
-              availableColor={availableColor}
-            />
-          </Grid.Col>
+        {/* 비어있을 때만 시안과 동일한 dashed 슬롯을 표시. 추가는 헤더 버튼으로 */}
+        {sortedNotes.length === 0 && (
+          <button
+            type="button"
+            className="wl-sticky--empty"
+            onClick={handleAdd}
+            aria-label={t("dashboard:stickyNotes.createButton")}
+          >
+            + {t("dashboard:stickyNotes.createButton")}
+          </button>
         )}
-      </Grid>
+      </div>
 
       <Box
-        mt="md"
+        mt="sm"
         style={{
           display: "flex",
           justifyContent: "space-between",
@@ -229,7 +278,7 @@ export function StickyNotes() {
           {t("dashboard:stickyNotes.limitNotice", { count: MAX_NOTES })}
         </span>
         <span style={{ fontFamily: "var(--wl-font-mono)" }}>
-          {notes.length} / {MAX_NOTES}
+          {sortedNotes.length} / {MAX_NOTES}
         </span>
       </Box>
 

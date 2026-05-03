@@ -86,10 +86,12 @@
   },
   "stickyNotes": {
     "title": "Sticky notes",
+    "handTagline": "stick it, don't forget it",
     "loading": "Loading...",
     "limitNotice": "You can add up to {{count}} sticky notes.",
-    "createButton": "New note",
+    "createButton": "Add note",
     "placeholder": "Write a note...",
+    "colorPickerAria": "Pick note color",
     "aria": {
       "delete": "Delete note"
     },

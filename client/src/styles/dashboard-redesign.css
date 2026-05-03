@@ -86,9 +86,34 @@
   background: linear-gradient(180deg, #2a2620 0%, #1f1c17 100%);
 }
 
+/* 시안 1:1 — 220px 고정, 200px min-height, 가로 스크롤 보드 안에 배치 */
+.wl-notes-board {
+  display: flex;
+  gap: 18px;
+  align-items: stretch;
+  overflow-x: auto;
+  overflow-y: visible;
+  padding: 8px 4px 14px;
+  margin: 0 -4px;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+  scrollbar-color: var(--wl-line-strong) transparent;
+}
+.wl-notes-board::-webkit-scrollbar {
+  height: 8px;
+}
+.wl-notes-board::-webkit-scrollbar-track {
+  background: transparent;
+}
+.wl-notes-board::-webkit-scrollbar-thumb {
+  background: var(--wl-line-strong);
+  border-radius: 99px;
+}
+
 .wl-sticky {
   position: relative;
-  width: 100%;
+  width: 220px;
+  flex: 0 0 220px;
   min-height: 200px;
   padding: 28px 18px 18px;
   border-radius: 2px 14px 4px 8px;
@@ -97,6 +122,8 @@
   flex-direction: column;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
   border: none;
+  scroll-snap-align: start;
+  transform: rotate(var(--wl-rot, 0deg));
 }
 .wl-sticky:hover {
   transform: translateY(-3px) rotate(var(--wl-rot, 0deg)) scale(1.02);
@@ -160,11 +187,14 @@
   color: rgba(0, 0, 0, 0.3);
 }
 
-/* 빈 메모 (생성 버튼) */
+/* 빈 메모 (생성 버튼) — 시안 1:1 사이즈 */
 .wl-sticky--empty {
   background: transparent;
   border: 2px dashed var(--wl-line-strong);
   box-shadow: none;
+  width: 220px;
+  flex: 0 0 220px;
+  min-height: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -173,15 +203,76 @@
   font-size: 22px;
   cursor: pointer;
   border-radius: var(--wl-radius-md);
-  min-height: 200px;
-  transition: border-color 0.15s, color 0.15s;
+  transition: border-color 0.15s, color 0.15s, transform 0.15s;
+  scroll-snap-align: start;
 }
 .wl-sticky--empty:hover {
   border-color: var(--wl-ink);
   color: var(--wl-ink);
+  transform: translateY(-2px);
 }
-.wl-sticky--empty::before {
-  display: none;
+
+/* 색상 픽커 + 메모 추가 버튼 (notes-card 헤더) */
+.wl-color-pick {
+  display: flex;
+  gap: 6px;
+  padding: 5px;
+  background: var(--wl-card);
+  border-radius: 10px;
+  border: 1px solid var(--wl-line);
+}
+.wl-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.12s;
+  padding: 0;
+}
+.wl-swatch:hover {
+  transform: scale(1.1);
+}
+.wl-swatch--active {
+  box-shadow: 0 0 0 2px var(--wl-ink);
+}
+.wl-swatch--yellow {
+  background: var(--wl-yellow);
+}
+.wl-swatch--pink {
+  background: var(--wl-pink);
+}
+.wl-swatch--blue {
+  background: var(--wl-blue);
+}
+.wl-swatch--mint {
+  background: var(--wl-green);
+}
+
+.wl-add-note {
+  height: 34px;
+  padding: 0 14px;
+  background: var(--wl-ink);
+  color: var(--wl-yellow);
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: transform 0.12s, background 0.12s;
+}
+.wl-add-note:hover {
+  transform: translateY(-1px);
+  background: #000;
+}
+.wl-add-note:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
 }
 
 /* ───────── 페이퍼 카드 (타이머/체크리스트 공통) ───────── */
