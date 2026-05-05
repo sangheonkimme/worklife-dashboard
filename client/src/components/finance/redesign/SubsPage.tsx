@@ -64,8 +64,9 @@ export function SubsPage() {
   const filtered = MOCK_SUBS.filter(
     (s) => filter === "all" || s.cat === filter,
   );
+  // 시안 기준: '이번 달 결제 예정' 카운트는 월/년 모두 포함한 활성 건수
   const sortedActiveByDay = [...filtered]
-    .filter((s) => s.status === "active" && s.cycle === "월")
+    .filter((s) => s.status === "active")
     .sort((a, b) => a.day - b.day);
 
   const cells: (number | null)[] = [];
@@ -100,8 +101,9 @@ export function SubsPage() {
             <span className="wl-page-title__hand">— 새는 돈 잡기</span>
           </h1>
           <div className="wl-page-sub">
-            활성 <b>{monthlyActive.length + yearlyActive.length}건</b> · 이번 달
-            결제 예정 <b>{sortedActiveByDay.length}건</b> · 다음 결제까지{" "}
+            활성 구독{" "}
+            <b>{monthlyActive.length + yearlyActive.length}건</b> · 이번 달 결제
+            예정 <b>{sortedActiveByDay.length}건</b> · 다음 결제까지{" "}
             <b>D-{nextDleft}</b>
           </div>
         </div>

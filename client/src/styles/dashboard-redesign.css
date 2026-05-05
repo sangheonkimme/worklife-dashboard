@@ -2470,7 +2470,7 @@
 /* TOP STAT STRIP */
 .wl-subs-strip {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px;
   margin-bottom: 18px;
 }
@@ -2481,6 +2481,7 @@
   padding: 16px 18px;
   position: relative;
   overflow: hidden;
+  min-width: 0;
 }
 .wl-subs-stat--hero {
   background: linear-gradient(165deg, #fff7d6 0%, var(--wl-yellow) 100%);
@@ -2499,11 +2500,19 @@
 .wl-subs-stat__val {
   font-family: var(--wl-font-mono);
   font-variant-numeric: tabular-nums;
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 800;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.04em;
   margin-top: 4px;
   color: var(--wl-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (min-width: 1400px) {
+  .wl-subs-stat__val {
+    font-size: 26px;
+  }
 }
 .wl-subs-stat__sub {
   margin-top: 4px;
@@ -2599,6 +2608,12 @@
   gap: 10px;
   align-items: center;
   font-size: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--wl-line);
+}
+.wl-cat-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
 }
 .wl-cat-dot {
   width: 10px;
