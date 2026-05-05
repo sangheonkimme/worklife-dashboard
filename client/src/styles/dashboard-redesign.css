@@ -4275,3 +4275,478 @@ textarea.wl-set-input {
   color: white;
   border-color: var(--wl-red);
 }
+
+/* ============================================================
+ * 이미지 → PDF (`/tools/image-to-pdf`)
+ * ============================================================ */
+
+/* 빈 상태 - 드롭존 */
+.wl-pdf-dropzone {
+  background: var(--wl-card);
+  border: 2px dashed var(--wl-line-strong);
+  border-radius: var(--wl-radius-md);
+  padding: 48px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: border-color 0.15s, background 0.15s;
+}
+.wl-pdf-dropzone--drag {
+  border-color: var(--wl-ink);
+  background: var(--wl-yellow);
+}
+.wl-pdf-dz-pile {
+  position: relative;
+  display: flex;
+  margin-bottom: 28px;
+}
+.wl-pdf-dz-pile > * {
+  margin: 0 -28px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+.wl-pdf-dz-sample {
+  width: 120px;
+  aspect-ratio: 3/4;
+  background: linear-gradient(135deg, #f4ede0 0%, #e8dcc4 100%);
+  border: 1px solid var(--wl-line);
+  border-radius: 6px;
+}
+.wl-pdf-dropzone h2 {
+  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--wl-ink);
+}
+.wl-pdf-dropzone > p {
+  margin: 0 0 18px;
+  color: var(--wl-ink-soft);
+  font-size: 13px;
+}
+.wl-pdf-dz-link {
+  background: var(--wl-ink);
+  color: var(--wl-yellow);
+  border: none;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin: 0 4px;
+}
+.wl-pdf-dz-formats {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 24px;
+}
+.wl-pdf-dz-formats span {
+  font-family: var(--wl-font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 9px;
+  background: var(--wl-bg-paper);
+  border: 1px solid var(--wl-line);
+  border-radius: 99px;
+  color: var(--wl-ink-soft);
+}
+.wl-pdf-dz-tips {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  max-width: 580px;
+  width: 100%;
+}
+@media (max-width: 760px) {
+  .wl-pdf-dz-tips {
+    grid-template-columns: 1fr;
+  }
+}
+.wl-pdf-dz-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--wl-bg-paper);
+  border: 1px solid var(--wl-line);
+  border-radius: 8px;
+  text-align: left;
+}
+.wl-pdf-dz-tip b {
+  font-family: var(--wl-font-mono);
+  font-size: 14px;
+  color: var(--wl-ink);
+  flex-shrink: 0;
+}
+.wl-pdf-dz-tip span {
+  font-size: 12px;
+  color: var(--wl-ink-soft);
+  line-height: 1.4;
+}
+
+/* 업로드 후 — 2단 레이아웃 */
+.wl-pdf-uploaded {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* TOP — strip */
+.wl-pdf-up-strip {
+  background: var(--wl-card);
+  border: 1px solid var(--wl-line);
+  border-radius: var(--wl-radius-md);
+  padding: 16px;
+}
+.wl-pdf-strip-h {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.wl-rail-h {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--wl-ink-mute);
+  margin-bottom: 8px;
+}
+.wl-pdf-strip-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+@media (max-width: 1280px) {
+  .wl-pdf-strip-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.wl-pdf-strip-card {
+  position: relative;
+  background: var(--wl-bg-paper);
+  border: 1px solid var(--wl-line);
+  border-radius: 10px;
+  padding: 10px;
+  cursor: grab;
+  transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+.wl-pdf-strip-card:hover {
+  border-color: var(--wl-line-strong);
+  transform: translateY(-2px);
+  box-shadow: var(--wl-shadow-sm);
+}
+.wl-pdf-strip-card--active {
+  border-color: var(--wl-ink);
+  box-shadow: -3px 0 0 var(--wl-yellow), 0 4px 12px rgba(40, 30, 10, 0.08);
+}
+.wl-pdf-strip-card--add {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-style: dashed;
+  background: transparent;
+  cursor: pointer;
+  text-align: center;
+  min-height: 200px;
+}
+.wl-pdf-strip-card--add small {
+  font-size: 11px;
+  color: var(--wl-ink-mute);
+}
+.wl-pdf-strip-card--add .wl-hand {
+  font-family: var(--wl-font-hand);
+  font-size: 14px;
+  color: var(--wl-ink-mute);
+  margin-top: 2px;
+}
+.wl-pdf-add-plus {
+  font-size: 32px;
+  color: var(--wl-ink-mute);
+  font-weight: 300;
+  line-height: 1;
+}
+.wl-pdf-strip-num {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  z-index: 2;
+  width: 22px;
+  height: 22px;
+  background: var(--wl-ink);
+  color: var(--wl-yellow);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 800;
+  font-family: var(--wl-font-mono);
+}
+.wl-pdf-strip-grip {
+  position: absolute;
+  top: 8px;
+  right: 32px;
+  font-size: 14px;
+  letter-spacing: -2px;
+  color: var(--wl-ink-mute);
+  opacity: 0.4;
+  z-index: 2;
+}
+.wl-pdf-strip-x {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--wl-line);
+  background: var(--wl-card);
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1;
+  color: var(--wl-ink-mute);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.wl-pdf-strip-x:hover {
+  background: var(--wl-red);
+  color: #fff;
+  border-color: var(--wl-red);
+}
+.wl-pdf-strip-img {
+  aspect-ratio: 3/4;
+  background: var(--wl-card);
+  border: 1px solid var(--wl-line);
+  border-radius: 6px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+.wl-pdf-strip-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.wl-pdf-strip-meta {
+  margin-top: 8px;
+}
+.wl-pdf-strip-meta b {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--wl-ink);
+}
+.wl-pdf-strip-meta small {
+  font-size: 10px;
+  color: var(--wl-ink-mute);
+  font-family: var(--wl-font-mono);
+}
+
+/* BOTTOM — settings + preview */
+.wl-pdf-up-bottom {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 14px;
+}
+@media (max-width: 1280px) {
+  .wl-pdf-up-bottom {
+    grid-template-columns: 1fr;
+  }
+}
+.wl-pdf-up-settings {
+  background: var(--wl-card);
+  border: 1px solid var(--wl-line);
+  border-radius: var(--wl-radius-md);
+  padding: 16px;
+}
+.wl-pdf-set-block {
+  margin-bottom: 18px;
+}
+.wl-pdf-set-block:last-child {
+  margin-bottom: 0;
+}
+.wl-pdf-set-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--wl-ink);
+  margin-bottom: 8px;
+}
+.wl-pdf-paper-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.wl-pdf-paper-card {
+  background: var(--wl-bg-paper);
+  border: 1px solid var(--wl-line);
+  border-radius: 8px;
+  padding: 10px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--wl-ink);
+}
+.wl-pdf-paper-card--on {
+  background: var(--wl-ink);
+  color: var(--wl-yellow);
+  border-color: var(--wl-ink);
+}
+.wl-pdf-paper-card--on .wl-pdf-paper-glyph {
+  background: var(--wl-yellow);
+  border-color: var(--wl-yellow);
+}
+.wl-pdf-paper-glyph {
+  width: 22px;
+  background: transparent;
+  border: 1.5px solid var(--wl-ink-soft);
+  border-radius: 1.5px;
+}
+.wl-pdf-paper-card b {
+  font-size: 11px;
+  font-weight: 700;
+}
+.wl-pdf-paper-card small {
+  font-size: 9px;
+  opacity: 0.7;
+}
+.wl-pdf-orient-row {
+  display: flex;
+  gap: 4px;
+}
+.wl-pdf-orient-row button {
+  flex: 1;
+  height: 32px;
+  background: var(--wl-bg-paper);
+  border: 1px solid var(--wl-line);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 11px;
+  cursor: pointer;
+  color: var(--wl-ink);
+}
+.wl-pdf-orient-row button.wl-pdf-orient--on {
+  background: var(--wl-ink);
+  color: var(--wl-yellow);
+  border-color: var(--wl-ink);
+}
+.wl-pdf-rail-input {
+  width: 100%;
+  height: 32px;
+  background: var(--wl-bg-paper);
+  border: 1px solid var(--wl-line);
+  border-radius: 6px;
+  padding: 0 10px;
+  font-family: var(--wl-font-mono);
+  font-size: 11px;
+  color: var(--wl-ink);
+  box-sizing: border-box;
+  outline: none;
+}
+.wl-pdf-rail-input:focus {
+  border-color: var(--wl-ink);
+}
+
+/* Live preview */
+.wl-pdf-up-preview {
+  background: linear-gradient(180deg, #f4ede0 0%, #ebe2cf 100%);
+  border: 1px solid var(--wl-line);
+  border-radius: var(--wl-radius-md);
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  min-height: 360px;
+}
+.wl-pdf-up-preview::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.4), transparent 50%),
+    radial-gradient(circle at 100% 100%, rgba(0, 0, 0, 0.04), transparent 50%);
+  pointer-events: none;
+}
+.wl-pdf-prev-h {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--wl-ink-mute);
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+}
+.wl-pdf-prev-h small {
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--wl-ink-soft);
+}
+.wl-pdf-prev-stack {
+  flex: 1;
+  position: relative;
+  display: grid;
+  place-items: center;
+  z-index: 1;
+}
+.wl-pdf-prev-page {
+  position: absolute;
+  width: 42%;
+  max-width: 220px;
+  background: #fff;
+  border: 1px solid #d6cfc0;
+  border-radius: 3px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06), 0 12px 28px rgba(0, 0, 0, 0.18);
+  transition: transform 0.25s ease;
+}
+.wl-pdf-prev-pad {
+  padding: 10%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.wl-pdf-prev-pad img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.wl-pdf-prev-no {
+  position: absolute;
+  bottom: 6px;
+  right: 8px;
+  font-family: var(--wl-font-mono);
+  font-size: 9px;
+  color: #999;
+}
+.wl-pdf-prev-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-top: 12px;
+  margin-top: 12px;
+  border-top: 1px dashed rgba(0, 0, 0, 0.12);
+  position: relative;
+  z-index: 1;
+}
+.wl-pdf-prev-foot .wl-hand {
+  font-family: var(--wl-font-hand);
+  font-size: 16px;
+  color: var(--wl-ink-soft);
+}
