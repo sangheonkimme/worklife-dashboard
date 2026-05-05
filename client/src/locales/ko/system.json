@@ -65,6 +65,12 @@
         "pageTitle": "연봉 계산기",
         "pageDescription": "2026년 세율로 예상 실수령액을 계산합니다."
       },
+      "loan": {
+        "label": "대출 이자 계산기",
+        "description": "원리금/원금 균등",
+        "pageTitle": "대출 이자 계산기",
+        "pageDescription": "월 납입금과 총 이자를 한눈에 비교하세요."
+      },
       "financeTools": {
         "label": "급여 계산기",
         "description": "주급 · 시급",

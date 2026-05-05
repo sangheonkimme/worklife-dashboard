@@ -4978,3 +4978,283 @@ textarea.wl-set-input {
   font-size: 12px;
   color: var(--wl-ink-soft);
 }
+
+/* ============================================================
+ * 대출 이자 계산기 (`/dashboard/loan`)
+ * ============================================================ */
+.wl-loan-card {
+  background: var(--wl-card);
+  border: 1px solid var(--wl-line);
+  border-radius: var(--wl-radius-md);
+  padding: 22px 24px;
+}
+.wl-loan-h3 {
+  margin: 0 0 16px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--wl-ink);
+}
+.wl-loan-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.wl-loan-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+@media (max-width: 900px) {
+  .wl-loan-grid-2,
+  .wl-loan-grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
+.wl-loan-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.wl-loan-field label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--wl-ink-soft);
+}
+.wl-loan-hint {
+  font-size: 11px;
+  color: var(--wl-ink-mute);
+  margin-top: 2px;
+}
+.wl-loan-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.wl-loan-input-wrap input {
+  width: 100%;
+  height: 42px;
+  padding: 0 36px 0 14px;
+  border: 1px solid var(--wl-line);
+  background: var(--wl-bg-paper);
+  border-radius: 8px;
+  font-family: var(--wl-font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 14px;
+  font-weight: 600;
+  outline: none;
+  color: var(--wl-ink);
+}
+.wl-loan-input-wrap input:focus {
+  border-color: var(--wl-ink);
+  background: #fff;
+}
+.wl-loan-input-wrap input[type="number"] {
+  -moz-appearance: textfield;
+}
+.wl-loan-input-wrap input[type="number"]::-webkit-outer-spin-button,
+.wl-loan-input-wrap input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.wl-loan-suffix {
+  position: absolute;
+  right: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--wl-ink-soft);
+  pointer-events: none;
+}
+.wl-loan-spinner {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.wl-loan-spinner button {
+  width: 18px;
+  height: 14px;
+  background: transparent;
+  border: none;
+  font-size: 8px;
+  color: var(--wl-ink-mute);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+.wl-loan-spinner button:hover {
+  color: var(--wl-ink);
+}
+.wl-loan-type-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  background: var(--wl-bg-paper);
+  border: 1px solid var(--wl-line);
+  border-radius: 10px;
+  padding: 4px;
+  gap: 2px;
+  margin-top: 6px;
+}
+.wl-loan-tab {
+  background: transparent;
+  border: none;
+  height: 40px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--wl-ink-mute);
+  cursor: pointer;
+  border-radius: 7px;
+  transition: background 0.12s, color 0.12s, box-shadow 0.12s;
+}
+.wl-loan-tab:hover {
+  color: var(--wl-ink);
+}
+.wl-loan-tab--on {
+  background: var(--wl-card);
+  color: var(--wl-ink);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  font-weight: 700;
+}
+
+/* Summary */
+.wl-loan-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+@media (max-width: 1100px) {
+  .wl-loan-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.wl-loan-stat {
+  background: var(--wl-bg-paper);
+  border: 1px solid var(--wl-line);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.wl-ls-lbl {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--wl-ink-soft);
+  margin-bottom: 8px;
+}
+.wl-ls-val {
+  font-family: var(--wl-font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--wl-ink);
+  margin-bottom: 6px;
+}
+.wl-ls-sub {
+  font-size: 11px;
+  color: var(--wl-ink-mute);
+  line-height: 1.4;
+}
+.wl-loan-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.wl-loan-chip {
+  padding: 4px 10px;
+  background: var(--wl-bg-paper);
+  border: 1px solid var(--wl-line);
+  border-radius: 99px;
+  font-family: var(--wl-font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--wl-ink-soft);
+}
+.wl-loan-disclaimer {
+  margin: 6px 0 0;
+  font-size: 11px;
+  color: var(--wl-ink-mute);
+}
+
+/* Schedule */
+.wl-loan-schedule-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.wl-loan-toggle-all {
+  height: 32px;
+  padding: 0 14px;
+  background: var(--wl-bg-paper);
+  border: 1px solid var(--wl-line);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--wl-ink-soft);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.wl-loan-toggle-all:hover {
+  background: var(--wl-ink);
+  color: var(--wl-yellow);
+  border-color: var(--wl-ink);
+}
+.wl-loan-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.wl-loan-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.wl-loan-table thead th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--wl-ink-mute);
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--wl-line);
+  background: var(--wl-bg-paper);
+}
+.wl-loan-table tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px dashed var(--wl-line);
+}
+.wl-loan-table tbody tr:hover {
+  background: var(--wl-bg-paper);
+}
+.wl-loan-no {
+  font-family: var(--wl-font-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--wl-ink-soft);
+}
+.wl-loan-num {
+  font-family: var(--wl-font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  text-align: left;
+  color: var(--wl-ink);
+}
+.wl-loan-num b {
+  font-weight: 700;
+}
+.wl-loan-num--orange {
+  color: #c97a2c;
+}
+.wl-loan-num--muted {
+  color: var(--wl-ink-mute);
+}

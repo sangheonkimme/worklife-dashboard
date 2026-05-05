@@ -58,6 +58,7 @@ const NAV_GROUPS: NavGroup[] = [
     labelKey: "tools",
     items: [
       { key: "salary", href: "/dashboard/salary", icon: IconCalculator },
+      { key: "loan", href: "/dashboard/loan", icon: IconCash },
       { key: "financeTools", href: "/dashboard/finance-tools", icon: IconCurrencyWon },
       { key: "imageCrop", href: "/tools/image-crop", icon: IconCrop },
       { key: "imageToPdf", href: "/tools/image-to-pdf", icon: IconFileTypePdf },

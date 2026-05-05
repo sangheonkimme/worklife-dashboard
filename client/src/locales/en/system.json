@@ -65,6 +65,12 @@
         "pageTitle": "Salary calculator",
         "pageDescription": "Estimate take-home pay with the 2026 tax brackets."
       },
+      "loan": {
+        "label": "Loan calculator",
+        "description": "Equal pay/principal",
+        "pageTitle": "Loan calculator",
+        "pageDescription": "Compare monthly payments and total interest at a glance."
+      },
       "financeTools": {
         "label": "Wage tools",
         "description": "Hourly · weekly",
