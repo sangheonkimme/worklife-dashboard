@@ -63,19 +63,34 @@ const normalizeLanguageCode = (input?: string | null): SupportedLanguage => {
   return "ko";
 };
 
-const detectInitialLanguage = (): SupportedLanguage => {
-  if (typeof localStorage !== "undefined") {
-    const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+// 첫 렌더는 서버/클라이언트 동일하게 ko 로 시작해 hydration mismatch 를 막는다.
+// 사용자 선호 언어 적용은 마운트 후 applyStoredLanguage() 에서 처리.
+const detectInitialLanguage = (): SupportedLanguage => "ko";
+
+export const applyStoredLanguage = (): void => {
+  if (typeof window === "undefined") return;
+
+  let target: SupportedLanguage | null = null;
+
+  try {
+    const stored = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
     if (stored && SUPPORTED_LANGUAGES.includes(stored as SupportedLanguage)) {
-      return stored as SupportedLanguage;
+      target = stored as SupportedLanguage;
+    }
+  } catch {
+    /* localStorage 접근 실패 시 navigator 로 폴백 */
+  }
+
+  if (!target && typeof navigator !== "undefined") {
+    target = normalizeLanguageCode(navigator.language);
+  }
+
+  if (target && i18n.language !== target) {
+    void i18n.changeLanguage(target);
+    if (typeof document !== "undefined") {
+      document.documentElement.setAttribute("lang", target);
     }
   }
-
-  if (typeof navigator !== "undefined") {
-    return normalizeLanguageCode(navigator.language);
-  }
-
-  return "ko";
 };
 
 export const resolveLanguagePreference = (
