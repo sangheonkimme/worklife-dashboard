@@ -21,7 +21,9 @@ const fontHand = Gaegu({
 });
 
 const fontMono = JetBrains_Mono({
-  subsets: ["latin"],
+  // latin-ext 까지 포함시켜야 통화 기호 ₩(U+20A9) 글리프가 로드됩니다.
+  // 이 subset 이 빠지면 ₩만 시스템 폴백 폰트로 렌더링되어 자릿수 정렬과 굵기가 흐트러집니다.
+  subsets: ["latin", "latin-ext"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-mono",
   display: "swap",
