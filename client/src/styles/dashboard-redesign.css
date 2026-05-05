@@ -4750,3 +4750,231 @@ textarea.wl-set-input {
   font-size: 16px;
   color: var(--wl-ink-soft);
 }
+
+/* ============================================================
+ * 캘린더 (`/dashboard/calendar`)
+ * ============================================================ */
+.wl-cal-grid-2 {
+  display: grid;
+  grid-template-columns: 8fr 4fr;
+  gap: 18px;
+  align-items: flex-start;
+}
+@media (max-width: 1100px) {
+  .wl-cal-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.wl-cal-nav-group {
+  display: flex;
+  border: 1px solid var(--wl-line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--wl-card);
+}
+.wl-cal-nav {
+  height: 32px;
+  min-width: 36px;
+  padding: 0 10px;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border-right: 1px solid var(--wl-line);
+  color: var(--wl-ink);
+  display: grid;
+  place-items: center;
+}
+.wl-cal-nav:last-child {
+  border-right: none;
+}
+.wl-cal-nav:hover {
+  background: var(--wl-bg-paper);
+}
+
+.wl-big-cal {
+  display: flex;
+  flex-direction: column;
+}
+.wl-big-cal__head {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border-bottom: 1px solid var(--wl-line);
+  margin-bottom: 4px;
+}
+.wl-big-dow {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: left;
+  padding: 8px 10px;
+  color: var(--wl-ink-mute);
+}
+.wl-big-dow--sun {
+  color: var(--wl-red);
+}
+.wl-big-dow--sat {
+  color: #4a7e9a;
+}
+.wl-big-cal__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: minmax(86px, 1fr);
+  gap: 2px;
+  background: var(--wl-line);
+  border: 1px solid var(--wl-line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.wl-big-cell {
+  background: var(--wl-card);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 0;
+}
+.wl-big-cell--muted {
+  background: var(--wl-bg-paper);
+}
+.wl-big-cell--muted .wl-big-cell__num {
+  color: var(--wl-ink-mute);
+  opacity: 0.5;
+}
+.wl-big-cell--today {
+  background: #fffbe8;
+}
+.wl-big-cell__num {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--wl-ink);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.wl-big-cell__num--sun {
+  color: var(--wl-red);
+}
+.wl-big-cell__num--sat {
+  color: #4a7e9a;
+}
+.wl-today-pill {
+  font-family: var(--wl-font-mono);
+  font-size: 9px;
+  background: var(--wl-ink);
+  color: var(--wl-yellow);
+  padding: 1px 6px;
+  border-radius: 99px;
+  letter-spacing: 0.06em;
+}
+.wl-big-cell__events {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.wl-big-event {
+  font-size: 10px;
+  font-weight: 600;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.wl-big-event__time {
+  font-family: var(--wl-font-mono);
+  font-weight: 700;
+  margin-right: 4px;
+  opacity: 0.85;
+}
+.wl-big-event__more {
+  font-size: 10px;
+  color: var(--wl-ink-mute);
+  font-weight: 600;
+  padding-left: 4px;
+}
+
+/* Upcoming */
+.wl-upcoming {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.wl-upc {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 4px;
+  border-bottom: 1px dashed var(--wl-line);
+}
+.wl-upc:last-child {
+  border-bottom: none;
+}
+.wl-upc__bar {
+  width: 4px;
+  height: 36px;
+  border-radius: 99px;
+  flex-shrink: 0;
+}
+.wl-upc__day {
+  font-size: 11px;
+  color: var(--wl-ink-mute);
+  font-weight: 600;
+}
+.wl-upc__title {
+  font-size: 13px;
+  font-weight: 700;
+  margin-top: 1px;
+  color: var(--wl-ink);
+}
+.wl-upc__time {
+  font-size: 11px;
+  color: var(--wl-ink-mute);
+  margin-top: 1px;
+}
+.wl-upc__edit {
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--wl-line);
+  background: var(--wl-card);
+  border-radius: 6px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  color: var(--wl-ink-soft);
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.wl-upc__edit:hover {
+  background: var(--wl-ink);
+  color: var(--wl-yellow);
+  border-color: var(--wl-ink);
+}
+
+.wl-cal-legend-block {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--wl-line);
+}
+.wl-cal-legend-h {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--wl-ink);
+}
+.wl-cal-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.wl-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--wl-ink-soft);
+}
