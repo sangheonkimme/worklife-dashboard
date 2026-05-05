@@ -29,7 +29,11 @@ const formatToday = (locale: string) => {
   });
 };
 
-export function RedesignedTopbar() {
+interface RedesignedTopbarProps {
+  onOpenSearch?: () => void;
+}
+
+export function RedesignedTopbar({ onOpenSearch }: RedesignedTopbarProps = {}) {
   const { t, i18n } = useTranslation("dashboard");
   const { user } = useAuth();
   const colorScheme = useUiStore((s) => s.colorScheme);
@@ -66,15 +70,18 @@ export function RedesignedTopbar() {
       </div>
 
       <div className="wl-topbar-actions">
-        <label className="wl-search">
+        <button
+          type="button"
+          className="wl-search wl-search--trigger"
+          onClick={onOpenSearch}
+          aria-label={t("topbar.searchPlaceholder")}
+        >
           <IconSearch size={14} />
-          <input
-            type="search"
-            placeholder={t("topbar.searchPlaceholder")}
-            aria-label={t("topbar.searchPlaceholder")}
-          />
+          <span className="wl-search__placeholder">
+            {t("topbar.searchPlaceholder")}
+          </span>
           <kbd>⌘K</kbd>
-        </label>
+        </button>
         <button
           type="button"
           className="wl-icon-btn"

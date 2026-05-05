@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { useMantineColorScheme } from "@mantine/core";
 import { useUiStore } from "@/store/useUiStore";
+import { SearchOverlay } from "@/components/search/SearchOverlay";
 import { RedesignedSidebar } from "./RedesignedSidebar";
 import { RedesignedTopbar } from "./RedesignedTopbar";
 
@@ -20,10 +21,26 @@ export function RedesignedShell({ children }: RedesignedShellProps) {
   const pathname = usePathname();
   const colorScheme = useUiStore((s) => s.colorScheme);
   const { setColorScheme } = useMantineColorScheme();
+  const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
     setColorScheme(colorScheme);
   }, [colorScheme, setColorScheme]);
+
+  // ⌘K / Ctrl+K 글로벌 단축키
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSearchOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  const openSearch = useCallback(() => setSearchOpen(true), []);
+  const closeSearch = useCallback(() => setSearchOpen(false), []);
 
   const showTopbar = TOPBAR_ROUTES.has(pathname ?? "");
 
@@ -31,13 +48,14 @@ export function RedesignedShell({ children }: RedesignedShellProps) {
     <div className="wl-shell">
       <RedesignedSidebar />
       <div className="wl-main">
-        {showTopbar && <RedesignedTopbar />}
+        {showTopbar && <RedesignedTopbar onOpenSearch={openSearch} />}
         {children}
         <footer className="wl-footer">
           <span>{t("footer.copyright", { year: new Date().getFullYear() })}</span>
           <span>{t("footer.version")}</span>
         </footer>
       </div>
+      <SearchOverlay open={searchOpen} onClose={closeSearch} />
     </div>
   );
 }
