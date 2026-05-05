@@ -5,6 +5,7 @@ import { IconSearch, IconTrash, IconX } from "@tabler/icons-react";
 import { AuthRequiredWrapper } from "@/components/auth/AuthRequiredWrapper";
 import { ICON_MAP, MOCK_TXNS, type MockTxn } from "./mockData";
 import { getCategoryColor } from "./categoryColor";
+import { ReceiptUploadModal } from "./ReceiptUploadModal";
 
 const fmt = (n: number) =>
   (n < 0 ? "-" : n > 0 ? "+" : "") + "₩" + Math.abs(n).toLocaleString();
@@ -33,6 +34,7 @@ export function TxnsPage() {
   const [pay, setPay] = useState<string>("all");
   const [range, setRange] = useState<RangeKey>("month");
   const [activeId, setActiveId] = useState<number>(MOCK_TXNS[0]?.id ?? 0);
+  const [receiptOpen, setReceiptOpen] = useState(false);
 
   const allCats = useMemo(
     () => Array.from(new Set(MOCK_TXNS.map((t) => t.cat))),
@@ -98,7 +100,11 @@ export function TxnsPage() {
           <button type="button" className="wl-timer-btn">
             CSV
           </button>
-          <button type="button" className="wl-timer-btn">
+          <button
+            type="button"
+            className="wl-timer-btn"
+            onClick={() => setReceiptOpen(true)}
+          >
             영수증 첨부
           </button>
           <button type="button" className="wl-timer-btn wl-timer-btn--primary">
@@ -398,7 +404,15 @@ export function TxnsPage() {
                   <span>{active.pay}</span>
                   <span>{active.time}</span>
                 </div>
-                <div className="wl-receipt-foot">— 영수증 첨부 가능 —</div>
+                <div className="wl-receipt-foot">
+                  <button
+                    type="button"
+                    className="wl-receipt-attach-btn"
+                    onClick={() => setReceiptOpen(true)}
+                  >
+                    + 영수증 첨부하기
+                  </button>
+                </div>
               </div>
 
               <div className="wl-txn-detail-actions">
@@ -424,6 +438,11 @@ export function TxnsPage() {
           )}
         </aside>
       </div>
+
+      <ReceiptUploadModal
+        open={receiptOpen}
+        onClose={() => setReceiptOpen(false)}
+      />
     </AuthRequiredWrapper>
   );
 }

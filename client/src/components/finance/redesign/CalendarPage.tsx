@@ -8,6 +8,7 @@ import {
   IconPencil,
 } from "@tabler/icons-react";
 import { AuthRequiredWrapper } from "@/components/auth/AuthRequiredWrapper";
+import { DayDetailPanel, type DayPanelTarget } from "./DayDetailPanel";
 
 interface CalEvent {
   title: string;
@@ -64,6 +65,7 @@ export function CalendarPage() {
   const [cursor, setCursor] = useState(
     () => new Date(today.getFullYear(), today.getMonth(), 1)
   );
+  const [activeDay, setActiveDay] = useState<DayPanelTarget | null>(null);
 
   const yr = cursor.getFullYear();
   const mo = cursor.getMonth();
@@ -148,6 +150,19 @@ export function CalendarPage() {
                     className={`wl-big-cell${c.muted ? " wl-big-cell--muted" : ""}${
                       isToday ? " wl-big-cell--today" : ""
                     }`}
+                    onClick={() => {
+                      if (c.muted) return;
+                      setActiveDay({
+                        yr,
+                        mo,
+                        d: c.d,
+                        events: dayEvents.map((e) => ({
+                          title: e.title,
+                          color: e.color,
+                          time: e.time,
+                        })),
+                      });
+                    }}
                   >
                     <div
                       className={`wl-big-cell__num${
@@ -224,6 +239,11 @@ export function CalendarPage() {
           </div>
         </div>
       </div>
+
+      <DayDetailPanel
+        day={activeDay}
+        onClose={() => setActiveDay(null)}
+      />
     </AuthRequiredWrapper>
   );
 }
