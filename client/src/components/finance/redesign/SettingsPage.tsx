@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   IconUser,
   IconSparkles,
@@ -11,8 +11,13 @@ import {
   IconDatabase,
   IconCoin,
   IconCheck,
+  IconLogout,
 } from "@tabler/icons-react";
+import { useMantineColorScheme } from "@mantine/core";
+import { useTranslation } from "react-i18next";
 import { AuthRequiredWrapper } from "@/components/auth/AuthRequiredWrapper";
+import { useAuth } from "@/hooks/useAuth";
+import { useUiStore } from "@/store/useUiStore";
 
 type SectionKey =
   | "profile"
@@ -25,14 +30,28 @@ type SectionKey =
   | "account";
 
 interface Tweaks {
-  dark: boolean;
   accent: "yellow" | "coral" | "mint" | "lilac";
   showCalendar: boolean;
   payday: number;
   paydayType: "fixed" | "lastDay" | "firstDay" | "custom";
   cycleStart: "payday" | "1st" | "custom";
   currency: "KRW" | "USD" | "JPY" | "EUR";
+  fontFamily: "pretendard" | "jakarta" | "noto";
+  fontSize: "s" | "m" | "l";
 }
+
+const TWEAKS_STORAGE_KEY = "wl-settings-tweaks";
+
+const DEFAULT_TWEAKS: Tweaks = {
+  accent: "yellow",
+  showCalendar: true,
+  payday: 25,
+  paydayType: "fixed",
+  cycleStart: "payday",
+  currency: "KRW",
+  fontFamily: "pretendard",
+  fontSize: "m",
+};
 
 const SECTIONS: {
   id: SectionKey;
@@ -40,7 +59,7 @@ const SECTIONS: {
   label: string;
   sub: string;
 }[] = [
-  { id: "profile", icon: <IconUser size={16} />, label: "프로필", sub: "이름 · 이메일 · 사진" },
+  { id: "profile", icon: <IconUser size={16} />, label: "프로필", sub: "이름 · 이메일 · 언어" },
   { id: "appearance", icon: <IconSparkles size={16} />, label: "테마 · 외관", sub: "다크 모드 · 색상" },
   { id: "ledger", icon: <IconWallet size={16} />, label: "가계부 설정", sub: "월급일 · 카테고리 · 통화" },
   { id: "notifications", icon: <IconBell size={16} />, label: "알림", sub: "푸시 · 이메일 · 사운드" },
@@ -50,19 +69,38 @@ const SECTIONS: {
   { id: "account", icon: <IconCoin size={16} />, label: "계정 · 결제", sub: "플랜 · 청구" },
 ];
 
+const useTweaks = () => {
+  const [tweaks, setTweaks] = useState<Tweaks>(DEFAULT_TWEAKS);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = window.localStorage.getItem(TWEAKS_STORAGE_KEY);
+      if (raw) setTweaks({ ...DEFAULT_TWEAKS, ...JSON.parse(raw) });
+    } catch {
+      /* noop */
+    }
+  }, []);
+
+  const setTweak = <K extends keyof Tweaks>(key: K, value: Tweaks[K]) =>
+    setTweaks((prev) => {
+      const next = { ...prev, [key]: value };
+      if (typeof window !== "undefined") {
+        try {
+          window.localStorage.setItem(TWEAKS_STORAGE_KEY, JSON.stringify(next));
+        } catch {
+          /* noop */
+        }
+      }
+      return next;
+    });
+
+  return [tweaks, setTweak] as const;
+};
+
 export function SettingsPage() {
   const [section, setSection] = useState<SectionKey>("profile");
-  const [tweaks, setTweaks] = useState<Tweaks>({
-    dark: false,
-    accent: "yellow",
-    showCalendar: true,
-    payday: 25,
-    paydayType: "fixed",
-    cycleStart: "payday",
-    currency: "KRW",
-  });
-  const setTweak = <K extends keyof Tweaks>(key: K, value: Tweaks[K]) =>
-    setTweaks((prev) => ({ ...prev, [key]: value }));
+  const [tweaks, setTweak] = useTweaks();
 
   return (
     <AuthRequiredWrapper>
@@ -73,11 +111,8 @@ export function SettingsPage() {
             환경설정
             <span className="wl-page-title__hand">— 내 입맛에 맞게</span>
           </h1>
-          <div className="wl-page-sub">앱 동작과 모양을 자유롭게 바꿔보세요</div>
+          <div className="wl-page-sub">변경한 항목은 자동 저장됩니다</div>
         </div>
-        <button type="button" className="wl-timer-btn wl-timer-btn--primary">
-          변경 저장
-        </button>
       </div>
 
       <div className="wl-settings-layout">
@@ -132,7 +167,13 @@ function SettingRow({
   );
 }
 
-function Switch({ on, onChange }: { on: boolean; onChange?: (v: boolean) => void }) {
+function Switch({
+  on,
+  onChange,
+}: {
+  on: boolean;
+  onChange?: (v: boolean) => void;
+}) {
   const [local, setLocal] = useState(on);
   const v = onChange ? on : local;
   const toggle = () => {
@@ -152,20 +193,55 @@ function Switch({ on, onChange }: { on: boolean; onChange?: (v: boolean) => void
 }
 
 function ProfileSection() {
+  const { user } = useAuth();
+  const { i18n } = useTranslation();
+  const displayName = user?.name?.trim() || "게스트";
+  const email = user?.email ?? "—";
+  const initial = displayName.charAt(0).toUpperCase();
+  const avatarUrl = (user as { image?: string | null } | null)?.image ?? null;
+
+  const [name, setName] = useState(displayName);
+  const [bio, setBio] = useState("");
+
+  useEffect(() => {
+    setName(displayName);
+  }, [displayName]);
+
+  const changeLanguage = (lang: string) => {
+    void i18n.changeLanguage(lang);
+    if (typeof window !== "undefined") {
+      try {
+        window.localStorage.setItem("i18nextLng", lang);
+      } catch {
+        /* noop */
+      }
+    }
+  };
+
   return (
     <div className="wl-settings-group">
       <h3>프로필</h3>
       <div className="wl-profile-hero">
-        <div
-          className="wl-avatar"
-          style={{ width: 64, height: 64, fontSize: 26, background: "#e89aac" }}
-        >
-          N
-        </div>
+        {avatarUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={avatarUrl}
+            alt={displayName}
+            className="wl-avatar"
+            style={{ width: 64, height: 64, objectFit: "cover", borderRadius: "50%" }}
+          />
+        ) : (
+          <div
+            className="wl-avatar"
+            style={{ width: 64, height: 64, fontSize: 26, background: "#e89aac" }}
+          >
+            {initial}
+          </div>
+        )}
         <div style={{ flex: 1 }}>
-          <b style={{ fontSize: 18 }}>나비</b>
+          <b style={{ fontSize: 18 }}>{displayName}</b>
           <div className="wl-memo-muted" style={{ fontSize: 13 }}>
-            nabi@worklife.app · 무료 플랜
+            {email} · 무료 플랜
           </div>
         </div>
         <button type="button" className="wl-timer-btn">
@@ -173,23 +249,39 @@ function ProfileSection() {
         </button>
       </div>
       <SettingRow label="이름">
-        <input className="wl-set-input" defaultValue="나비" />
+        <input
+          className="wl-set-input"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
       </SettingRow>
       <SettingRow label="이메일">
-        <input className="wl-set-input" defaultValue="nabi@worklife.app" />
+        <input className="wl-set-input" value={email} readOnly />
       </SettingRow>
       <SettingRow label="자기소개" sub="대시보드 상단에 표시됩니다">
         <textarea
           className="wl-set-input"
           rows={2}
-          defaultValue="디자이너 / 일과 삶의 균형을 추구합니다."
+          value={bio}
+          onChange={(e) => setBio(e.target.value)}
+          placeholder="한 줄 소개를 적어보세요."
         />
+      </SettingRow>
+      <SettingRow label="서비스 언어" sub="앱 전체에 적용">
+        <select
+          className="wl-set-input"
+          value={i18n.language}
+          onChange={(e) => changeLanguage(e.target.value)}
+        >
+          <option value="ko">한국어</option>
+          <option value="en">English</option>
+        </select>
       </SettingRow>
       <SettingRow label="시간대">
         <select className="wl-set-input" defaultValue="seoul">
           <option value="seoul">(GMT+9) 서울</option>
-          <option value="tokyo">도쿄</option>
-          <option value="ny">뉴욕</option>
+          <option value="tokyo">(GMT+9) 도쿄</option>
+          <option value="ny">(GMT-5) 뉴욕</option>
         </select>
       </SettingRow>
     </div>
@@ -203,18 +295,30 @@ function AppearanceSection({
   tweaks: Tweaks;
   setTweak: <K extends keyof Tweaks>(key: K, value: Tweaks[K]) => void;
 }) {
+  const colorScheme = useUiStore((s) => s.colorScheme);
+  const setColorSchemePreference = useUiStore((s) => s.setColorSchemePreference);
+  const { setColorScheme } = useMantineColorScheme();
+  const isDark = colorScheme === "dark";
+
+  const toggleDark = (next: boolean) => {
+    const value = next ? "dark" : "light";
+    setColorSchemePreference(value);
+    setColorScheme(value);
+  };
+
   const accents: { id: Tweaks["accent"]; c: string; label: string }[] = [
     { id: "yellow", c: "#ffe27a", label: "노랑" },
     { id: "coral", c: "#ffb38a", label: "코랄" },
     { id: "mint", c: "#b9e7c9", label: "민트" },
     { id: "lilac", c: "#d4c1f0", label: "라일락" },
   ];
+
   return (
     <>
       <div className="wl-settings-group">
         <h3>테마</h3>
         <SettingRow label="다크 모드" sub="저녁 작업에 편한 어두운 테마">
-          <Switch on={tweaks.dark} onChange={(v) => setTweak("dark", v)} />
+          <Switch on={isDark} onChange={toggleDark} />
         </SettingRow>
         <SettingRow label="포인트 컬러" sub="브랜드 색상과 강조 요소에 적용">
           <div style={{ display: "flex", gap: 8 }}>
@@ -242,14 +346,26 @@ function AppearanceSection({
       <div className="wl-settings-group">
         <h3>글꼴 · 타이포그래피</h3>
         <SettingRow label="기본 글꼴">
-          <select className="wl-set-input" defaultValue="pretendard">
+          <select
+            className="wl-set-input"
+            value={tweaks.fontFamily}
+            onChange={(e) =>
+              setTweak("fontFamily", e.target.value as Tweaks["fontFamily"])
+            }
+          >
             <option value="pretendard">Pretendard</option>
             <option value="jakarta">Plus Jakarta Sans</option>
             <option value="noto">Noto Sans KR</option>
           </select>
         </SettingRow>
         <SettingRow label="글자 크기" sub="앱 전체 기준">
-          <select className="wl-set-input" defaultValue="m">
+          <select
+            className="wl-set-input"
+            value={tweaks.fontSize}
+            onChange={(e) =>
+              setTweak("fontSize", e.target.value as Tweaks["fontSize"])
+            }
+          >
             <option value="s">작게</option>
             <option value="m">보통</option>
             <option value="l">크게</option>
@@ -517,29 +633,62 @@ function DataSection() {
 }
 
 function AccountSection() {
+  const { user, logout } = useAuth();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await logout();
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
+
   return (
-    <div className="wl-settings-group">
-      <h3>현재 플랜</h3>
-      <div className="wl-plan-card">
-        <div>
-          <b style={{ fontSize: 18 }}>무료 플랜</b>
-          <div className="wl-memo-muted" style={{ fontSize: 12, marginTop: 4 }}>
-            스티커 3개 · 기본 도구 · 광고 없음
+    <>
+      <div className="wl-settings-group">
+        <h3>현재 플랜</h3>
+        <div className="wl-plan-card">
+          <div>
+            <b style={{ fontSize: 18 }}>무료 플랜</b>
+            <div className="wl-memo-muted" style={{ fontSize: 12, marginTop: 4 }}>
+              스티커 3개 · 기본 도구 · 광고 없음
+            </div>
           </div>
+          <button type="button" className="wl-timer-btn wl-timer-btn--primary">
+            Pro로 업그레이드
+          </button>
         </div>
-        <button type="button" className="wl-timer-btn wl-timer-btn--primary">
-          Pro로 업그레이드
-        </button>
-      </div>
-      <div className="wl-plan-card wl-plan-card--pro">
-        <div>
-          <b style={{ fontSize: 18 }}>Pro 플랜 — ₩4,900/월</b>
-          <div className="wl-memo-muted" style={{ fontSize: 12, marginTop: 4 }}>
-            무제한 메모 · 클라우드 백업 · 우선 지원 · 가족 공유
+        <div className="wl-plan-card wl-plan-card--pro">
+          <div>
+            <b style={{ fontSize: 18 }}>Pro 플랜 — ₩4,900/월</b>
+            <div className="wl-memo-muted" style={{ fontSize: 12, marginTop: 4 }}>
+              무제한 메모 · 클라우드 백업 · 우선 지원 · 가족 공유
+            </div>
           </div>
+          <span className="wl-tag">추천</span>
         </div>
-        <span className="wl-tag">추천</span>
       </div>
-    </div>
+
+      <div className="wl-settings-group">
+        <h3>세션</h3>
+        <SettingRow
+          label="로그인 상태"
+          sub={user?.email ? `${user.email}로 로그인됨` : "게스트"}
+        >
+          <button
+            type="button"
+            className="wl-timer-btn wl-timer-btn--danger"
+            onClick={handleLogout}
+            disabled={isLoggingOut || !user}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+          >
+            <IconLogout size={14} />
+            {isLoggingOut ? "로그아웃 중…" : "로그아웃"}
+          </button>
+        </SettingRow>
+      </div>
+    </>
   );
 }
