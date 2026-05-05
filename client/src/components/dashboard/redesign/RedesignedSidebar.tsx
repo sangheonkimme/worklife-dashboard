@@ -45,8 +45,7 @@ const NAV_GROUPS: NavGroup[] = [
     labelKey: "moneyAndSchedule",
     items: [
       { key: "transactions", href: "/dashboard/transactions", icon: IconWallet },
-      // 거래내역(txns) — 별도 페이지 신설 예정. 우선 가계부 페이지로 라우팅.
-      { key: "txns", href: "/dashboard/transactions", icon: IconCash },
+      { key: "txns", href: "/dashboard/txns", icon: IconCash },
       { key: "subscriptions", href: "/dashboard/subscriptions", icon: IconRepeat },
       { key: "calendar", href: "/dashboard/calendar", icon: IconCalendar },
     ],

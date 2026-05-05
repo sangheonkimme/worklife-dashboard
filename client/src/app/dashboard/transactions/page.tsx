@@ -1,9 +1,9 @@
 "use client";
 
-import TransactionsPageClient from "./TransactionsPageClient";
+import { MoneyLedgerPage } from "@/components/finance/redesign/MoneyLedgerPage";
 
 const TransactionsPage = () => {
-  return <TransactionsPageClient />;
+  return <MoneyLedgerPage />;
 };
 
 export default TransactionsPage;
