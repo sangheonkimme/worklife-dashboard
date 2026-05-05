@@ -64,10 +64,6 @@ const NAV_GROUPS: NavGroup[] = [
       { key: "imageToPdf", href: "/tools/image-to-pdf", icon: IconFileTypePdf },
     ],
   },
-  {
-    labelKey: "system",
-    items: [{ key: "settings", href: "/dashboard/settings", icon: IconSettings }],
-  },
 ];
 
 export function RedesignedSidebar() {
@@ -136,6 +132,18 @@ export function RedesignedSidebar() {
           <b>{displayName}</b>
           <span>{planLabel}</span>
         </div>
+        <Link
+          href="/dashboard/settings"
+          className={`wl-side-foot__settings${
+            pathname === "/dashboard/settings"
+              ? " wl-side-foot__settings--on"
+              : ""
+          }`}
+          aria-label={t("system:layout.nav.settings.label")}
+          title={t("system:layout.nav.settings.label")}
+        >
+          <IconSettings size={16} />
+        </Link>
       </div>
     </aside>
   );
