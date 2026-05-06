@@ -258,48 +258,44 @@
     "title": "Image cropper",
     "subtitle": "Import, crop, and export images without leaving the dashboard.",
     "cta": "Open the full editor to fine-tune crop sizes and formats.",
-    "dropzone": {
-      "title": "Drop an image or click to upload",
-      "replaceTitle": "Drop or click to replace the current image",
-      "subtitle": "PNG, JPEG, or WebP up to 20 MB. Paste with ⌘/Ctrl + V."
-    },
-    "aspect": {
-      "free": "Freeform",
-      "custom": "Custom"
+    "crumb": "Tools · Image cropper",
+    "handSub": "crop it clean",
+    "pageSub": "Adjust ratio, rotation, and output format on a single screen",
+    "headerMeta": "Source {{w}} × {{h}} px",
+    "actions": {
+      "reset": "Reset",
+      "export": "Export",
+      "download": "Download",
+      "downloadAs": "Save as {{format}}",
+      "copy": "Copy to clipboard",
+      "flipH": "Flip"
     },
     "sections": {
-      "inputArea": "Source image",
-      "inputDescription": "Upload, drop, or paste an image before editing the crop.",
-      "aspect": "Aspect ratio",
-      "freeformArea": "Crop area size",
-      "zoom": "Zoom",
-      "format": "Output format",
+      "aspect": "Ratio presets",
+      "area": "Manual area",
+      "transform": "Transform",
+      "format": "Format",
       "quality": "Quality",
-      "transparent": "Keep transparent background",
-      "transparentHint": "JPEG does not support transparency."
+      "qualityNotePng": "PNG is lossless — quality setting ignored",
+      "download": "Download",
+      "recent": "Recent"
     },
-    "fields": {
-      "aspectWidth": "Width",
-      "aspectHeight": "Height",
-      "cropWidth": "Width (px)",
-      "cropHeight": "Height (px)"
+    "stage": {
+      "preview": "Preview",
+      "dropHint": "Drop an image here",
+      "fit": "Fit",
+      "output": "Output {{w}} × {{h}} · {{ratio}}",
+      "noOutput": "Drop an image to see output info",
+      "zoomLabel": "Zoom {{pct}}%"
     },
-    "actions": {
-      "download": "Download crop",
-      "copy": "Copy to clipboard",
-      "clearImage": "Remove current image"
+    "tip": {
+      "title": "Tip",
+      "body": "For social, 1080px wide at quality 88~92 works well."
     },
     "empty": {
-      "title": "Drop or paste an image to get started",
-      "description": "Use drag-and-drop, the upload area above, or paste directly from the clipboard."
-    },
-    "history": {
-      "title": "Recent exports",
-      "empty": "Exports will appear here after you save or copy a crop.",
-      "download": "Download",
-      "copy": "Copy",
-      "remove": "Remove",
-      "clear": "Clear history"
+      "title": "Drop an image here",
+      "description": "JPG · PNG · WebP · HEIC up to 20 MB · paste with ⌘V",
+      "cta": "Choose file"
     },
     "notifications": {
       "unsupportedTitle": "Unsupported file",

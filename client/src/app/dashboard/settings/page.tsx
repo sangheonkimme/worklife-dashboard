@@ -1,9 +1,9 @@
 "use client";
 
-import SettingsPageClient from "./SettingsPageClient";
+import { SettingsPage } from "@/components/finance/redesign/SettingsPage";
 
-const SettingsPage = () => {
-  return <SettingsPageClient />;
+const Page = () => {
+  return <SettingsPage />;
 };
 
-export default SettingsPage;
+export default Page;

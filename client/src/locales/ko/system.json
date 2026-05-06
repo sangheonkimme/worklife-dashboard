@@ -19,31 +19,43 @@
       "heading": "메뉴",
       "transactions": {
         "label": "가계부",
-        "description": "예산 · 거래내역 · 통계",
+        "description": "수입 · 지출 · 통계",
         "pageTitle": "가계부",
         "pageDescription": "예산, 거래내역, 통계를 한 곳에서 확인합니다."
       },
+      "txns": {
+        "label": "거래내역",
+        "description": "전체 검색 · 상세",
+        "pageTitle": "거래내역",
+        "pageDescription": "거래 내역을 검색하고 상세를 확인합니다."
+      },
       "dashboard": {
         "label": "대시보드",
-        "description": "홈 대시보드",
+        "description": "홈 / Dashboard",
         "pageTitle": "대시보드",
         "pageDescription": "자주 쓰는 기능을 한 눈에 살펴보세요."
       },
+      "calendar": {
+        "label": "캘린더",
+        "description": "일정 · 이벤트",
+        "pageTitle": "캘린더",
+        "pageDescription": "이번 달 일정과 이벤트를 살펴보세요."
+      },
       "subscriptions": {
         "label": "정기구독",
-        "description": "고정비/구독 관리",
+        "description": "구독 관리",
         "pageTitle": "정기구독 관리",
         "pageDescription": "고정비와 정기 결제를 한 곳에서 관리하세요."
       },
       "imageCrop": {
         "label": "이미지 자르기",
-        "description": "이미지 크롭/내보내기",
+        "description": "비율 · 크롭",
         "pageTitle": "이미지 자르기",
         "pageDescription": "이미지를 빠르게 크롭하고 내보내세요."
       },
       "imageToPdf": {
         "label": "이미지 → PDF",
-        "description": "이미지 합쳐 PDF",
+        "description": "한번에 변환",
         "pageTitle": "이미지 → PDF",
         "pageDescription": "여러 이미지를 한 번에 PDF로 변환하세요."
       },
@@ -51,23 +63,29 @@
         "label": "연봉 계산기",
         "description": "실수령액 계산",
         "pageTitle": "연봉 계산기",
-        "pageDescription": "2025년 세율로 예상 실수령액을 계산합니다."
+        "pageDescription": "2026년 세율로 예상 실수령액을 계산합니다."
+      },
+      "loan": {
+        "label": "대출 이자 계산기",
+        "description": "원리금/원금 균등",
+        "pageTitle": "대출 이자 계산기",
+        "pageDescription": "월 납입금과 총 이자를 한눈에 비교하세요."
       },
       "financeTools": {
-        "label": "금융 계산기",
-        "description": "대출 · 상환",
-        "pageTitle": "금융 계산기",
-        "pageDescription": "대출 상환 계획을 시나리오별로 비교하세요."
+        "label": "급여 계산기",
+        "description": "주급 · 시급",
+        "pageTitle": "급여 계산기",
+        "pageDescription": "주급/시급 시나리오를 빠르게 비교하세요."
       },
       "notes": {
         "label": "메모",
-        "description": "메모 관리",
+        "description": "장문 메모",
         "pageTitle": "메모",
         "pageDescription": "개인 메모를 작성하고 정리하세요."
       },
       "settings": {
         "label": "환경설정",
-        "description": "알림 · 테마 · 위젯",
+        "description": "테마 · 계정",
         "pageTitle": "환경설정",
         "pageDescription": "알림, 테마, 위젯 환경을 취향에 맞게 설정하세요."
       }

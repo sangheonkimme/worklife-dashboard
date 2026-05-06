@@ -258,48 +258,44 @@
     "title": "이미지 자르기",
     "subtitle": "업로드한 이미지를 빠르게 자르고 내보내세요.",
     "cta": "세밀한 크기와 포맷 설정은 전체 화면 도구에서 할 수 있어요.",
-    "dropzone": {
-      "title": "이미지를 드롭하거나 클릭하여 업로드",
-      "replaceTitle": "현재 이미지를 교체하려면 드롭/클릭",
-      "subtitle": "PNG, JPEG, WebP 최대 20MB · ⌘/Ctrl + V 붙여넣기 지원"
-    },
-    "aspect": {
-      "free": "자유 비율",
-      "custom": "사용자 지정"
+    "crumb": "도구 · 이미지 자르기",
+    "handSub": "깔끔하게 잘라내요",
+    "pageSub": "비율 · 회전 · 출력 포맷을 한 화면에서 조정하세요",
+    "headerMeta": "원본 {{w}} × {{h}} px",
+    "actions": {
+      "reset": "초기화",
+      "export": "내보내기",
+      "download": "다운로드",
+      "downloadAs": "{{format}}로 저장",
+      "copy": "클립보드 복사",
+      "flipH": "좌우반전"
     },
     "sections": {
-      "inputArea": "이미지 입력",
-      "inputDescription": "자르기 전에 이미지를 업로드·드롭·붙여넣기 해주세요.",
       "aspect": "비율 프리셋",
-      "freeformArea": "자르기 영역 크기",
-      "zoom": "확대/축소",
-      "format": "출력 형식",
+      "area": "자유 입력",
+      "transform": "변환",
+      "format": "출력 포맷",
       "quality": "품질",
-      "transparent": "투명 배경 유지",
-      "transparentHint": "JPEG는 투명 배경을 지원하지 않습니다."
+      "qualityNotePng": "PNG는 무손실 — 품질 설정 미사용",
+      "download": "다운로드",
+      "recent": "최근 작업"
     },
-    "fields": {
-      "aspectWidth": "가로",
-      "aspectHeight": "세로",
-      "cropWidth": "가로(px)",
-      "cropHeight": "세로(px)"
+    "stage": {
+      "preview": "미리보기",
+      "dropHint": "이미지를 끌어다 놓으세요",
+      "fit": "맞춤",
+      "output": "출력 {{w}} × {{h}} · {{ratio}}",
+      "noOutput": "이미지를 올리면 출력 정보가 표시돼요",
+      "zoomLabel": "줌 {{pct}}%"
     },
-    "actions": {
-      "download": "자르기 다운로드",
-      "copy": "클립보드에 복사",
-      "clearImage": "현재 이미지 제거"
+    "tip": {
+      "title": "팁",
+      "body": "SNS용은 1080px 너비 + 품질 88~92가 가장 안정적이에요."
     },
     "empty": {
-      "title": "이미지를 드롭하거나 붙여넣어 시작하세요",
-      "description": "업로드 영역을 사용하거나 클립보드에서 바로 붙여넣을 수 있습니다."
-    },
-    "history": {
-      "title": "최근 내보내기",
-      "empty": "내보내기를 수행하면 여기에서 다시 사용할 수 있습니다.",
-      "download": "다운로드",
-      "copy": "복사",
-      "remove": "삭제",
-      "clear": "기록 지우기"
+      "title": "여기로 이미지를 끌어다 놓으세요",
+      "description": "JPG · PNG · WebP · HEIC 최대 20 MB · ⌘V 붙여넣기 지원",
+      "cta": "파일 선택"
     },
     "notifications": {
       "unsupportedTitle": "지원하지 않는 파일",

@@ -1,29 +1,26 @@
 "use client";
 
-import {
-  Card,
-  Text,
-  RingProgress,
-  Stack,
-  Group,
-  Button,
-  Badge,
-  ActionIcon,
-  ThemeIcon,
-} from '@mantine/core';
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
   IconPlayerPlay,
   IconPlayerPause,
   IconPlayerStop,
-  IconClock,
-} from '@tabler/icons-react';
-import { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+  IconFlame,
+} from "@tabler/icons-react";
 import {
   usePomodoroStore,
   requestNotificationPermission,
-} from '@/store/usePomodoroStore';
-import { unlockAudio } from '@/utils/audio';
+} from "@/store/usePomodoroStore";
+import { unlockAudio } from "@/utils/audio";
+import { CircleTimer } from "@/components/dashboard/redesign/CircleTimer";
+
+const formatMmSs = (sec: number) => {
+  const total = Math.max(0, Math.floor(sec));
+  const m = String(Math.floor(total / 60)).padStart(2, "0");
+  const s = String(total % 60).padStart(2, "0");
+  return `${m}:${s}`;
+};
 
 export function PomodoroTimerCard() {
   const {
@@ -32,182 +29,136 @@ export function PomodoroTimerCard() {
     remainingTime,
     totalDuration,
     completedSessions,
+    settings,
     startTimer,
     pauseTimer,
     resumeTimer,
     stopTimer,
+    switchSession,
     restoreSession,
   } = usePomodoroStore();
-  const { t } = useTranslation('widgets');
+  const { t } = useTranslation("widgets");
 
-  // 컴포넌트 마운트 시 설정 로드, 세션 복원, 알림 권한 요청
   useEffect(() => {
-    restoreSession(); // 새로고침 시 타이머 상태 복원
+    restoreSession();
     requestNotificationPermission();
   }, [restoreSession]);
 
-  // 남은 시간을 MM:SS 형식으로 변환
-  const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
+  const isRunning = status === "running";
+  const progress = totalDuration > 0 ? remainingTime / totalDuration : 0;
+  const focusMin = Math.round(settings.focusDuration / 60);
+  const breakMin = Math.round(settings.shortBreakDuration / 60);
 
-  // 진행률 계산 (0-100)
-  const progress = totalDuration > 0
-    ? ((totalDuration - remainingTime) / totalDuration) * 100
-    : 0;
-
-  // 세션 타입별 색상
-  const getColor = () => {
-    if (status === 'paused') return 'yellow';
-    if (sessionType === 'FOCUS') return 'red';
-    return 'green';
-  };
-
-  // 세션 타입별 텍스트
-  const getSessionLabel = () => {
-    switch (sessionType) {
-      case 'FOCUS':
-        return t('pomodoro.sessionLabels.focus');
-      case 'SHORT_BREAK':
-        return t('pomodoro.sessionLabels.shortBreak');
-      case 'LONG_BREAK':
-        return t('pomodoro.sessionLabels.longBreak');
+  const handlePrimary = () => {
+    if (isRunning) {
+      pauseTimer();
+      return;
+    }
+    unlockAudio();
+    if (status === "paused") {
+      resumeTimer();
+    } else {
+      startTimer();
     }
   };
 
-  const color = getColor();
-
-  const handleStart = () => {
-    unlockAudio();
-    startTimer();
-  };
-
-  const handleResume = () => {
-    unlockAudio();
-    resumeTimer();
-  };
-
   return (
-    <Card
-      shadow="sm"
-      padding="lg"
-      radius="md"
-      withBorder
+    <div
+      className="wl-paper-card wl-paper-card--pomodoro"
       style={{
-        height: '100%',
-        transition: 'transform 0.2s, box-shadow 0.2s',
-        cursor: 'default',
-      }}
-      styles={{
-        root: {
-          '&:hover': {
-            transform: 'translateY(-4px)',
-            boxShadow: '0 8px 16px rgba(0, 0, 0, 0.1)',
-          },
-        },
+        padding: 20,
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
-      <Stack gap="md" align="center" justify="space-between" style={{ height: '100%' }}>
-        {/* 제목 */}
-        <Group gap="xs">
-          <ThemeIcon size="lg" variant="light" color="red">
-            <IconClock size={20} />
-          </ThemeIcon>
-          <Text fw={600} size="lg">
-            {t('pomodoro.title')}
-          </Text>
-        </Group>
+      <div className="wl-card-head">
+        <div className="wl-card-title wl-card-title--accent">
+          <IconFlame size={16} />
+          {t("pomodoro.title")}
+        </div>
+        <span className="wl-tag">
+          {t("pomodoro.badges.completed", { count: completedSessions })}
+        </span>
+      </div>
 
-        {/* 타이머 디스플레이 */}
-        <Stack gap="xs" align="center">
-          <RingProgress
-            size={180}
-            thickness={12}
-            sections={[{ value: progress, color }]}
-            label={
-              <Stack gap={0} align="center">
-                <Text size="xl" fw={700} c={color}>
-                  {formatTime(remainingTime)}
-                </Text>
-                <Text size="xs" c="dimmed" mt={4}>
-                  {getSessionLabel()}
-                </Text>
-              </Stack>
-            }
-          />
-        </Stack>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: 6,
+          marginBottom: 4,
+        }}
+      >
+        <button
+          type="button"
+          className={`wl-preset${sessionType === "FOCUS" ? " wl-preset--on" : ""}`}
+          onClick={() => switchSession("FOCUS")}
+          disabled={isRunning}
+        >
+          {t("pomodoro.sessionLabels.focus")} {focusMin}
+        </button>
+        <button
+          type="button"
+          className={`wl-preset${
+            sessionType === "SHORT_BREAK" ? " wl-preset--on" : ""
+          }`}
+          onClick={() => switchSession("SHORT_BREAK")}
+          disabled={isRunning}
+        >
+          {t("pomodoro.sessionLabels.shortBreak")} {breakMin}
+        </button>
+      </div>
 
-        {/* 컨트롤 버튼 */}
-        <Group gap="xs" justify="center">
-          {status === 'idle' && (
-            <Button
-              leftSection={<IconPlayerPlay size={16} />}
-              color={color}
-              onClick={handleStart}
-              size="sm"
-            >
-              {t('pomodoro.actions.start')}
-            </Button>
-          )}
+      <CircleTimer
+        progress={progress}
+        color="var(--wl-red)"
+        trackColor="rgba(226,92,77,0.18)"
+      >
+        <span className="wl-timer-time wl-timer-time--pomodoro">
+          {formatMmSs(remainingTime)}
+        </span>
+        <small>
+          {sessionType === "FOCUS"
+            ? t("pomodoro.sessionLabels.focus")
+            : sessionType === "SHORT_BREAK"
+            ? t("pomodoro.sessionLabels.shortBreak")
+            : t("pomodoro.sessionLabels.longBreak")}
+        </small>
+      </CircleTimer>
 
-          {status === 'running' && (
-            <>
-              <ActionIcon
-                variant="filled"
-                color="yellow"
-                size="lg"
-                onClick={pauseTimer}
-                aria-label={t('pomodoro.actions.pause')}
-              >
-                <IconPlayerPause size={18} />
-              </ActionIcon>
-              <ActionIcon
-                variant="filled"
-                color="gray"
-                size="lg"
-                onClick={stopTimer}
-                aria-label={t('pomodoro.actions.stop')}
-              >
-                <IconPlayerStop size={18} />
-              </ActionIcon>
-            </>
-          )}
+      <div
+        style={{
+          display: "flex",
+          gap: 8,
+          justifyContent: "center",
+          marginTop: 14,
+        }}
+      >
+        <button
+          type="button"
+          className="wl-timer-btn wl-timer-btn--primary"
+          onClick={handlePrimary}
+        >
+          {isRunning ? <IconPlayerPause size={12} /> : <IconPlayerPlay size={12} />}
+          {isRunning
+            ? t("pomodoro.actions.pause")
+            : status === "paused"
+            ? t("pomodoro.actions.resume")
+            : t("pomodoro.actions.start")}
+        </button>
+        {(status === "running" || status === "paused") && (
+          <button type="button" className="wl-timer-btn" onClick={stopTimer}>
+            <IconPlayerStop size={12} />
+            {t("pomodoro.actions.stop")}
+          </button>
+        )}
+      </div>
 
-          {status === 'paused' && (
-            <>
-              <Button
-                leftSection={<IconPlayerPlay size={16} />}
-                color={color}
-                onClick={handleResume}
-                size="sm"
-              >
-                {t('pomodoro.actions.resume')}
-              </Button>
-              <ActionIcon
-                variant="filled"
-                color="gray"
-                size="lg"
-                onClick={stopTimer}
-                aria-label={t('pomodoro.actions.stop')}
-              >
-                <IconPlayerStop size={18} />
-              </ActionIcon>
-            </>
-          )}
-        </Group>
-
-        {/* 오늘 완료 개수 */}
-        <Group gap="xs">
-          <Text size="sm" c="dimmed">
-            {t('pomodoro.badges.today')}
-          </Text>
-          <Badge color="red" variant="light">
-            {t('pomodoro.badges.completed', { count: completedSessions })}
-          </Badge>
-        </Group>
-      </Stack>
-    </Card>
+      <div className="wl-card-foot">
+        {t("pomodoro.badges.today")} — {completedSessions * focusMin}
+        분 집중
+      </div>
+    </div>
   );
 }

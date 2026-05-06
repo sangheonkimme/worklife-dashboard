@@ -1,10 +1,105 @@
 {
+  "sidebar": {
+    "menuLabel": "메뉴",
+    "guestName": "게스트",
+    "planFree": "무료 플랜",
+    "groups": {
+      "home": "홈",
+      "moneyAndSchedule": "가계 · 일정",
+      "records": "기록",
+      "tools": "도구",
+      "system": "시스템"
+    }
+  },
+  "topbar": {
+    "greeting": "좋은 아침이에요, {{name}}",
+    "guestName": "친구",
+    "handTagline": "let's get it done",
+    "subtitle": "오늘의 메모와 타이머를 한곳에서 관리하세요.",
+    "subtitleShort": "오늘 일정과 메모를 한곳에서 정리하세요.",
+    "subtitleDetail": "오늘은 {{events}}개의 일정과 {{pomodoros}}개의 포모도로 세션이 예약되어 있어요.",
+    "searchPlaceholder": "검색하기...",
+    "actions": {
+      "darkMode": "다크 모드로 전환",
+      "lightMode": "라이트 모드로 전환",
+      "notifications": "알림"
+    }
+  },
+  "footer": {
+    "copyright": "© {{year}} WorkLife Dashboard · Made with ☕ in Seoul",
+    "version": "v2.0 · 패치노트"
+  },
+  "sections": {
+    "tools": "도구 모음",
+    "toolsViewAll": "전체 보기 →",
+    "timers": "타이머",
+    "timersSettings": "설정 →",
+    "overview": "한눈에 보기",
+    "overviewMore": "자세히 →"
+  },
+  "tools": {
+    "salary": {
+      "title": "연봉 계산기",
+      "desc": "실수령액을 간편하게 계산해보세요",
+      "point1": "2026년 기준 세율 적용",
+      "point2": "4대 보험 · 소득세 자동 계산"
+    },
+    "imageCrop": {
+      "title": "이미지 자르기",
+      "desc": "업로드한 이미지를 빠르게 자르고 내보내요",
+      "point1": "원하는 크기와 포맷 설정",
+      "point2": "전체 화면 도구에서 사용 가능"
+    },
+    "imageToPdf": {
+      "title": "이미지 → PDF",
+      "desc": "여러 이미지를 하나의 PDF로 깔끔하게 합쳐요",
+      "point1": "품질 유지와 순서 편집",
+      "point2": "전체 화면 도구에서 진행"
+    }
+  },
+  "deskPile": {
+    "journal": {
+      "tab": "오늘의 한 줄",
+      "placeholder": "오늘의 한 줄을 적어보세요",
+      "footHand": "오늘의 한 줄"
+    },
+    "pinBoard": {
+      "title": "자주 쓰는 정보",
+      "addLabel": "+ 핀 추가"
+    }
+  },
+  "money": {
+    "title": "가계부 — {{month}}월",
+    "subtitle": "월급일까지 D-{{days}} · 이번 달 흐름을 한눈에",
+    "addEntry": "+ 내역 추가",
+    "stats": {
+      "income": "월급 (실수령)",
+      "expense": "이번 달 지출",
+      "remaining": "남은 예산",
+      "incomeSub": "매월 25일 입금",
+      "expenseSub": "예산 {{pct}}% 사용",
+      "remainingSub": "D-{{days}}까지 사용 가능"
+    },
+    "budgetUsed": "{{pct}}% 사용 중",
+    "viewAll": "자세히 →"
+  },
+  "calendar": {
+    "title": "{{year}} . {{month}}",
+    "subtitle": "이번 달 일정 {{count}}개",
+    "expandAria": "전체 달력으로 이동",
+    "weekdays": ["일", "월", "화", "수", "목", "금", "토"],
+    "memoPlaceholder": "떠오른 생각을 빠르게 적어두세요",
+    "memoLabel": "한 줄 메모",
+    "memoSave": "저장"
+  },
   "stickyNotes": {
     "title": "스티커 메모",
+    "handTagline": "붙여두면 잊지 않아요",
     "loading": "로딩 중...",
-    "limitNotice": "스티커 메모는 최대 {{count}}개까지 추가할 수 있습니다.",
-    "createButton": "새 메모",
+    "limitNotice": "스티커 메모는 최대 {{count}}개까지 추가할 수 있어요.",
+    "createButton": "메모 추가",
     "placeholder": "메모를 입력하세요...",
+    "colorPickerAria": "메모 색상 선택",
     "aria": {
       "delete": "메모 삭제"
     },

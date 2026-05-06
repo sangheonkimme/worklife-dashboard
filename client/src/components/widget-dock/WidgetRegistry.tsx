@@ -1,7 +1,6 @@
-import { IconCrop, IconFileTypePdf, IconHourglassHigh } from "@tabler/icons-react";
+import { IconFileTypePdf, IconHourglassHigh } from "@tabler/icons-react";
 import type { WidgetConfig } from "@/types/widget";
 import {
-  ImageCropWidget,
   ImageToPdfWidget,
   TimerWidget,
 } from "@/components/widgets";
@@ -23,20 +22,6 @@ export const WIDGETS: WidgetConfig[] = [
     modalSize: "xl",
     color: "blue",
     order: 1,
-    enabled: true,
-  },
-  {
-    id: "image-crop",
-    name: "Image cropper",
-    nameKey: "registry.imageCrop.name",
-    icon: IconCrop,
-    description: "Crop, resize, and export images without leaving the dashboard.",
-    descriptionKey: "registry.imageCrop.description",
-    component: ImageCropWidget,
-    displayMode: "modal",
-    modalSize: "xl",
-    color: "cyan",
-    order: 2,
     enabled: true,
   },
   {
